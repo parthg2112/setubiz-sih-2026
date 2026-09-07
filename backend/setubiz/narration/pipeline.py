@@ -21,7 +21,9 @@ class NarrationResult:
     validation: ValidationReport
 
 
-def narrate(facts: Facts, language: Language = Language.EN, *, use_llm: bool | None = None) -> NarrationResult:
+def narrate(
+    facts: Facts, language: Language = Language.EN, *, use_llm: bool | None = None
+) -> NarrationResult:
     """Narrate and validate. The template lane is the default and the fallback."""
     wants_llm = LlmNarrator.available() if use_llm is None else use_llm
     narrator = LlmNarrator() if wants_llm and LlmNarrator.available() else TemplateNarrator()

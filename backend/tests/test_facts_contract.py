@@ -6,6 +6,7 @@ import json
 from decimal import Decimal
 
 import pytest
+from pydantic import ValidationError
 
 from setubiz.facts import build_facts
 from setubiz.facts.provenance import SOURCES, resolve, unknown_ids
@@ -48,10 +49,22 @@ def test_synthetic_data_is_declared_not_hidden(facts):
 
 def test_the_headline_numbers_are_all_indexed(facts):
     for key in (
-        "margin", "project_cost", "max_loan", "recommended_loan", "headroom",
-        "required_capital", "debt_need", "annual_noi", "max_loan_min_dscr",
-        "recommended_min_dscr", "dscr_threshold", "competitors_low", "competitors_high",
-        "households_now", "quarterly_instalment_max", "quarterly_instalment_recommended",
+        "margin",
+        "project_cost",
+        "max_loan",
+        "recommended_loan",
+        "headroom",
+        "required_capital",
+        "debt_need",
+        "annual_noi",
+        "max_loan_min_dscr",
+        "recommended_min_dscr",
+        "dscr_threshold",
+        "competitors_low",
+        "competitors_high",
+        "households_now",
+        "quarterly_instalment_max",
+        "quarterly_instalment_recommended",
     ):
         assert key in facts.numeric_index, key
 
@@ -91,7 +104,7 @@ def test_facts_serialize_to_json_round_trip(facts):
 
 
 def test_facts_are_frozen(facts):
-    with pytest.raises(Exception):
+    with pytest.raises(ValidationError):
         facts.numeric_index = {}
 
 

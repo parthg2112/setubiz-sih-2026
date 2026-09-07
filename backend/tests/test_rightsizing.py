@@ -42,7 +42,8 @@ def test_the_demo_moment_max_loan_fails_dscr(dairy, logic_b_route):
     assert rs.recommended_loan < rs.max_loan
     assert rs.headroom == rs.max_loan - rs.recommended_loan
     assert rs.recommended_min_dscr >= rs.dscr_threshold
-    assert any("worst-year DSCR" in w for w in rs.warnings)
+    assert any(w.id == "overborrowing" for w in rs.warnings)
+    assert all(w.text_en and w.text_hi for w in rs.warnings)  # bilingual at source
 
 
 def test_recommended_loan_is_bound_by_stress_and_reported_as_such(dairy, logic_b_route):
@@ -66,7 +67,7 @@ def test_capital_shortfall_is_surfaced_not_hidden(dairy, logic_b_route):
     rs = right_size(logic_b_route, dairy)
     assert rs.debt_need == money(310800)  # ₹4,10,800 required − ₹1,00,000 margin
     assert rs.capital_shortfall == rs.debt_need - rs.recommended_loan
-    assert any("Cash flow supports only" in w for w in rs.warnings)
+    assert any(w.id == "capital_shortfall" for w in rs.warnings)
 
 
 def test_capital_need_binds_when_cash_flow_is_strong(logic_b_route):
@@ -77,7 +78,7 @@ def test_capital_need_binds_when_cash_flow_is_strong(logic_b_route):
     assert rs.recommended_loan == rs.debt_need
     # Rounding must never manufacture a shortfall when need is what binds.
     assert rs.capital_shortfall == 0
-    assert not any("Cash flow supports only" in w for w in rs.warnings)
+    assert not any(w.id == "capital_shortfall" for w in rs.warnings)
 
 
 def test_scheme_cap_binds_when_the_unit_costs_more_than_the_ps_formula_allows(dairy):
@@ -102,7 +103,9 @@ def test_scheme_cap_binds_when_the_unit_costs_more_than_the_ps_formula_allows(da
 def test_loss_making_unit_is_not_viable_at_any_loan_size(logic_b_route, dairy):
     broke = dairy.model_copy(
         update={
-            "monthly_revenue": (dairy.monthly_revenue[0].model_copy(update={"amount": money(5000)}),)
+            "monthly_revenue": (
+                dairy.monthly_revenue[0].model_copy(update={"amount": money(5000)}),
+            )
         }
     )
     rs = right_size(logic_b_route, broke)
@@ -110,21 +113,22 @@ def test_loss_making_unit_is_not_viable_at_any_loan_size(logic_b_route, dairy):
     assert rs.binding is BindingConstraint.NOT_VIABLE
     assert rs.recommended_loan == 0
     assert rs.recommended_dscr == ()
-    assert any("no loan size is" in w for w in rs.warnings)
+    assert any(w.id == "not_viable" for w in rs.warnings)
 
 
 def test_out_of_scope_route_short_circuits(dairy):
     rs = right_size(route(600000), dairy)
     assert rs.recommended_loan == 0
     assert rs.max_loan == 0
-    assert "outside the NSFDC envelope" in rs.warnings[0]
+    assert rs.warnings[0].id == "out_of_scope"
+    assert "outside the NSFDC envelope" in rs.warnings[0].text_en
 
 
 def test_dscr_falls_monotonically_with_loan_size(dairy, logic_b_route):
     noi = dairy.annual_noi
     ratios = [
-        min_dscr(noi, money(l), logic_b_route, MoratoriumMode.SERVICED)
-        for l in (100000, 200000, 400000, 900000)
+        min_dscr(noi, money(amount), logic_b_route, MoratoriumMode.SERVICED)
+        for amount in (100000, 200000, 400000, 900000)
     ]
     assert ratios == sorted(ratios, reverse=True)
 
@@ -137,12 +141,18 @@ def test_largest_loan_meeting_returns_ceiling_when_everything_passes(logic_b_rou
 
 
 def test_largest_loan_meeting_is_zero_without_income(logic_b_route):
-    assert largest_loan_meeting(
-        money(0), logic_b_route, MoratoriumMode.SERVICED, Decimal("1.5"), money(900000)
-    ) == 0
-    assert largest_loan_meeting(
-        money(90000), logic_b_route, MoratoriumMode.SERVICED, Decimal("1.5"), money(0)
-    ) == 0
+    assert (
+        largest_loan_meeting(
+            money(0), logic_b_route, MoratoriumMode.SERVICED, Decimal("1.5"), money(900000)
+        )
+        == 0
+    )
+    assert (
+        largest_loan_meeting(
+            money(90000), logic_b_route, MoratoriumMode.SERVICED, Decimal("1.5"), money(0)
+        )
+        == 0
+    )
 
 
 def test_min_dscr_of_a_zero_loan_is_unbounded(logic_b_route):
@@ -164,8 +174,12 @@ def test_dscr_by_year_is_empty_for_an_empty_schedule(logic_b_route):
 
 
 def test_a_stricter_threshold_lowers_the_recommendation(dairy, logic_b_route):
-    lenient = right_size(logic_b_route, dairy, dscr_threshold=Decimal("1.2"), enforce_stress_floor=False)
-    strict = right_size(logic_b_route, dairy, dscr_threshold=Decimal("2.0"), enforce_stress_floor=False)
+    lenient = right_size(
+        logic_b_route, dairy, dscr_threshold=Decimal("1.2"), enforce_stress_floor=False
+    )
+    strict = right_size(
+        logic_b_route, dairy, dscr_threshold=Decimal("2.0"), enforce_stress_floor=False
+    )
     assert strict.recommended_loan < lenient.recommended_loan
 
 

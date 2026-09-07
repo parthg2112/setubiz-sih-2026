@@ -96,7 +96,10 @@ class LlmNarrator:
         client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
         section_ids = [s.id for s in draft.sections]
         payload = json.dumps(
-            {"language": language.value, "sections": [{"id": s.id, "body": s.body} for s in draft.sections]},
+            {
+                "language": language.value,
+                "sections": [{"id": s.id, "body": s.body} for s in draft.sections],
+            },
             ensure_ascii=False,
         )
 

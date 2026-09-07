@@ -34,9 +34,7 @@ def test_golden_vector_b_term_loan():
     assert a.instalment == money("44729.31")
     assert len(a.schedule) == 28
 
-    repayment_interest = sum(
-        (row.interest for row in a.schedule if row.phase == "repayment"), ZERO
-    )
+    repayment_interest = sum((row.interest for row in a.schedule if row.phase == "repayment"), ZERO)
     # PLAN.md's "total interest ≈ ₹2.63 L" is the repayment-phase figure.
     assert abs(repayment_interest - money(262962)) < money(100)
     # With the moratorium interest serviced quarterly (₹18,000 × 2) the all-in figure is higher.
@@ -96,9 +94,7 @@ def test_schedule_invariants(loan, rate, quarters, moratorium, mode):
     interests = [row.interest for row in repayment]
     assert interests == sorted(interests, reverse=True)  # interest falls as principal amortizes
     # Cash-flow identity, true in every phase and both modes.
-    assert all(
-        row.closing == row.opening + row.interest - row.instalment for row in a.schedule
-    )
+    assert all(row.closing == row.opening + row.interest - row.instalment for row in a.schedule)
 
 
 def test_capitalized_moratorium_costs_more_than_servicing_it():
@@ -110,9 +106,7 @@ def test_capitalized_moratorium_costs_more_than_servicing_it():
     assert capitalized.instalment > serviced.instalment
     assert capitalized.total_interest > serviced.total_interest
     # Capitalized: nothing is paid at all during the moratorium.
-    assert all(
-        row.instalment == ZERO for row in capitalized.schedule if row.phase == "moratorium"
-    )
+    assert all(row.instalment == ZERO for row in capitalized.schedule if row.phase == "moratorium")
     # Serviced: exactly the interest is paid, principal untouched.
     assert all(
         row.instalment == row.interest and row.opening == row.closing

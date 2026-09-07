@@ -83,7 +83,8 @@ def _chart_data(facts: Facts) -> dict[str, dict[str, Any]]:
             "dscr_threshold": rs.dscr_threshold,
             "stress_floor": rs.stress_floor,
             "max_loan": [
-                {"year": r.year, "dscr": r.dscr, "debt_service": r.debt_service} for r in rs.max_loan_dscr
+                {"year": r.year, "dscr": r.dscr, "debt_service": r.debt_service}
+                for r in rs.max_loan_dscr
             ],
             "recommended": [
                 {"year": r.year, "dscr": r.dscr, "debt_service": r.debt_service}
@@ -102,7 +103,12 @@ def _chart_data(facts: Facts) -> dict[str, dict[str, Any]]:
         "repayment": {
             "mode": rs.mode.value,
             "recommended": [
-                r.__dict__ for r in (facts.amortization_recommended.schedule if facts.amortization_recommended else ())
+                r.__dict__
+                for r in (
+                    facts.amortization_recommended.schedule
+                    if facts.amortization_recommended
+                    else ()
+                )
             ],
             "alternate_mode": (
                 facts.amortization_alternate_mode.mode.value
@@ -191,7 +197,9 @@ def _swot_section(facts: Facts, language: Language) -> ReportSection:
     body = " ".join(line for lines in quadrants.values() for line in lines)
     return ReportSection(
         id="swot",
-        heading="Strengths, weaknesses, opportunities and threats" if en else "ताकत, कमजोरी, अवसर एवं जोखिम",
+        heading="Strengths, weaknesses, opportunities and threats"
+        if en
+        else "ताकत, कमजोरी, अवसर एवं जोखिम",
         body=body,
         cites=tuple(dict.fromkeys(c for i in facts.swot.items for c in i.cites)),
         data={"quadrants": quadrants, "rules_fired": [i.id for i in facts.swot.items]},
@@ -211,7 +219,9 @@ def _threats_section(facts: Facts, language: Language) -> ReportSection:
         cites=facts.threats.sources,
         data={
             "items": items,
-            "price_band": facts.threats.price_band.model_dump() if facts.threats.price_band else None,
+            "price_band": facts.threats.price_band.model_dump()
+            if facts.threats.price_band
+            else None,
             "seasonality": _chart_data(facts)["stress_seasonality"],
         },
     )

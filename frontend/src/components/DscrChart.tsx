@@ -39,8 +39,11 @@ export function DscrChart({ base, scenarios, threshold, stressFloor, language }:
 
   const x = (year: number) =>
     PAD.left + ((year - years[0]) / Math.max(years.length - 1, 1)) * (W - PAD.left - PAD.right)
+  // Clamped to [0, yMax]: a stressed year can have a negative operating surplus, and an unclamped
+  // point would render below the axis on top of the tick labels. It sits on the zero baseline
+  // instead, and the legend reports the real figure.
   const y = (value: number) =>
-    PAD.top + (1 - Math.min(value, yMax) / yMax) * (H - PAD.top - PAD.bottom)
+    PAD.top + (1 - Math.min(Math.max(value, 0), yMax) / yMax) * (H - PAD.top - PAD.bottom)
 
   const ticks = Array.from({ length: yMax + 1 }, (_, i) => i)
 
@@ -59,8 +62,9 @@ export function DscrChart({ base, scenarios, threshold, stressFloor, language }:
           onMouseLeave={() => setHover(null)}
         >
           <defs>
+            {/* Inset by a marker radius so the first and last points are not sliced in half. */}
             <clipPath id={clipId}>
-              <rect x={PAD.left} y={0} width={W - PAD.left - PAD.right} height={H} />
+              <rect x={PAD.left - 8} y={0} width={W - PAD.left - PAD.right + 16} height={H} />
             </clipPath>
           </defs>
 
@@ -166,22 +170,30 @@ export function DscrChart({ base, scenarios, threshold, stressFloor, language }:
       </div>
 
       <figcaption className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-ink-2">
-        {series.map((s, i) => (
-          <span key={s.label} className="inline-flex items-center gap-1.5">
-            <span
-              aria-hidden
-              className="inline-block h-0.5 w-4 rounded-full"
-              style={{ background: SERIES[i] }}
-            />
-            {s.label}
-            {hover !== null && (
-              <span className="tabular font-medium text-ink">
-                {' '}
-                {ratio(s.points[years.indexOf(hover)] ?? 0)}
-              </span>
-            )}
-          </span>
-        ))}
+        {series.map((s, i) => {
+          const worst = Math.min(...s.points)
+          return (
+            <span key={s.label} className="inline-flex items-center gap-1.5">
+              <span
+                aria-hidden
+                className="inline-block h-0.5 w-4 rounded-full"
+                style={{ background: SERIES[i] }}
+              />
+              {s.label}
+              {hover !== null ? (
+                <span className="tabular font-medium text-ink">
+                  {ratio(s.points[years.indexOf(hover)] ?? 0)}
+                </span>
+              ) : (
+                worst <= 0 && (
+                  <span className="font-medium" style={{ color: 'var(--status-critical)' }}>
+                    {language === 'en' ? 'no surplus to service debt' : 'चुकाने योग्य अधिशेष नहीं'}
+                  </span>
+                )
+              )}
+            </span>
+          )
+        })}
       </figcaption>
     </figure>
   )

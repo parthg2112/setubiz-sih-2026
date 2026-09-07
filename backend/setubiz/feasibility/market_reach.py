@@ -71,7 +71,10 @@ def compute(
     mandis = len(source.pois_near(centre.lat, centre.lon, radius, "mandi"))
     banks = sum(1 for n in neighbours if n.village.has_bank)
     road_share = (
-        q(Decimal(sum(1 for n in neighbours if n.village.has_pucca_road)) / len(neighbours), Decimal("0.01"))
+        q(
+            Decimal(sum(1 for n in neighbours if n.village.has_pucca_road)) / len(neighbours),
+            Decimal("0.01"),
+        )
         if neighbours
         else Decimal("0")
     )

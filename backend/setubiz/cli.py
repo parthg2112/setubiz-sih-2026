@@ -18,7 +18,9 @@ from setubiz.money import format_inr, money
 from setubiz.narration import narrate
 from setubiz.schemas import AdvisoryRequest, Language
 
-app = typer.Typer(help="SetuBiz — rural business advisory and financial structuring.", no_args_is_help=True)
+app = typer.Typer(
+    help="SetuBiz — rural business advisory and financial structuring.", no_args_is_help=True
+)
 console = Console()
 
 
@@ -53,7 +55,8 @@ def advise(
 
     console.print(
         Panel(
-            f"[bold]{facts.village.name}[/bold] · {facts.village.block} block · {facts.village.district}\n"
+            f"[bold]{facts.village.name}[/bold] · {facts.village.block} block · "
+            f"{facts.village.district}\n"
             f"[red]Maximum permissible loan   {format_inr(rs.max_loan)}[/red]   "
             f"(worst-year DSCR {rs.max_loan_min_dscr})\n"
             f"[green]Right-sized recommendation {format_inr(rs.recommended_loan)}[/green]   "
@@ -139,7 +142,9 @@ def facts_command(
     out: Path = Path("facts.json"),
 ) -> None:
     """Write the locked facts object without narrating it."""
-    request = AdvisoryRequest(village_query=village, savings=money(savings), business_category=category)
+    request = AdvisoryRequest(
+        village_query=village, savings=money(savings), business_category=category
+    )
     payload = json.loads(build_facts(request).model_dump_json())
     out.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
     console.print(f"wrote {out} ({len(payload['numeric_index'])} indexed figures)")

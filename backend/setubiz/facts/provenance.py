@@ -37,7 +37,9 @@ _SOURCES: tuple[Source, ...] = (
         url="https://microdata.gov.in/",
         year="2023-24",
         synthetic=True,
-        note="All-India rural MPCE anchor ₹4,122 is published; per-category shares are illustrative.",
+        note=(
+            "All-India rural MPCE anchor ₹4,122 is published; per-category shares are illustrative."
+        ),
     ),
     Source(
         id="agmarknet_sample",
@@ -50,7 +52,9 @@ _SOURCES: tuple[Source, ...] = (
         id="intercensal_scaling",
         title="District intercensal population scaling 2011 → 2026",
         kind=SourceKind.COMPUTED,
-        note="Census 2027 house-listing began April 2026; 2011 remains the only village-level base.",
+        note=(
+            "Census 2027 house-listing began April 2026; 2011 remains the only village-level base."
+        ),
     ),
     Source(
         id="nabard_templates",

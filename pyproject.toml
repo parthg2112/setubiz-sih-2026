@@ -51,7 +51,9 @@ src = ["backend"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
-ignore = ["RUF001", "RUF002", "RUF003"]
+# UP042: `str, Enum` is deliberate — it keeps JSON serialization stable on 3.11 without StrEnum.
+# RUF001-003: the codebase is bilingual; Devanagari and typographic dashes are not "ambiguous".
+ignore = ["RUF001", "RUF002", "RUF003", "UP042"]
 
 [tool.mypy]
 python_version = "3.11"

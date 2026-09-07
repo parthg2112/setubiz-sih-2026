@@ -45,6 +45,8 @@ export const BINDING_LABEL: Record<string, { en: string; hi: string }> = {
   not_viable: { en: 'no loan size is serviceable', hi: 'कोई भी ऋण राशि चुकाने योग्य नहीं' },
 }
 
+/** UI strings. Deliberately not `as const` — the two language tables must share one widened
+ *  shape, or every consumer sees a union of literal types. */
 export const T = {
   en: {
     appName: 'SetuBiz',
@@ -132,6 +134,6 @@ export const T = {
       threat: 'जोखिम',
     },
   },
-} as const
+}
 
 export type Strings = (typeof T)['en']

@@ -35,7 +35,12 @@ _MULTIPLIER = {
 #: Structural constants, not estimates: the 10% margin / 90% loan split, the stress percentages,
 #: and the per-1,000-household denominator. Permitted without appearing in the facts index.
 _STRUCTURAL = {
-    Decimal("10"), Decimal("15"), Decimal("30"), Decimal("90"), Decimal("100"), Decimal("1000")
+    Decimal("10"),
+    Decimal("15"),
+    Decimal("30"),
+    Decimal("90"),
+    Decimal("100"),
+    Decimal("1000"),
 }
 
 
@@ -156,7 +161,5 @@ class NumericGroundingValidator:
             passed=not ungrounded,
             checked=len(numbers),
             ungrounded=tuple(ungrounded),
-            notes=(
-                f"{len(numbers)} figures checked against {len(allowed)} grounded values.",
-            ),
+            notes=(f"{len(numbers)} figures checked against {len(allowed)} grounded values.",),
         )

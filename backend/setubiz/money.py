@@ -2,8 +2,7 @@
 
 from __future__ import annotations
 
-from decimal import Decimal, ROUND_HALF_UP
-from typing import Union
+from decimal import ROUND_HALF_UP, Decimal
 
 Money = Decimal
 
@@ -11,7 +10,7 @@ PAISE = Decimal("0.01")
 RUPEE = Decimal("1")
 ZERO = Decimal("0")
 
-Numeric = Union[int, float, str, Decimal]
+Numeric = int | float | str | Decimal
 
 
 def money(value: Numeric) -> Decimal:

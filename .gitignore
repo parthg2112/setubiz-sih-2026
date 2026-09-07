@@ -1,74 +1,20 @@
-# Operating System
-.DS_Store
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-
-# Secrets & Environment variables
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-*.env
-!.env.example
-
-# Node.js & Frontend
-node_modules/
-**/node_modules/
-dist/
-**/dist/
-build/
-**/build/
-.next/
-.out/
-
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-# Python & Backend
-__pycache__/
-/**/__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-env/
-venv/
 .venv/
-ENV/
-env.bak/
-venv.bak/
+__pycache__/
+*.py[cod]
 .pytest_cache/
-/**/.pytest_cache/
 .coverage
-.coverage.*
 htmlcov/
-.mypy_cache/
 .ruff_cache/
+.mypy_cache/
 *.egg-info/
-.installed.cfg
-*.egg
+build/
+dist/
 
-# IDE & Editor Configs
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-.idea/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+node_modules/
+frontend/dist/
 
-# Temporary files & Caches
-.tmp/
-tmp/
+.env
+facts.json
+.DS_Store
+
+frontend/tsconfig.tsbuildinfo

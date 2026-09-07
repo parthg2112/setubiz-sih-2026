@@ -1,0 +1,36 @@
+services:
+  api:
+    build: .
+    environment:
+      # The demo runs on the committed sample data — no network, no keys, no failure mode.
+      SETUBIZ_LLM_ENABLED: "0"
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz')"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  web:
+    build: ./frontend
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "5173:80"
+
+# The geo layer runs on haversine over committed rows today. When real SHRUG polygons land,
+# uncomment this and swap SampleDataSource for a PostGIS-backed DataSource — nothing above
+# setubiz/data/loader.py has to change.
+#
+#  postgis:
+#    image: postgis/postgis:16-3.4
+#    environment:
+#      POSTGRES_PASSWORD: setubiz
+#      POSTGRES_DB: setubiz
+#    volumes:
+#      - pgdata:/var/lib/postgresql/data
+#
+# volumes:
+#   pgdata:

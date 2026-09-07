@@ -104,7 +104,7 @@ Report pipeline: engine emits `facts.json` → LLM narrates with citations → J
 
 **Golden unit-test vectors:**
 - B: M = ₹1,00,000 → P = ₹10,00,000, L = ₹9,00,000; r = 2%/q; moratorium 2 q → 26 instalments ≈ **₹44,729/q**; total interest ≈ ₹2.63 L.
-- A: P = ₹1,40,000 → L = **₹1,25,000 (capped, not ₹1.26 L)**; r = 1.625%/q; moratorium 1 q → 11 instalments ≈ **₹12,471/q**.
+- A: P = ₹1,40,000 → L = **₹1,25,000 (capped, not ₹1.26 L)**; r = 1.625%/q; moratorium 1 q → 11 instalments ≈ ~~₹12,471/q~~ → **corrected to ₹12,501.34/q** under the r = annual/4 convention that vector B matches to the paisa. See README §"Correction to PLAN.md §5". Do not quote ₹12,471.
 - Boundary: M = ₹14,000 → A; M = ₹14,001 → B; M = ₹5,00,000 → B (P = ₹50 L); M = ₹5,00,001 → out of scope.
 
 **Right-sizing (flagship):** NABARD cost templates → required_capital, monthly revenue/opex → DSCR per loan year, threshold **1.5** (configurable) → **recommended loan ≤ max loan**; stress at −15%/−30%; UI shows Max (red) vs Recommended (green). Example: dairy template ₹4.1 L required vs ₹10 L borrowable; at ₹9 L loan the base case fails DSCR — the demo moment.

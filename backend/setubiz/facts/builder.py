@@ -26,7 +26,7 @@ from setubiz.finance.cost_templates import CostTemplate, find_template_for_categ
 from setubiz.finance.rightsizing import RightSizing, right_size
 from setubiz.finance.router import ActivityKind, SchemeRoute, route
 from setubiz.money import ZERO, format_inr, q
-from setubiz.schemas import AdvisoryRequest, Source
+from setubiz.schemas import Advisory, AdvisoryRequest, Source
 
 
 class Facts(BaseModel):
@@ -56,7 +56,8 @@ class Facts(BaseModel):
     numeric_index: dict[str, Decimal]
     provenance: dict[str, tuple[str, ...]]
     sources: tuple[Source, ...]
-    warnings: tuple[str, ...]
+    #: Bilingual engine advisories. The UI renders `text_en`/`text_hi` by the chosen language.
+    warnings: tuple[Advisory, ...]
     #: True while any contributing source is a synthetic placeholder. Never ship a report
     #: claiming otherwise — the sample data README explains why.
     contains_synthetic_data: bool
@@ -72,7 +73,8 @@ class Facts(BaseModel):
             *self.eligibility.conditions,
             *(d.en for d in self.eligibility.documents),
             *(d.hi or "" for d in self.eligibility.documents),
-            *self.warnings,
+            *(w.text_en for w in self.warnings),
+            *(w.text_hi for w in self.warnings),
             *self.template.assumptions,
             *(li.item for li in self.template.fixed_capital),
             *(li.item for li in self.template.monthly_revenue),
@@ -91,7 +93,11 @@ class Facts(BaseModel):
             self.demand.addressable_market_monthly.method,
         ]
         if self.eligibility.sca:
-            parts += [self.eligibility.sca.address, self.eligibility.sca.name, self.eligibility.sca.channel]
+            parts += [
+                self.eligibility.sca.address,
+                self.eligibility.sca.name,
+                self.eligibility.sca.channel,
+            ]
         if self.eligibility.corporation:
             parts.append(self.eligibility.corporation.income_ceiling_note or "")
         return " ".join(p for p in parts if p)
@@ -99,11 +105,19 @@ class Facts(BaseModel):
     def allowed_numbers(self, tolerance: Decimal = Decimal("0.02")) -> set[Decimal]:
         """Every figure the narration layer is permitted to state."""
         allowed: set[Decimal] = set(self.numeric_index.values())
-        for row in (self.amortization_recommended.schedule if self.amortization_recommended else ()):
-            allowed.update({row.quarter, row.opening, row.interest, row.principal, row.instalment, row.closing})
-        for row in (self.amortization_max.schedule if self.amortization_max else ()):
-            allowed.update({row.quarter, row.opening, row.interest, row.principal, row.instalment, row.closing})
-        for item in (*self.template.fixed_capital, *self.template.monthly_opex, *self.template.monthly_revenue):
+        for row in self.amortization_recommended.schedule if self.amortization_recommended else ():
+            allowed.update(
+                {row.quarter, row.opening, row.interest, row.principal, row.instalment, row.closing}
+            )
+        for row in self.amortization_max.schedule if self.amortization_max else ():
+            allowed.update(
+                {row.quarter, row.opening, row.interest, row.principal, row.instalment, row.closing}
+            )
+        for item in (
+            *self.template.fixed_capital,
+            *self.template.monthly_opex,
+            *self.template.monthly_revenue,
+        ):
             allowed.add(item.amount)
         for row in self.right_sizing.max_loan_dscr + self.right_sizing.recommended_dscr:
             allowed.update({Decimal(row.year), row.dscr, row.debt_service, row.noi})
@@ -321,18 +335,38 @@ def build_facts(request: AdvisoryRequest, source: DataSource | None = None) -> F
     rs = right_size(scheme, template, mode)
 
     amort_max = (
-        amortize(scheme.max_loan, scheme.annual_rate, scheme.total_quarters, scheme.moratorium_quarters, mode)
+        amortize(
+            scheme.max_loan,
+            scheme.annual_rate,
+            scheme.total_quarters,
+            scheme.moratorium_quarters,
+            mode,
+        )
         if scheme.max_loan > 0
         else None
     )
     amort_rec = (
-        amortize(rs.recommended_loan, scheme.annual_rate, scheme.total_quarters, scheme.moratorium_quarters, mode)
+        amortize(
+            rs.recommended_loan,
+            scheme.annual_rate,
+            scheme.total_quarters,
+            scheme.moratorium_quarters,
+            mode,
+        )
         if rs.recommended_loan > 0
         else None
     )
-    alternate = MoratoriumMode.CAPITALIZED if mode is MoratoriumMode.SERVICED else MoratoriumMode.SERVICED
+    alternate = (
+        MoratoriumMode.CAPITALIZED if mode is MoratoriumMode.SERVICED else MoratoriumMode.SERVICED
+    )
     amort_alt = (
-        amortize(rs.recommended_loan, scheme.annual_rate, scheme.total_quarters, scheme.moratorium_quarters, alternate)
+        amortize(
+            rs.recommended_loan,
+            scheme.annual_rate,
+            scheme.total_quarters,
+            scheme.moratorium_quarters,
+            alternate,
+        )
         if rs.recommended_loan > 0
         else None
     )
@@ -378,17 +412,39 @@ def build_facts(request: AdvisoryRequest, source: DataSource | None = None) -> F
         elif key.startswith(("demand_", "addressable_")):
             provenance[key] = dem.addressable_market_monthly.sources
         elif key.startswith(
-            ("households", "population", "villages", "village_", "road_", "growth", "radius",
-             "mandis", "literacy", "sc_pct", "st_pct", "dist_to_town")
+            (
+                "households",
+                "population",
+                "villages",
+                "village_",
+                "road_",
+                "growth",
+                "radius",
+                "mandis",
+                "literacy",
+                "sc_pct",
+                "st_pct",
+                "dist_to_town",
+            )
         ):
             provenance[key] = reach.sources
         elif key.startswith(("price_", "seasonality", "peak_")):
             provenance[key] = ("agmarknet_sample",)
-        elif key.startswith(("monthly_", "fixed_capital", "working_capital", "required_capital", "annual_noi")):
+        elif key.startswith(
+            ("monthly_", "fixed_capital", "working_capital", "required_capital", "annual_noi")
+        ):
             provenance[key] = ("nabard_templates",)
         elif key.startswith(("income_", "annual_family")):
             provenance[key] = eligibility.sources
-        elif key in {"annual_rate_pct", "quarterly_rate_pct", "sca_rate_pct", "total_quarters", "moratorium_quarters", "repayment_quarters", "tenure_years"}:
+        elif key in {
+            "annual_rate_pct",
+            "quarterly_rate_pct",
+            "sca_rate_pct",
+            "total_quarters",
+            "moratorium_quarters",
+            "repayment_quarters",
+            "tenure_years",
+        }:
             provenance[key] = scheme.sources
         else:
             provenance[key] = ("finance_engine", "nabard_templates")

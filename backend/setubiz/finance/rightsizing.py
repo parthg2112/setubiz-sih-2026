@@ -16,6 +16,7 @@ from setubiz.finance.amortization import AmortizationResult, MoratoriumMode, amo
 from setubiz.finance.cost_templates import CostTemplate
 from setubiz.finance.router import SchemeRoute
 from setubiz.money import ZERO, floor_to, format_inr, q
+from setubiz.schemas import Advisory
 
 #: Reported when a year carries no debt service at all (capitalized moratorium year).
 UNBOUNDED_DSCR = Decimal("999")
@@ -74,7 +75,7 @@ class RightSizing:
     recommended_stress: tuple[StressResult, ...]
 
     capital_shortfall: Decimal
-    warnings: tuple[str, ...] = field(default=())
+    warnings: tuple[Advisory, ...] = field(default=())
 
     @property
     def max_loan_passes(self) -> bool:
@@ -82,7 +83,9 @@ class RightSizing:
 
 
 def _annual_noi(template: CostTemplate, revenue_factor: Decimal = Decimal("1")) -> Decimal:
-    return q((q(template.monthly_revenue_total * revenue_factor) - template.monthly_opex_total) * 12)
+    return q(
+        (q(template.monthly_revenue_total * revenue_factor) - template.monthly_opex_total) * 12
+    )
 
 
 def dscr_by_year(
@@ -91,10 +94,7 @@ def dscr_by_year(
     """DSCR = net operating income ÷ debt service, computed per loan year."""
     rows: list[DscrYear] = []
     for idx, ds in enumerate(amort.debt_service_by_year(), start=1):
-        if ds <= 0:
-            ratio = UNBOUNDED_DSCR
-        else:
-            ratio = q(annual_noi / ds, Decimal("0.01"))
+        ratio = UNBOUNDED_DSCR if ds <= 0 else q(annual_noi / ds, Decimal("0.01"))
         rows.append(
             DscrYear(
                 year=idx, noi=annual_noi, debt_service=ds, dscr=ratio, passes=ratio >= threshold
@@ -103,10 +103,14 @@ def dscr_by_year(
     return tuple(rows)
 
 
-def min_dscr(annual_noi: Decimal, loan: Decimal, scheme: SchemeRoute, mode: MoratoriumMode) -> Decimal:
+def min_dscr(
+    annual_noi: Decimal, loan: Decimal, scheme: SchemeRoute, mode: MoratoriumMode
+) -> Decimal:
     if loan <= 0:
         return UNBOUNDED_DSCR
-    amort = amortize(loan, scheme.annual_rate, scheme.total_quarters, scheme.moratorium_quarters, mode)
+    amort = amortize(
+        loan, scheme.annual_rate, scheme.total_quarters, scheme.moratorium_quarters, mode
+    )
     ratios = [row.dscr for row in dscr_by_year(annual_noi, amort, Decimal("0"))]
     return min(ratios) if ratios else UNBOUNDED_DSCR
 
@@ -200,7 +204,7 @@ def right_size(
     required = template.required_capital
     debt_need = max(ZERO, q(required - scheme.margin))
     max_loan = scheme.max_loan
-    warnings: list[str] = []
+    warnings: list[Advisory] = []
 
     if not scheme.in_scope:
         return RightSizing(
@@ -223,7 +227,15 @@ def right_size(
             max_loan_stress=(),
             recommended_stress=(),
             capital_shortfall=debt_need,
-            warnings=("Project cost is outside the NSFDC envelope; see referral schemes.",),
+            warnings=(
+                Advisory(
+                    id="out_of_scope",
+                    text_en=(
+                        "Project cost is outside the NSFDC envelope; see the referral schemes."
+                    ),
+                    text_hi=("परियोजना लागत एनएसएफडीसी की सीमा से बाहर है; अन्य योजनाएँ देखें।"),
+                ),
+            ),
         )
 
     candidates: dict[BindingConstraint, Decimal] = {
@@ -234,8 +246,17 @@ def right_size(
         recommended = ZERO
         binding = BindingConstraint.NOT_VIABLE
         warnings.append(
-            "The unit's monthly operating surplus is zero or negative — no loan size is "
-            "serviceable. Revisit prices, scale or the cost template before borrowing."
+            Advisory(
+                id="not_viable",
+                text_en=(
+                    "The unit's monthly operating surplus is zero or negative — no loan size is "
+                    "serviceable. Revisit prices, scale or the cost template before borrowing."
+                ),
+                text_hi=(
+                    "इकाई का मासिक परिचालन अधिशेष शून्य या ऋणात्मक है — कोई भी ऋण राशि चुकाने "
+                    "योग्य नहीं है। उधार लेने से पहले मूल्य, स्तर या लागत अनुमान की समीक्षा करें।"
+                ),
+            )
         )
     else:
         candidates[BindingConstraint.DSCR] = largest_loan_meeting(
@@ -272,15 +293,35 @@ def right_size(
     shortfall = max(ZERO, q(debt_need - recommended))
     if shortfall > 0 and binding is not BindingConstraint.NOT_VIABLE:
         warnings.append(
-            f"Cash flow supports only {format_inr(recommended)} of the {format_inr(debt_need)} "
-            "of debt this unit needs. Increase promoter contribution, start at a smaller scale, "
-            "or phase the investment."
+            Advisory(
+                id="capital_shortfall",
+                text_en=(
+                    f"Cash flow supports only {format_inr(recommended)} of the "
+                    f"{format_inr(debt_need)} of debt this unit needs. Increase promoter "
+                    "contribution, start at a smaller scale, or phase the investment."
+                ),
+                text_hi=(
+                    f"नकदी प्रवाह केवल {format_inr(recommended)} का ऋण चुका सकता है, जबकि इकाई को "
+                    f"{format_inr(debt_need)} चाहिए। स्वयं का अंशदान बढ़ाएँ, छोटे स्तर से शुरू करें, "
+                    "या निवेश चरणों में करें।"
+                ),
+            )
         )
     if max_min < threshold:
         warnings.append(
-            f"At the maximum permissible loan of {format_inr(max_loan)} the worst-year DSCR is "
-            f"{max_min}, below the {threshold} appraisal norm — this is the borrowing level that "
-            "causes the defaults the scheme is trying to prevent."
+            Advisory(
+                id="overborrowing",
+                text_en=(
+                    f"At the maximum permissible loan of {format_inr(max_loan)} the worst-year "
+                    f"DSCR is {max_min}, below the {threshold} appraisal norm — this is the "
+                    "borrowing level that causes the defaults the scheme is trying to prevent."
+                ),
+                text_hi=(
+                    f"अधिकतम स्वीकार्य ऋण {format_inr(max_loan)} पर सबसे कमजोर वर्ष का डीएससीआर "
+                    f"{max_min} है, जो {threshold} के मानक से नीचे है — यही वह स्तर है जिस पर "
+                    "चूक होती है और जिसे योजना रोकना चाहती है।"
+                ),
+            )
         )
 
     return RightSizing(
@@ -300,9 +341,7 @@ def right_size(
         recommended_dscr=rec_rows,
         max_loan_min_dscr=max_min,
         recommended_min_dscr=rec_min,
-        max_loan_stress=_stress(
-            template, max_loan, scheme, mode, settings.stress_factors, floor
-        ),
+        max_loan_stress=_stress(template, max_loan, scheme, mode, settings.stress_factors, floor),
         recommended_stress=_stress(
             template, recommended, scheme, mode, settings.stress_factors, floor
         ),

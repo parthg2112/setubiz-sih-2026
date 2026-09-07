@@ -75,6 +75,20 @@ class Language(str, Enum):
     HI = "hi"
 
 
+class Advisory(BaseModel):
+    """A bilingual note the engines emit. Both languages are written at source — a report must
+    never fall back to showing English text under a Hindi heading."""
+
+    model_config = ConfigDict(frozen=True)
+
+    id: str
+    text_en: str
+    text_hi: str
+
+    def text(self, language: Language | str = Language.EN) -> str:
+        return self.text_hi if Language(language) is Language.HI else self.text_en
+
+
 class AdvisoryRequest(BaseModel):
     """What the voice/PWA layer collects before anything is computed."""
 

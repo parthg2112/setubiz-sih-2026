@@ -128,6 +128,13 @@ export interface EligibilityDoc {
   hi: string | null
 }
 
+/** Engine advisories carry both languages so the report never mixes them. */
+export interface Advisory {
+  id: string
+  text_en: string
+  text_hi: string
+}
+
 export interface Facts {
   generated_at: string
   village: {
@@ -166,7 +173,7 @@ export interface Facts {
     recommended_min_dscr: string
     max_loan_dscr: DscrYear[]
     recommended_dscr: DscrYear[]
-    warnings: string[]
+    warnings: Advisory[]
   }
   amortization_max: { instalment: string; total_interest: string; schedule: ScheduleRow[] } | null
   amortization_recommended: {
@@ -187,7 +194,7 @@ export interface Facts {
   numeric_index: Record<string, string>
   provenance: Record<string, string[]>
   sources: Source[]
-  warnings: string[]
+  warnings: Advisory[]
   contains_synthetic_data: boolean
 }
 

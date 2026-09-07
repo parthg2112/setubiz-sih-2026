@@ -76,7 +76,8 @@ def test_competitor_estimator_falls_back_when_a_block_has_no_ec13_row(ormanjhi, 
     est = competitors.Ec13ZScoreEstimator().estimate(orphan, reach, "dairy", source)
     assert est.band.confidence is Confidence.LOW
     assert est.z_score is None
-    assert any("No Economic Census density" in note for note in est.notes)
+    assert any(n.id == "no_ec13_row" for n in est.notes)
+    assert all(n.text_en and n.text_hi for n in est.notes)
 
 
 def test_competitor_estimate_is_raised_to_the_observed_count(ormanjhi, source):
@@ -176,18 +177,35 @@ def test_swot_rules_fire_deterministically_and_cite_sources():
 
 
 def test_swot_compound_and_missing_metric_conditions():
-    base = {"literacy_rate": 0.7, "road_connected_share": Decimal("0.9"), "literacy_pct": 70.0, "road_pct": Decimal("90")}
-    assert swot._matches({"all": [
-        {"metric": "literacy_rate", "op": ">=", "value": 0.65},
-        {"metric": "road_connected_share", "op": ">=", "value": 0.6},
-    ]}, base)
-    assert swot._matches({"any": [
-        {"metric": "literacy_rate", "op": "<", "value": 0.1},
-        {"metric": "road_connected_share", "op": ">=", "value": 0.6},
-    ]}, base)
+    base = {
+        "literacy_rate": 0.7,
+        "road_connected_share": Decimal("0.9"),
+        "literacy_pct": 70.0,
+        "road_pct": Decimal("90"),
+    }
+    assert swot._matches(
+        {
+            "all": [
+                {"metric": "literacy_rate", "op": ">=", "value": 0.65},
+                {"metric": "road_connected_share", "op": ">=", "value": 0.6},
+            ]
+        },
+        base,
+    )
+    assert swot._matches(
+        {
+            "any": [
+                {"metric": "literacy_rate", "op": "<", "value": 0.1},
+                {"metric": "road_connected_share", "op": ">=", "value": 0.6},
+            ]
+        },
+        base,
+    )
     # A metric the caller never supplied, or supplied as None, must not fire a rule.
     assert not swot._matches({"metric": "not_computed", "op": ">", "value": 0}, base)
-    assert not swot._matches({"metric": "literacy_rate", "op": ">", "value": 0}, {"literacy_rate": None})
+    assert not swot._matches(
+        {"metric": "literacy_rate", "op": ">", "value": 0}, {"literacy_rate": None}
+    )
     with pytest.raises(ValueError, match="unsupported operator"):
         swot._matches({"metric": "literacy_rate", "op": "=~", "value": 1}, base)
 

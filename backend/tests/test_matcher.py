@@ -45,9 +45,7 @@ def test_soundex_separates_genuinely_different_names():
     assert indic_soundex("") == ""
 
 
-@pytest.mark.parametrize(
-    "spoken", ["Ormanji", "ormanjhi", "Aurmanjhi", "ओरमांझी", "ORMANJI"]
-)
+@pytest.mark.parametrize("spoken", ["Ormanji", "ormanjhi", "Aurmanjhi", "ओरमांझी", "ORMANJI"])
 def test_the_intended_village_is_the_top_match(spoken, source):
     matches = match_villages(spoken, source, state="Jharkhand")
     assert matches, spoken

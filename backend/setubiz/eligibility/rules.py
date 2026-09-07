@@ -147,7 +147,9 @@ def sca_for_state(state: str | None, corporation_id: str | None) -> Sca | None:
     return None
 
 
-def _documents(corporation_id: str | None, activity_category: str | None) -> tuple[DocumentItem, ...]:
+def _documents(
+    corporation_id: str | None, activity_category: str | None
+) -> tuple[DocumentItem, ...]:
     doc = _corporations_doc()["documents"]
     items = [DocumentItem.model_validate(d) for d in doc["common"]]
     if corporation_id:

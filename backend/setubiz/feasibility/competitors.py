@@ -14,7 +14,7 @@ from typing import Protocol, runtime_checkable
 from setubiz.data.loader import DataSource, Village
 from setubiz.feasibility.market_reach import MarketReach
 from setubiz.money import q
-from setubiz.schemas import Band, Confidence
+from setubiz.schemas import Advisory, Band, Confidence
 
 
 @dataclass(frozen=True)
@@ -25,7 +25,7 @@ class CompetitorEstimate:
     district_mean_per_1k: Decimal | None
     z_score: Decimal | None
     method: str
-    notes: tuple[str, ...]
+    notes: tuple[Advisory, ...]
 
 
 @runtime_checkable
@@ -54,13 +54,22 @@ class Ec13ZScoreEstimator:
         observed = len(source.pois_near(centre.lat, centre.lon, reach.radius_km, category))
         density = source.block_density(centre.district, centre.block, category)
         stats = source.district_density_stats(centre.district, category)
-        notes: list[str] = []
+        notes: list[Advisory] = []
 
         if density is None:
             # No EC13 row for this block: fall back to the observed count as the point estimate.
             notes.append(
-                f"No Economic Census density for block {centre.block!r} and category "
-                f"{category!r}; falling back to the observed OSM count, which under-counts."
+                Advisory(
+                    id="no_ec13_row",
+                    text_en=(
+                        f"No Economic Census density for block {centre.block} and category "
+                        f"{category}; falling back to the observed OSM count, which under-counts."
+                    ),
+                    text_hi=(
+                        f"{centre.block} प्रखंड एवं {category} श्रेणी के लिए आर्थिक जनगणना का "
+                        "घनत्व उपलब्ध नहीं; OSM की गिनती पर आधारित अनुमान, जो कम आँकता है।"
+                    ),
+                )
             )
             point = Decimal(observed)
             confidence = Confidence.LOW
@@ -78,8 +87,17 @@ class Ec13ZScoreEstimator:
 
         if point < observed:
             notes.append(
-                f"Estimate raised to the {observed} enterprises actually mapped in OpenStreetMap — "
-                "an observed count is a hard floor."
+                Advisory(
+                    id="raised_to_observed",
+                    text_en=(
+                        f"Estimate raised to the {observed} enterprises actually mapped in "
+                        "OpenStreetMap — an observed count is a hard floor."
+                    ),
+                    text_hi=(
+                        f"अनुमान बढ़ाकर {observed} किया गया, क्योंकि OpenStreetMap में इतनी इकाइयाँ "
+                        "दर्ज हैं — देखी गई गिनती न्यूनतम सीमा है।"
+                    ),
+                )
             )
             point = Decimal(observed)
 
