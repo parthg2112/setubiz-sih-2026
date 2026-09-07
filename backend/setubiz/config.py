@@ -37,6 +37,14 @@ class Settings(BaseSettings):
     llm_max_attempts: int = 3
     anthropic_api_key: str | None = None
 
+    # --- offline narration lane: Llama 3.1 8B Instruct Q4_K_M via llama.cpp (PLAN.md §3) ---
+    local_llm_enabled: bool = False
+    #: Path to the GGUF. The weights are not shipped; the lane stays unavailable without them.
+    local_llm_model_path: Path | None = None
+    local_llm_n_ctx: int = 8192
+    local_llm_threads: int | None = None
+    local_llm_max_tokens: int = 2048
+
     data_dir: Path = SAMPLE_DATA_DIR
 
 

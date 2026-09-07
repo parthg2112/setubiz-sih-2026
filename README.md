@@ -5,7 +5,8 @@ micro-entrepreneurs — **SIH 2026, Problem Statement SIH26091** (Ministry of So
 Empowerment).
 
 **Master plan:** [`PLAN.md`](./PLAN.md) — scheme research, model specs, data plan, timeline, demo
-and judge strategy. This file describes what is **built and running today**.
+and judge strategy. **Coverage against it:** [`docs/PRD-COVERAGE.md`](./docs/PRD-COVERAGE.md) —
+section-by-section, what is built, partial and missing. This file is the short version.
 
 > **The core rule.** ML only where the data is genuinely uncertain (competitor density, local
 > demand). Every financial calculation and eligibility decision is deterministic code. The language
@@ -68,12 +69,33 @@ setubiz templates                # NABARD-style unit economics
 | **Decision — eligibility** (`setubiz/eligibility`) | Complete. SC→NSFDC (₹5 L ceiling, w.e.f. 07-01-2026), safai karamchari→NSKFDC (no ceiling), OBC/EBC→NBCFDC (₹3 L). Verdict, conditions, bilingual document checklist, SCA address, PM-DAKSH handoff, comparison cards. 100% coverage. |
 | **Estimation** (`setubiz/feasibility`) | v0 deterministic. Competitor density from EC13 block z-scores floored by observed OSM POIs; demand from HCES-shaped shares as a band; seasonality from mandi arrivals; SWOT from a YAML rule library. Every estimate is a **band with a stated method**, never a bare number. |
 | **Facts contract** (`setubiz/facts`) | Complete. One frozen object holds every quotable figure plus a `provenance` map from figure → source. Tested: no indexed number may exist without a registered source. |
-| **Language** (`setubiz/narration`) | Template narrator (Jinja, en + hi) is the default and the offline lane. Numeric-grounding validator rejects any figure not in the facts object; the LLM lane is wired but off unless `SETUBIZ_LLM_ENABLED=1`. |
+| **Language** (`setubiz/narration`) | Three lanes, tried in order: cloud LLM, local Llama 3.1 8B via llama.cpp, template. The template lane (Jinja, en + hi) is the default and needs nothing. Every lane paraphrases the deterministic draft and is checked by the numeric-grounding validator. |
 | **API / CLI / PWA** | FastAPI at `/api/v1`, a Typer CLI, and a React + Vite + Tailwind app with the red-vs-green hero, DSCR and seasonality charts, quarterly schedule, bilingual toggle, and a provenance panel. |
+
+## Offline narration lane (Llama 3.1 8B)
+
+The answer to "what if the network dies at the venue". Off by default, and the weights are a
+~4.7 GB download this repo does not ship:
+
+```bash
+pip install -e ".[local]"
+export SETUBIZ_LOCAL_LLM_ENABLED=1
+export SETUBIZ_LOCAL_LLM_MODEL_PATH=~/models/Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf
+```
+
+Output is constrained by a **GBNF grammar** generated from the report's own section ids, so a
+response that is not the section object cannot be sampled at all. It then goes through the same
+numeric-grounding validator as every other lane. Without the runtime or the weights the lane
+reports itself unavailable and the template narrator serves, so enabling it can never make the
+demo worse. `/api/v1/metrics` shows which lane would serve the next request.
+
+**Unverified:** generation quality on the real model has not been observed here. The grammar, the
+availability gate, the retry loop and the fallback are tested; the model is not.
 
 ## What is not built yet
 
-Named plainly, because a judge will ask:
+Full matrix in [`docs/PRD-COVERAGE.md`](./docs/PRD-COVERAGE.md). The short version, because a
+judge will ask:
 
 - **Models ①–④ are not trained.** `LightgbmDensityEstimator` is registered and raises
   `NotImplementedError` with a pointer to PLAN.md §3 — it needs Udyam labels whose granularity is

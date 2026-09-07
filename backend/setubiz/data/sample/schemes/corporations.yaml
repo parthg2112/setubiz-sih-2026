@@ -1,5 +1,5 @@
 # Apex corporations under MoSJE that on-lend through State Channelizing Agencies (SCAs).
-# Figures verified against the official portals — see PLAN.md §0.1-0.2.
+# Figures verified against the official portals; see PLAN.md §0.1-0.2.
 
 corporations:
   - id: nsfdc

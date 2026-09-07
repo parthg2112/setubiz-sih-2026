@@ -29,6 +29,9 @@ dev = [
     "types-PyYAML",
 ]
 llm = ["anthropic>=0.40"]
+# The offline narration lane. Deliberately not a default: llama-cpp-python compiles native code,
+# which would make `make setup` slow and fragile on the machines this has to run on.
+local = ["llama-cpp-python>=0.3"]
 
 [project.scripts]
 setubiz = "setubiz.cli:app"

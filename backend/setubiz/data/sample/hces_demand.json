@@ -1,7 +1,7 @@
 {
   "_meta": {
     "source": "HCES 2023-24-shaped synthetic sample (factsheet rural MPCE anchor)",
-    "note": "SYNTHETIC PLACEHOLDER DATA — see data/sample/README.md. Not for citation. The all-India rural MPCE anchor of ₹4,122 is from the published HCES 2023-24 factsheet; the per-category shares below are illustrative until the microdata (catalogue 237) is approved.",
+    "note": "SYNTHETIC PLACEHOLDER DATA. See data/sample/README.md. Not for citation. The all-India rural MPCE anchor of ₹4,122 is from the published HCES 2023-24 factsheet; the per-category shares below are illustrative until the microdata (catalogue 237) is approved.",
     "schema_ref": "https://microdata.gov.in/",
     "method_note": "MVP uses a state mean ± coefficient of variation to emit a band. PLAN.md §3 Model ② replaces this with Fay-Herriot small-area estimation."
   },

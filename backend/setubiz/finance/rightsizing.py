@@ -249,11 +249,11 @@ def right_size(
             Advisory(
                 id="not_viable",
                 text_en=(
-                    "The unit's monthly operating surplus is zero or negative — no loan size is "
+                    "The unit's monthly operating surplus is zero or negative, so no loan size is "
                     "serviceable. Revisit prices, scale or the cost template before borrowing."
                 ),
                 text_hi=(
-                    "इकाई का मासिक परिचालन अधिशेष शून्य या ऋणात्मक है — कोई भी ऋण राशि चुकाने "
+                    "इकाई का मासिक परिचालन अधिशेष शून्य या ऋणात्मक है, इसलिए कोई भी ऋण राशि चुकाने "
                     "योग्य नहीं है। उधार लेने से पहले मूल्य, स्तर या लागत अनुमान की समीक्षा करें।"
                 ),
             )
@@ -313,12 +313,12 @@ def right_size(
                 id="overborrowing",
                 text_en=(
                     f"At the maximum permissible loan of {format_inr(max_loan)} the worst-year "
-                    f"DSCR is {max_min}, below the {threshold} appraisal norm — this is the "
+                    f"DSCR is {max_min}, below the {threshold} appraisal norm. This is the "
                     "borrowing level that causes the defaults the scheme is trying to prevent."
                 ),
                 text_hi=(
                     f"अधिकतम स्वीकार्य ऋण {format_inr(max_loan)} पर सबसे कमजोर वर्ष का डीएससीआर "
-                    f"{max_min} है, जो {threshold} के मानक से नीचे है — यही वह स्तर है जिस पर "
+                    f"{max_min} है, जो {threshold} के मानक से नीचे है। यही वह स्तर है जिस पर "
                     "चूक होती है और जिसे योजना रोकना चाहती है।"
                 ),
             )

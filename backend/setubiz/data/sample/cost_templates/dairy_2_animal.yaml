@@ -1,10 +1,10 @@
 id: dairy_2_animal
-name: Dairy unit — 2 crossbred milch animals
-name_hi: डेयरी इकाई — 2 संकर नस्ल दुधारू पशु
+name: Dairy unit with 2 crossbred milch animals
+name_hi: डेयरी इकाई, 2 संकर नस्ल दुधारू पशु
 category: dairy
 unit: 2 crossbred cows
 activity_kind: general
-source: NABARD Model Bankable Project — Dairy Farming (2-animal unit), Jharkhand cost norms
+source: "NABARD Model Bankable Project: Dairy Farming (2-animal unit), Jharkhand cost norms"
 fixed_capital:
   - {item: 2 crossbred cows @ ₹75,000, item_hi: 2 संकर नस्ल गाय, amount: 150000}
   - {item: Semi-pucca cattle shed, item_hi: पशु शेड, amount: 140000}
@@ -15,7 +15,7 @@ fixed_capital:
   - {item: Fodder plot development, item_hi: चारा भूमि विकास, amount: 5000}
 working_capital_months: 3
 monthly_revenue:
-  - {item: Milk — 600 L @ ₹46/L, item_hi: दूध बिक्री, amount: 27600}
+  - {item: "Milk, 600 L @ ₹46/L", item_hi: दूध बिक्री, amount: 27600}
   - {item: Dung and manure, item_hi: गोबर एवं खाद, amount: 1800}
 monthly_opex:
   - {item: Green and dry fodder, item_hi: हरा एवं सूखा चारा, amount: 11500}

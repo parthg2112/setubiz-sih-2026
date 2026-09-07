@@ -19,7 +19,7 @@ from setubiz.finance.cost_templates import find_template_for_category, list_temp
 from setubiz.finance.rightsizing import right_size
 from setubiz.finance.router import ActivityKind, route
 from setubiz.matching.village_matcher import match_villages
-from setubiz.narration import CATCH_RATE, narrate
+from setubiz.narration import CATCH_RATE, local_narrator, narrate, select_narrator
 from setubiz.narration.base import Report
 from setubiz.narration.validator import ValidationReport
 from setubiz.schemas import AdvisoryRequest, Language, VillageMatch
@@ -54,7 +54,7 @@ def advisory(request: AdvisoryRequest, use_llm: bool | None = None) -> AdvisoryR
     return AdvisoryResponse(facts=facts, report=result.report, validation=result.validation)
 
 
-@router.post("/finance/structure", summary="Finance engine only — max vs recommended loan")
+@router.post("/finance/structure", summary="Finance engine only: max vs recommended loan")
 def finance_structure(request: FinanceRequest) -> dict[str, Any]:
     template = find_template_for_category(request.business_category)
     if template is None:
@@ -128,7 +128,9 @@ def metrics() -> dict[str, Any]:
     return {
         "version": __version__,
         "validator": CATCH_RATE.as_dict(),
-        "narrator": "llm" if settings.llm_enabled else "template",
+        # The lane that would actually serve the next request, not the one that is configured.
+        "narrator": select_narrator().name,
+        "local_llm": local_narrator.describe(),
         "competitor_estimator": settings.competitor_estimator,
         "demand_estimator": settings.demand_estimator,
         "dscr_threshold": settings.dscr_threshold,

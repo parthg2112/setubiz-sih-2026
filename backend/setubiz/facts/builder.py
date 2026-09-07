@@ -273,6 +273,16 @@ def _numeric_index(
         "max_loan_min_dscr": rs.max_loan_min_dscr,
         "recommended_min_dscr": rs.recommended_min_dscr,
     }
+
+    # The stressed operating surplus is a property of the unit, not of the loan, so index it
+    # unconditionally. Deriving it from `rs.*_stress` alone left it missing whenever no loan was
+    # sized (an out-of-scope margin), and the report template then failed to render at all.
+    for factor in get_settings().stress_factors:
+        drop = str(int((1 - factor) * 100))
+        stressed_revenue = q(template.monthly_revenue_total * factor)
+        stressed = q((stressed_revenue - template.monthly_opex_total) * 12)
+        index[f"annual_noi_stress_{drop}"] = stressed
+
     if amort_max:
         index["quarterly_instalment_max"] = amort_max.instalment
         index["total_interest_max"] = amort_max.total_interest

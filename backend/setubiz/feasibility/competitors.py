@@ -91,11 +91,11 @@ class Ec13ZScoreEstimator:
                     id="raised_to_observed",
                     text_en=(
                         f"Estimate raised to the {observed} enterprises actually mapped in "
-                        "OpenStreetMap — an observed count is a hard floor."
+                        "OpenStreetMap. An observed count is a hard floor."
                     ),
                     text_hi=(
                         f"अनुमान बढ़ाकर {observed} किया गया, क्योंकि OpenStreetMap में इतनी इकाइयाँ "
-                        "दर्ज हैं — देखी गई गिनती न्यूनतम सीमा है।"
+                        "दर्ज हैं। देखी गई गिनती न्यूनतम सीमा है।"
                     ),
                 )
             )

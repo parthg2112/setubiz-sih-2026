@@ -1,7 +1,7 @@
 {
   "_meta": {
     "source": "Economic Census 2013-shaped synthetic sample (SHRUG EC13 join)",
-    "note": "SYNTHETIC PLACEHOLDER DATA — see data/sample/README.md. Not for citation.",
+    "note": "SYNTHETIC PLACEHOLDER DATA. See data/sample/README.md. Not for citation.",
     "unit": "establishments per 1,000 households",
     "schema_ref": "https://www.devdatalab.org/shrug_download/ec13",
     "method_note": "Block density is z-scored against the district mean; the z-score, not the raw count, is what the estimator uses."

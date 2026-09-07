@@ -1,4 +1,4 @@
-# Deterministic report templates — the default narrator and the offline fallback lane
+# Deterministic report templates: the default narrator and the offline fallback lane
 # (PLAN.md §4). Jinja over the facts object only. If a number is not in facts, it cannot appear
 # here, and the numeric-grounding validator proves that on every run.
 #
@@ -15,7 +15,8 @@ sections:
       households within {{ n.radius_km }} km, spread across {{ n.villages_in_radius }} villages.
       For a {{ tpl.name }}, the scheme formula would allow you to borrow {{ fmt(n.max_loan) }}.
       {% if rec > 0 -%}
-      Our appraisal says borrow {{ fmt(n.recommended_loan) }} instead — {{ fmt(n.headroom) }} less.
+      Our appraisal says borrow {{ fmt(n.recommended_loan) }} instead, which is
+      {{ fmt(n.headroom) }} less.
       {%- else -%}
       Our appraisal says this unit cannot service any loan as costed.
       {%- endif %}
@@ -24,7 +25,7 @@ sections:
       दायरे में {{ n.villages_in_radius }} गाँवों के लगभग {{ n.households_now }} परिवार हैं।
       {{ tpl.name_hi or tpl.name }} के लिए योजना के सूत्र से {{ fmt(n.max_loan) }} तक ऋण मिल सकता है।
       {% if rec > 0 -%}
-      हमारी गणना के अनुसार {{ fmt(n.recommended_loan) }} लेना उचित है — {{ fmt(n.headroom) }} कम।
+      हमारी गणना के अनुसार {{ fmt(n.recommended_loan) }} लेना उचित है, जो {{ fmt(n.headroom) }} कम है।
       {%- else -%}
       हमारी गणना के अनुसार यह इकाई वर्तमान लागत पर कोई ऋण नहीं चुका सकती।
       {%- endif %}
@@ -70,7 +71,7 @@ sections:
       इकाइयाँ हैं, जबकि OpenStreetMap में केवल {{ n.competitors_observed_osm }} दर्ज हैं।
       यह प्रति 1,000 परिवार {{ n.competitor_density_per_1k_households }} का घनत्व है, अर्थात्
       लगभग {{ n.households_per_competitor }} परिवार प्रति इकाई।
-      यह एक श्रेणी है, गिनती नहीं — ग्रामीण मानचित्रण अधूरा है, और हम इसे छिपाते नहीं।
+      यह एक श्रेणी है, गिनती नहीं। ग्रामीण मानचित्रण अधूरा है, और हम इसे छिपाते नहीं।
 
   - id: loan_structure
     heading_en: How much you can borrow, and how much you should
@@ -83,7 +84,7 @@ sections:
       The {{ tpl.unit }} unit actually costs {{ fmt(n.required_capital) }} to set up, of which
       {{ fmt(n.debt_need) }} would have to be borrowed.
       At the maximum loan, the worst year's debt service coverage ratio is
-      {{ n.max_loan_min_dscr }} — below the {{ n.dscr_threshold }} appraisal norm.
+      {{ n.max_loan_min_dscr }}, below the {{ n.dscr_threshold }} appraisal norm.
       {% if rec > 0 -%}
       We recommend {{ fmt(n.recommended_loan) }}, where the worst year covers
       {{ n.recommended_min_dscr }} times its debt service. {{ binding_reason_en }}
@@ -107,9 +108,9 @@ sections:
     cites: [finance_engine, nsfdc_term_loan, nsfdc_micro_finance]
     body_en: |
       {% if rec > 0 -%}
-      {{ scheme.scheme_name }} repays in quarterly instalments over {{ n.tenure_years }} years —
-      {{ n.total_quarters }} quarters in total, of which the first {{ n.moratorium_quarters }}
-      are a moratorium, leaving {{ n.repayment_quarters }} instalments.
+      {{ scheme.scheme_name }} repays in quarterly instalments over {{ n.tenure_years }} years.
+      That is {{ n.total_quarters }} quarters in total, of which the first
+      {{ n.moratorium_quarters }} are a moratorium, leaving {{ n.repayment_quarters }} instalments.
       At the recommended loan the quarterly instalment is
       {{ fmt(n.quarterly_instalment_recommended) }} and total interest over the term is
       {{ fmt(n.total_interest_recommended) }}.
@@ -122,7 +123,7 @@ sections:
       {%- endif %}
     body_hi: |
       {% if rec > 0 -%}
-      {{ scheme.scheme_name }} में चुकौती {{ n.tenure_years }} वर्ष में तिमाही किस्तों से होती है —
+      {{ scheme.scheme_name }} में चुकौती {{ n.tenure_years }} वर्ष में तिमाही किस्तों से होती है।
       कुल {{ n.total_quarters }} तिमाही, जिनमें पहली {{ n.moratorium_quarters }} अधिस्थगन की हैं,
       शेष {{ n.repayment_quarters }} किस्तें।
       अनुशंसित ऋण पर तिमाही किस्त {{ fmt(n.quarterly_instalment_recommended) }} और कुल ब्याज
@@ -148,17 +149,17 @@ sections:
       Coverage at the recommended loan then becomes {{ n.recommended_min_dscr_stress_15 }},
       against {{ n.max_loan_min_dscr_stress_15 }} at the maximum loan.
       {% endif %}
-      We do not predict failure — no labelled dataset of failed rural micro-enterprises exists.
-      We stress the cash flow instead and show you where it breaks.
+      We do not predict failure, because no labelled dataset of failed rural micro-enterprises
+      exists. We stress the cash flow instead and show you where it breaks.
     body_hi: |
-      इकाई का मासिक परिचालन अधिशेष {{ fmt(n.monthly_net) }} है, वार्षिक {{ fmt(n.annual_noi) }} —
-      {{ fmt(n.monthly_revenue) }} आय में से {{ fmt(n.monthly_opex) }} परिचालन खर्च घटाकर।
+      इकाई का मासिक परिचालन अधिशेष {{ fmt(n.monthly_net) }} है और वार्षिक {{ fmt(n.annual_noi) }},
+      जो {{ fmt(n.monthly_revenue) }} आय में से {{ fmt(n.monthly_opex) }} परिचालन खर्च घटाकर बनता है।
       यदि आय 15% घटे तो वार्षिक अधिशेष {{ fmt(n.annual_noi_stress_15) }} रह जाएगा।
       {% if rec > 0 %}
       तब अनुशंसित ऋण पर डीएससीआर {{ n.recommended_min_dscr_stress_15 }} होगा, जबकि अधिकतम ऋण पर
       {{ n.max_loan_min_dscr_stress_15 }}।
       {% endif %}
-      हम विफलता की भविष्यवाणी नहीं करते — ऐसा कोई लेबल किया हुआ डेटा मौजूद ही नहीं है।
+      हम विफलता की भविष्यवाणी नहीं करते, क्योंकि ऐसा कोई लेबल किया हुआ डेटा मौजूद ही नहीं है।
       हम नकदी प्रवाह पर दबाव डालकर दिखाते हैं कि कहाँ टूटता है।
 
   - id: scheme
@@ -169,12 +170,13 @@ sections:
       {% for reason in facts.eligibility.reasons %}{{ reason }} {% endfor %}
       {%- for condition in facts.eligibility.conditions %} {{ condition }} {% endfor %}
       {% if facts.eligibility.sca %}Apply through {{ facts.eligibility.sca.name }},
-      {{ facts.eligibility.sca.address }} — {{ facts.eligibility.sca.channel }}.{% endif %}
+      {{ facts.eligibility.sca.address }}. Ask for the
+      {{ facts.eligibility.sca.channel }}.{% endif %}
     body_hi: |
       {% for reason in facts.eligibility.reasons %}{{ reason }} {% endfor %}
       {%- for condition in facts.eligibility.conditions %} {{ condition }} {% endfor %}
       {% if facts.eligibility.sca %}आवेदन {{ facts.eligibility.sca.name_hi or facts.eligibility.sca.name }}
-      के माध्यम से करें — {{ facts.eligibility.sca.address }}।{% endif %}
+      के माध्यम से करें। पता: {{ facts.eligibility.sca.address }}।{% endif %}
 
   - id: data_note
     heading_en: Where these numbers come from
@@ -203,8 +205,8 @@ binding_reason:
     en: That level is set by what survives a bad year, not by the scheme ceiling.
     hi: यह सीमा खराब वर्ष झेलने की क्षमता से तय होती है, योजना की अधिकतम सीमा से नहीं।
   capital_need:
-    en: That is simply what the unit costs — borrowing more would add interest without adding capacity.
-    hi: यही इकाई की वास्तविक आवश्यकता है — अधिक ऋण से केवल ब्याज बढ़ेगा, क्षमता नहीं।
+    en: That is simply what the unit costs. Borrowing more would add interest without adding capacity.
+    hi: यही इकाई की वास्तविक आवश्यकता है। अधिक ऋण से केवल ब्याज बढ़ेगा, क्षमता नहीं।
   scheme_cap:
     en: That is the scheme ceiling; the unit could productively use more than the scheme allows.
     hi: यह योजना की अधिकतम सीमा है; इकाई इससे अधिक राशि का उपयोग कर सकती थी।

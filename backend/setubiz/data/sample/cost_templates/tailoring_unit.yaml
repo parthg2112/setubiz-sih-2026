@@ -1,10 +1,10 @@
 id: tailoring_unit
-name: Tailoring unit — 2 machines
-name_hi: सिलाई इकाई — 2 मशीन
+name: Tailoring unit with 2 machines
+name_hi: सिलाई इकाई, 2 मशीन
 category: tailoring
 unit: 2 sewing machines, 1 operator + 1 helper
 activity_kind: general
-source: NABARD Model Bankable Project — Rural Tailoring / MoSJE skill-linked micro unit norms
+source: "NABARD Model Bankable Project: Rural Tailoring / MoSJE skill-linked micro unit norms"
 fixed_capital:
   - {item: 2 sewing machines with motor, item_hi: 2 सिलाई मशीन, amount: 34000}
   - {item: Overlock / interlock machine, item_hi: ओवरलॉक मशीन, amount: 22000}
@@ -13,7 +13,7 @@ fixed_capital:
   - {item: Iron, scissors, tools, item_hi: प्रेस एवं औजार, amount: 7000}
 working_capital_months: 2
 monthly_revenue:
-  - {item: Stitching charges — 220 pieces @ ₹180, item_hi: सिलाई शुल्क, amount: 39600}
+  - {item: "Stitching charges, 220 pieces @ ₹180", item_hi: सिलाई शुल्क, amount: 39600}
   - {item: Fall-pico, alteration and repair work, item_hi: फॉल-पिको एवं मरम्मत, amount: 4200}
 monthly_opex:
   - {item: Cloth, thread, lining and trims, item_hi: कपड़ा एवं धागा, amount: 15600}

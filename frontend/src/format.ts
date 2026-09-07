@@ -77,7 +77,7 @@ export const T = {
     worstYear: 'worst-year DSCR',
     listening: 'Listening…',
     speak: 'Speak',
-    micUnsupported: 'Voice input is not available in this browser — type instead.',
+    micUnsupported: 'Voice input is not available in this browser. Please type instead.',
     synthetic: 'Demonstration data',
     syntheticNote:
       'This report is built on synthetic sample data. The formulae, scheme rules and rates are real; the village and market rows are not.',
@@ -120,7 +120,7 @@ export const T = {
     worstYear: 'सबसे कमजोर वर्ष का डीएससीआर',
     listening: 'सुन रहे हैं…',
     speak: 'बोलें',
-    micUnsupported: 'इस ब्राउज़र में आवाज़ उपलब्ध नहीं है — कृपया लिखें।',
+    micUnsupported: 'इस ब्राउज़र में आवाज़ उपलब्ध नहीं है। कृपया लिखें।',
     synthetic: 'प्रदर्शन डेटा',
     syntheticNote:
       'यह रिपोर्ट कृत्रिम नमूना डेटा पर बनी है। सूत्र, योजना के नियम और दरें वास्तविक हैं; गाँव एवं बाज़ार के आँकड़े नहीं।',

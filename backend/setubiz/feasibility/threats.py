@@ -131,11 +131,11 @@ def assess(reach: MarketReach, category: str, source: DataSource) -> ThreatAsses
                 severity="high",
                 text_en=(
                     f"Only {reach.mandis_in_radius} organised market within "
-                    f"{reach.radius_km} km — buyer concentration gives you little price bargaining "
+                    f"{reach.radius_km} km. Buyer concentration gives you little price bargaining "
                     "power. Line up a second buyer before scaling."
                 ),
                 text_hi=(
-                    f"{reach.radius_km} किमी में केवल {reach.mandis_in_radius} बाज़ार है — "
+                    f"{reach.radius_km} किमी में केवल {reach.mandis_in_radius} बाज़ार है। "
                     "मोल-भाव की शक्ति कम रहेगी। विस्तार से पहले दूसरा खरीदार तय करें।"
                 ),
                 cites=("osm_sample",),

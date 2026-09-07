@@ -1,7 +1,7 @@
 {
   "_meta": {
     "source": "SHRUG v2.2-shaped synthetic sample (Census 2011 PCA schema)",
-    "note": "SYNTHETIC PLACEHOLDER DATA — see data/sample/README.md. Not for citation.",
+    "note": "SYNTHETIC PLACEHOLDER DATA. See data/sample/README.md. Not for citation.",
     "district": "Ranchi",
     "state": "Jharkhand",
     "census_year": 2011,

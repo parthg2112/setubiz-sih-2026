@@ -19,7 +19,7 @@ from setubiz.narration import narrate
 from setubiz.schemas import AdvisoryRequest, Language
 
 app = typer.Typer(
-    help="SetuBiz — rural business advisory and financial structuring.", no_args_is_help=True
+    help="SetuBiz: rural business advisory and financial structuring.", no_args_is_help=True
 )
 console = Console()
 
@@ -89,7 +89,7 @@ def advise(
         f"figures grounded · passed={result.validation.passed}[/dim]"
     )
     if facts.contains_synthetic_data:
-        console.print("[yellow]Report built on synthetic sample data — not for citation.[/yellow]")
+        console.print("[yellow]Report built on synthetic sample data, not for citation.[/yellow]")
 
     if out:
         out.write_text(facts.model_dump_json(indent=2), encoding="utf-8")

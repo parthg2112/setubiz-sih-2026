@@ -1,7 +1,7 @@
 {
   "_meta": {
     "source": "OpenStreetMap Overpass-shaped synthetic sample",
-    "note": "SYNTHETIC PLACEHOLDER DATA — see data/sample/README.md. Not for citation.",
+    "note": "SYNTHETIC PLACEHOLDER DATA. See data/sample/README.md. Not for citation.",
     "schema_ref": "https://wiki.openstreetmap.org/wiki/Map_features",
     "known_limitation": "Rural OSM coverage is sparse; a POI count is a floor, never a census."
   },

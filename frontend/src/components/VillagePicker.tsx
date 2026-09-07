@@ -107,7 +107,7 @@ export function VillagePicker({ value, onChange, state, language, strings }: Pro
                       {m.name_hi && <span className="ml-2 text-ink-2">{m.name_hi}</span>}
                     </span>
                     <span className="block text-xs text-ink-2">
-                      {m.block} · {m.district} — {m.reason}
+                      {m.block} · {m.district} · {m.reason}
                     </span>
                   </span>
                   <span className="tabular shrink-0 text-xs text-ink-muted">

@@ -58,14 +58,14 @@ _SOURCES: tuple[Source, ...] = (
     ),
     Source(
         id="nabard_templates",
-        title="NABARD Model Bankable Projects — unit cost templates",
+        title="NABARD Model Bankable Projects: unit cost templates",
         kind=SourceKind.COST_TEMPLATE,
         url="https://www.nabard.org/",
         note="Line items follow published model project norms; local prices vary.",
     ),
     Source(
         id="mosje_corporations",
-        title="MoSJE apex corporations — NSFDC / NSKFDC / NBCFDC",
+        title="MoSJE apex corporations: NSFDC / NSKFDC / NBCFDC",
         kind=SourceKind.SCHEME,
         url="https://www.dosje.gov.in/",
     ),
@@ -103,7 +103,7 @@ _SOURCES: tuple[Source, ...] = (
         id="finance_engine",
         title="SetuBiz deterministic finance engine",
         kind=SourceKind.COMPUTED,
-        note="Quarterly amortization, DSCR right-sizing and stress tests — auditable code, no ML.",
+        note="Quarterly amortization, DSCR right-sizing and stress tests. Auditable code, no ML.",
     ),
 )
 

@@ -1,17 +1,17 @@
 id: backyard_poultry
-name: Backyard poultry — 500 bird broiler batch
-name_hi: बैकयार्ड मुर्गी पालन — 500 पक्षी
+name: Backyard poultry, 500 bird broiler batch
+name_hi: बैकयार्ड मुर्गी पालन, 500 पक्षी
 category: poultry
 unit: 500-bird shed, 5 batches/year
 activity_kind: general
-source: NABARD Model Bankable Project — Broiler Farming (small holder), Jharkhand norms
+source: "NABARD Model Bankable Project: Broiler Farming (small holder), Jharkhand norms"
 fixed_capital:
   - {item: Low-cost poultry shed 500 sq ft, item_hi: मुर्गी शेड, amount: 95000}
   - {item: Feeders, drinkers, brooders, item_hi: दाना-पानी एवं ब्रूडर उपकरण, amount: 18000}
   - {item: Electrical, water connection and fencing, item_hi: बिजली-पानी एवं बाड़, amount: 16000}
 working_capital_months: 2
 monthly_revenue:
-  - {item: Live bird sales — 208 birds @ ₹185, item_hi: पक्षी बिक्री, amount: 38480}
+  - {item: "Live bird sales, 208 birds @ ₹185", item_hi: पक्षी बिक्री, amount: 38480}
   - {item: Manure sales, item_hi: खाद बिक्री, amount: 900}
 monthly_opex:
   - {item: Day-old chicks, item_hi: चूजे, amount: 8300}

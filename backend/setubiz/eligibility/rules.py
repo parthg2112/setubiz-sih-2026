@@ -230,11 +230,11 @@ def assess(
     if is_woman:
         conditions.append(
             "Women beneficiaries qualify for the corporation's Mahila Samridhi / Mahila "
-            "Adhikarita concessional window — ask the SCA to apply it."
+            "Adhikarita concessional window. Ask the SCA to apply it."
         )
     if not has_prior_experience:
         conditions.append(
-            "No prior experience in the chosen activity — complete a PM-DAKSH course before "
+            "No prior experience in the chosen activity, so complete a PM-DAKSH course before "
             "disbursement; SCAs treat this as a strengthening factor."
         )
     if conditions and verdict is Verdict.ELIGIBLE:

@@ -1,4 +1,4 @@
-# SWOT rule library. Conditions are evaluated deterministically over computed metrics —
+# SWOT rule library. Conditions are evaluated deterministically over computed metrics:
 # the language model may paraphrase these lines, but it may not invent one (PLAN.md §4).
 #
 # `when` is a single condition or `all:` / `any:` of conditions. Operators: == != > >= < <=.
@@ -10,11 +10,11 @@ rules:
     when: {metric: demand_supply_ratio, op: ">=", value: 1.15}
     text_en: >-
       Estimated monthly spend on this category in the catchment is about
-      {demand_supply_ratio}× what the existing {competitors_point} enterprises can absorb —
+      {demand_supply_ratio}× what the existing {competitors_point} enterprises can absorb, so
       there is room for another unit.
     text_hi: >-
       क्षेत्र में इस श्रेणी पर अनुमानित मासिक खर्च मौजूदा {competitors_point} इकाइयों की क्षमता से
-      लगभग {demand_supply_ratio} गुना है — एक और इकाई के लिए जगह है।
+      लगभग {demand_supply_ratio} गुना है, इसलिए एक और इकाई के लिए जगह है।
     cites: [hces_sample, ec13_sample]
 
   - id: saturated_market
@@ -34,10 +34,10 @@ rules:
     when: {metric: households_now, op: ">=", value: 8000}
     text_en: >-
       About {households_now} households across {villages_in_radius} villages fall within
-      {radius_km} km — a catchment large enough to absorb a full-time unit.
+      {radius_km} km, a catchment large enough to absorb a full-time unit.
     text_hi: >-
-      {radius_km} किमी के भीतर {villages_in_radius} गाँवों के लगभग {households_now} परिवार आते हैं —
-      पूर्णकालिक इकाई के लिए पर्याप्त बाज़ार।
+      {radius_km} किमी के भीतर {villages_in_radius} गाँवों के लगभग {households_now} परिवार आते हैं,
+      जो पूर्णकालिक इकाई के लिए पर्याप्त बाज़ार है।
     cites: [shrug_sample, intercensal_scaling]
 
   - id: thin_catchment
@@ -65,10 +65,10 @@ rules:
     quadrant: weakness
     when: {metric: villages_with_bank, op: "<", value: 1}
     text_en: >-
-      No bank branch in the catchment. Every quarterly instalment will cost a day of travel —
+      No bank branch in the catchment. Every quarterly instalment will cost a day of travel, so
       budget for it and ask the SCA about a business correspondent.
     text_hi: >-
-      क्षेत्र में कोई बैंक शाखा नहीं है। हर तिमाही किस्त पर एक दिन की यात्रा लगेगी — इसका खर्च जोड़ें।
+      क्षेत्र में कोई बैंक शाखा नहीं है। हर तिमाही किस्त पर एक दिन की यात्रा लगेगी, इसका खर्च जोड़ें।
     cites: [shrug_sample]
 
   - id: healthy_repayment_capacity
@@ -109,11 +109,11 @@ rules:
     when: {metric: seasonality_cv, op: ">=", value: 0.45}
     text_en: >-
       Market arrivals for the linked commodity vary sharply across the year
-      (coefficient of variation {seasonality_cv}). Quarterly instalments do not flex — hold a
+      (coefficient of variation {seasonality_cv}). Quarterly instalments do not flex, so hold a
       reserve for the lean quarter.
     text_hi: >-
-      संबंधित वस्तु की मंडी आवक साल भर बहुत बदलती है (सीवी {seasonality_cv})। तिमाही किस्त तय रहती है —
-      कमजोर तिमाही के लिए बचत रखें।
+      संबंधित वस्तु की मंडी आवक साल भर बहुत बदलती है (सीवी {seasonality_cv})। तिमाही किस्त तय रहती है,
+      इसलिए कमजोर तिमाही के लिए बचत रखें।
     cites: [agmarknet_sample]
 
   - id: scheme_concession
@@ -121,9 +121,9 @@ rules:
     when: {metric: in_scope, op: "==", value: true}
     text_en: >-
       This unit routes to the {scheme_name} at {rate_pct}% per annum against a market rate of
-      12-18% — the concession is worth more than any cost saving you can negotiate locally.
+      12-18%. That concession is worth more than any cost saving you can negotiate locally.
     text_hi: >-
-      यह इकाई {scheme_name} के अंतर्गत {rate_pct}% वार्षिक ब्याज पर आती है, जबकि बाज़ार दर 12-18% है —
+      यह इकाई {scheme_name} के अंतर्गत {rate_pct}% वार्षिक ब्याज पर आती है, जबकि बाज़ार दर 12-18% है।
       यह रियायत किसी भी स्थानीय बचत से बड़ी है।
     cites: [nsfdc_micro_finance, nsfdc_term_loan]
 

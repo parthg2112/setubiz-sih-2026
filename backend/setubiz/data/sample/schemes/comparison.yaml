@@ -1,4 +1,4 @@
-# Informational comparison cards. These are NOT eligibility decisions — the engine only
+# Informational comparison cards. These are NOT eligibility decisions; the engine only
 # surfaces them alongside the routed NSFDC/NSKFDC/NBCFDC verdict (PLAN.md §5).
 
 schemes:
@@ -33,7 +33,7 @@ schemes:
     loan_range: [100000, 50000000]
     collateral_free: true
     highlights:
-      - A guarantee cover, not a loan — it removes the collateral demand from a bank loan.
+      - A guarantee cover, not a loan. It removes the collateral demand from a bank loan.
     when_to_prefer: When the bank asks for collateral the applicant does not have.
     portal: https://www.cgtmse.in/
 
