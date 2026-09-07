@@ -1,0 +1,29 @@
+id: dairy_2_animal
+name: Dairy unit — 2 crossbred milch animals
+name_hi: डेयरी इकाई — 2 संकर नस्ल दुधारू पशु
+category: dairy
+unit: 2 crossbred cows
+activity_kind: general
+source: NABARD Model Bankable Project — Dairy Farming (2-animal unit), Jharkhand cost norms
+fixed_capital:
+  - {item: 2 crossbred cows @ ₹75,000, item_hi: 2 संकर नस्ल गाय, amount: 150000}
+  - {item: Semi-pucca cattle shed, item_hi: पशु शेड, amount: 140000}
+  - {item: Chaff cutter, feed trough and equipment, item_hi: चारा कटर एवं उपकरण, amount: 25000}
+  - {item: Milk cans and utensils, item_hi: दूध के बर्तन, amount: 8000}
+  - {item: Cattle insurance premium (3 years), item_hi: पशु बीमा, amount: 12000}
+  - {item: Transport and procurement of animals, item_hi: पशु परिवहन, amount: 6000}
+  - {item: Fodder plot development, item_hi: चारा भूमि विकास, amount: 5000}
+working_capital_months: 3
+monthly_revenue:
+  - {item: Milk — 600 L @ ₹46/L, item_hi: दूध बिक्री, amount: 27600}
+  - {item: Dung and manure, item_hi: गोबर एवं खाद, amount: 1800}
+monthly_opex:
+  - {item: Green and dry fodder, item_hi: हरा एवं सूखा चारा, amount: 11500}
+  - {item: Concentrate feed, item_hi: दाना मिश्रण, amount: 5600}
+  - {item: Veterinary and medicines, item_hi: पशु चिकित्सा, amount: 900}
+  - {item: Labour (imputed family labour), item_hi: श्रम, amount: 2800}
+  - {item: Electricity, transport and miscellaneous, item_hi: बिजली एवं विविध, amount: 800}
+assumptions:
+  - Average yield 10 litres/animal/day over a 300-day lactation, staggered calving.
+  - Milk price is the local cooperative procurement rate; private buyers may pay less.
+  - Family labour is costed at shadow wage; excluding it overstates the true margin.

@@ -1,0 +1,48 @@
+{
+  "_meta": {
+    "source": "HCES 2023-24-shaped synthetic sample (factsheet rural MPCE anchor)",
+    "note": "SYNTHETIC PLACEHOLDER DATA — see data/sample/README.md. Not for citation. The all-India rural MPCE anchor of ₹4,122 is from the published HCES 2023-24 factsheet; the per-category shares below are illustrative until the microdata (catalogue 237) is approved.",
+    "schema_ref": "https://microdata.gov.in/",
+    "method_note": "MVP uses a state mean ± coefficient of variation to emit a band. PLAN.md §3 Model ② replaces this with Fay-Herriot small-area estimation."
+  },
+  "all_india_rural_mpce": 4122,
+  "states": {
+    "Jharkhand": {
+      "rural_mpce": 3701,
+      "avg_household_size": 5.1,
+      "categories": {
+        "dairy": {"share_of_mpce": 0.079, "cv": 0.24, "addressable_share": 0.45},
+        "kirana": {"share_of_mpce": 0.312, "cv": 0.18, "addressable_share": 0.62},
+        "tailoring": {"share_of_mpce": 0.041, "cv": 0.31, "addressable_share": 0.55},
+        "poultry": {"share_of_mpce": 0.058, "cv": 0.29, "addressable_share": 0.40},
+        "flour_mill": {"share_of_mpce": 0.022, "cv": 0.21, "addressable_share": 0.70}
+      }
+    },
+    "Maharashtra": {
+      "rural_mpce": 4010,
+      "avg_household_size": 4.4,
+      "categories": {
+        "dairy": {"share_of_mpce": 0.091, "cv": 0.22, "addressable_share": 0.48},
+        "kirana": {"share_of_mpce": 0.298, "cv": 0.17, "addressable_share": 0.60},
+        "tailoring": {"share_of_mpce": 0.038, "cv": 0.30, "addressable_share": 0.52},
+        "poultry": {"share_of_mpce": 0.062, "cv": 0.27, "addressable_share": 0.42},
+        "flour_mill": {"share_of_mpce": 0.019, "cv": 0.20, "addressable_share": 0.68}
+      }
+    }
+  },
+  "income_segments": {
+    "note": "Share of rural households by monthly household consumption band, used to segment market reach.",
+    "Jharkhand": [
+      {"label": "below ₹10,000", "share": 0.41},
+      {"label": "₹10,000-₹20,000", "share": 0.38},
+      {"label": "₹20,000-₹35,000", "share": 0.16},
+      {"label": "above ₹35,000", "share": 0.05}
+    ],
+    "Maharashtra": [
+      {"label": "below ₹10,000", "share": 0.28},
+      {"label": "₹10,000-₹20,000", "share": 0.39},
+      {"label": "₹20,000-₹35,000", "share": 0.24},
+      {"label": "above ₹35,000", "share": 0.09}
+    ]
+  }
+}

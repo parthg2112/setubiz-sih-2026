@@ -1,0 +1,24 @@
+id: kirana_store
+name: Village kirana (grocery) store
+name_hi: गाँव की किराना दुकान
+category: kirana
+unit: 1 counter shop, ~120 sq ft
+activity_kind: general
+source: NABARD Model Bankable Project — Rural Retail Outlet; district trade margin norms
+fixed_capital:
+  - {item: Shelving, counter and storage racks, item_hi: रैक एवं काउंटर, amount: 42000}
+  - {item: Weighing scale, sealer, small deep freezer, item_hi: तराजू एवं फ्रीजर, amount: 38000}
+  - {item: Shop fit-out, wiring, shutter, item_hi: दुकान सज्जा, amount: 30000}
+  - {item: Opening stock (non-recurring build-up), item_hi: प्रारंभिक स्टॉक, amount: 60000}
+working_capital_months: 1
+monthly_revenue:
+  - {item: Gross sales @ 11% blended trade margin, item_hi: सकल बिक्री मार्जिन, amount: 46200}
+monthly_opex:
+  - {item: Restocking transport and loading, item_hi: माल ढुलाई, amount: 3800}
+  - {item: Shop rent, item_hi: दुकान किराया, amount: 3500}
+  - {item: Electricity and cold storage running cost, item_hi: बिजली, amount: 2600}
+  - {item: Credit-sales shrinkage and spoilage provision, item_hi: उधार एवं क्षति प्रावधान, amount: 4200}
+  - {item: Part-time help, item_hi: सहायक, amount: 4000}
+assumptions:
+  - Revenue line is gross margin, not turnover — turnover at this margin is ≈ ₹4.2 L/month.
+  - Village kirana runs on credit; the shrinkage provision is deliberately conservative.

@@ -1,0 +1,26 @@
+# State Channelizing Agencies — the actual counter a beneficiary walks into.
+# NSFDC/NSKFDC/NBCFDC do not lend directly; they on-lend through these bodies (PLAN.md §0.1).
+# Sample subset for the pilot geography; the real directory comes from the corporation portals.
+
+agencies:
+  - state: Jharkhand
+    state_code: JH
+    corporations: [nsfdc, nskfdc, nbcfdc]
+    name: Jharkhand State Scheduled Castes Co-operative Development Corporation Ltd.
+    name_hi: झारखंड राज्य अनुसूचित जाति सहकारी विकास निगम लिमिटेड
+    address: Sector-2, Dhurwa, Ranchi 834004
+    channel: District Welfare Officer at the district collectorate
+  - state: Maharashtra
+    state_code: MH
+    corporations: [nsfdc, nbcfdc]
+    name: Mahatma Phule Backward Class Development Corporation Ltd.
+    name_hi: महात्मा फुले मागासवर्ग विकास महामंडळ
+    address: Juhu Supreme Shopping Centre, Gulmohar Cross Road 9, Mumbai 400049
+    channel: District office of the corporation
+  - state: Uttar Pradesh
+    state_code: UP
+    corporations: [nsfdc, nbcfdc]
+    name: U.P. Scheduled Castes Finance and Development Corporation Ltd.
+    name_hi: उत्तर प्रदेश अनुसूचित जाति वित्त एवं विकास निगम लिमिटेड
+    address: Indira Bhawan, Ashok Marg, Lucknow 226001
+    channel: District Manager, SC Finance Corporation

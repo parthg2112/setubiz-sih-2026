@@ -1,0 +1,24 @@
+id: backyard_poultry
+name: Backyard poultry — 500 bird broiler batch
+name_hi: बैकयार्ड मुर्गी पालन — 500 पक्षी
+category: poultry
+unit: 500-bird shed, 5 batches/year
+activity_kind: general
+source: NABARD Model Bankable Project — Broiler Farming (small holder), Jharkhand norms
+fixed_capital:
+  - {item: Low-cost poultry shed 500 sq ft, item_hi: मुर्गी शेड, amount: 95000}
+  - {item: Feeders, drinkers, brooders, item_hi: दाना-पानी एवं ब्रूडर उपकरण, amount: 18000}
+  - {item: Electrical, water connection and fencing, item_hi: बिजली-पानी एवं बाड़, amount: 16000}
+working_capital_months: 2
+monthly_revenue:
+  - {item: Live bird sales — 208 birds @ ₹185, item_hi: पक्षी बिक्री, amount: 38480}
+  - {item: Manure sales, item_hi: खाद बिक्री, amount: 900}
+monthly_opex:
+  - {item: Day-old chicks, item_hi: चूजे, amount: 8300}
+  - {item: Feed, item_hi: दाना, amount: 21500}
+  - {item: Vaccination and medicines, item_hi: टीकाकरण एवं दवा, amount: 1500}
+  - {item: Litter, electricity, water, item_hi: बिछावन, बिजली, पानी, amount: 1200}
+  - {item: Mortality provision (6%), item_hi: मृत्यु दर प्रावधान, amount: 2300}
+assumptions:
+  - 5 batches/year of 500 birds; monthly figures are the annual total ÷ 12.
+  - Broiler rates swing sharply; the seasonality index in the threats section applies here.
