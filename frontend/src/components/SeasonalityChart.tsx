@@ -36,7 +36,7 @@ export function SeasonalityChart({
 
   return (
     <figure className="print-block m-0">
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto max-w-[760px]">
         <svg
           viewBox={`0 0 ${W} ${H}`}
           className="h-auto w-full min-w-[420px]"
@@ -55,7 +55,7 @@ export function SeasonalityChart({
                 x2={W - PAD.right}
                 y1={PAD.top + (1 - f) * plotH}
                 y2={PAD.top + (1 - f) * plotH}
-                stroke="var(--gridline)"
+                stroke="var(--border)"
                 strokeWidth={1}
               />
               <text
@@ -63,7 +63,7 @@ export function SeasonalityChart({
                 y={PAD.top + (1 - f) * plotH + 4}
                 textAnchor="end"
                 className="tabular"
-                fill="var(--text-muted)"
+                fill="var(--subtle-foreground)"
                 fontSize={10}
               >
                 {Math.round((yMax * f) / 100) * 100}
@@ -95,7 +95,7 @@ export function SeasonalityChart({
                   width={barW}
                   height={h}
                   rx={4}
-                  fill="var(--series-1)"
+                  fill="var(--chart-1)"
                   opacity={hover === null || hover === i ? 1 : 0.55}
                 />
                 {(isExtreme || hover === i) && (
@@ -104,7 +104,7 @@ export function SeasonalityChart({
                     y={PAD.top + plotH - h - 4}
                     textAnchor="middle"
                     className="tabular"
-                    fill="var(--text-primary)"
+                    fill="var(--foreground)"
                     fontSize={10}
                     fontWeight={600}
                   >
@@ -115,7 +115,7 @@ export function SeasonalityChart({
                   x={PAD.left + i * slot + slot / 2}
                   y={H - 8}
                   textAnchor="middle"
-                  fill={isExtreme ? 'var(--text-secondary)' : 'var(--text-muted)'}
+                  fill={isExtreme ? 'var(--muted-foreground)' : 'var(--subtle-foreground)'}
                   fontSize={10}
                   fontWeight={isExtreme ? 600 : 400}
                 >
@@ -130,12 +130,12 @@ export function SeasonalityChart({
             x2={W - PAD.right}
             y1={PAD.top + plotH}
             y2={PAD.top + plotH}
-            stroke="var(--baseline)"
+            stroke="var(--chart-axis)"
             strokeWidth={1}
           />
         </svg>
       </div>
-      <figcaption className="mt-1 text-xs text-ink-2">
+      <figcaption className="mt-1 text-xs text-muted-foreground">
         {language === 'en'
           ? `${commodity} arrivals at ${market}, tonnes per month`
           : `${market} में ${commodity} की आवक, टन प्रति माह`}

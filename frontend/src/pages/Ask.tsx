@@ -67,7 +67,7 @@ export function Ask({ language, strings, onSubmit, busy, error }: Props) {
       />
 
       <div>
-        <label htmlFor="savings" className="block text-sm font-medium text-ink-2">
+        <label htmlFor="savings" className="block text-sm font-medium text-muted-foreground">
           {strings.savings}
         </label>
         <input
@@ -75,13 +75,13 @@ export function Ask({ language, strings, onSubmit, busy, error }: Props) {
           inputMode="numeric"
           value={savings}
           onChange={(e) => setSavings(e.target.value)}
-          className="tabular mt-1.5 w-full rounded-lg border border-hairline bg-surface px-4 py-3 text-base text-ink outline-none focus:border-accent"
+          className="tabular mt-1.5 w-full rounded-lg border border-border bg-card px-4 py-3 text-base text-foreground outline-none focus:border-primary"
         />
-        <p className="mt-1 text-xs text-ink-muted">{inr(savingsNumber)}</p>
+        <p className="mt-1 text-xs text-subtle-foreground">{inr(savingsNumber)}</p>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-ink-2">{strings.business}</label>
+        <label className="block text-sm font-medium text-muted-foreground">{strings.business}</label>
         <div className="mt-1.5 grid grid-cols-2 gap-2 sm:grid-cols-3">
           {templates.map((t) => (
             <button
@@ -91,17 +91,17 @@ export function Ask({ language, strings, onSubmit, busy, error }: Props) {
               aria-pressed={category === t.category}
               className="rounded-lg border px-3 py-3 text-left text-sm transition-colors"
               style={{
-                borderColor: category === t.category ? 'var(--accent)' : 'var(--hairline)',
+                borderColor: category === t.category ? 'var(--primary)' : 'var(--border)',
                 background:
                   category === t.category
-                    ? 'color-mix(in srgb, var(--accent) 8%, var(--surface-1))'
-                    : 'var(--surface-1)',
+                    ? 'color-mix(in srgb, var(--primary) 8%, var(--card))'
+                    : 'var(--card)',
               }}
             >
-              <span className="block font-medium text-ink">
+              <span className="block font-medium text-foreground">
                 {language === 'hi' && t.name_hi ? t.name_hi : t.name}
               </span>
-              <span className="tabular block text-xs text-ink-muted">
+              <span className="tabular block text-xs text-subtle-foreground">
                 {inr(t.required_capital)}
               </span>
             </button>
@@ -111,14 +111,14 @@ export function Ask({ language, strings, onSubmit, busy, error }: Props) {
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label htmlFor="social" className="block text-sm font-medium text-ink-2">
+          <label htmlFor="social" className="block text-sm font-medium text-muted-foreground">
             {strings.social}
           </label>
           <select
             id="social"
             value={social}
             onChange={(e) => setSocial(e.target.value)}
-            className="mt-1.5 w-full rounded-lg border border-hairline bg-surface px-4 py-3 text-base text-ink outline-none focus:border-accent"
+            className="mt-1.5 w-full rounded-lg border border-border bg-card px-4 py-3 text-base text-foreground outline-none focus:border-primary"
           >
             {SOCIAL_CATEGORIES.map((c) => (
               <option key={c.value} value={c.value}>
@@ -129,7 +129,7 @@ export function Ask({ language, strings, onSubmit, busy, error }: Props) {
         </div>
 
         <div>
-          <label htmlFor="income" className="block text-sm font-medium text-ink-2">
+          <label htmlFor="income" className="block text-sm font-medium text-muted-foreground">
             {strings.income}
           </label>
           <input
@@ -137,14 +137,14 @@ export function Ask({ language, strings, onSubmit, busy, error }: Props) {
             inputMode="numeric"
             value={income}
             onChange={(e) => setIncome(e.target.value)}
-            className="tabular mt-1.5 w-full rounded-lg border border-hairline bg-surface px-4 py-3 text-base text-ink outline-none focus:border-accent"
+            className="tabular mt-1.5 w-full rounded-lg border border-border bg-card px-4 py-3 text-base text-foreground outline-none focus:border-primary"
           />
         </div>
       </div>
 
       <div>
-        <label htmlFor="radius" className="block text-sm font-medium text-ink-2">
-          {strings.radius} <span className="tabular text-ink-muted">{radius} km</span>
+        <label htmlFor="radius" className="block text-sm font-medium text-muted-foreground">
+          {strings.radius} <span className="tabular text-subtle-foreground">{radius} km</span>
         </label>
         <input
           id="radius"
@@ -154,7 +154,7 @@ export function Ask({ language, strings, onSubmit, busy, error }: Props) {
           step={1}
           value={radius}
           onChange={(e) => setRadius(Number(e.target.value))}
-          className="mt-2 w-full accent-[var(--accent)]"
+          className="mt-2 w-full accent-[var(--primary)]"
         />
       </div>
 
@@ -168,8 +168,8 @@ export function Ask({ language, strings, onSubmit, busy, error }: Props) {
           role="alert"
           className="rounded-lg px-4 py-3 text-sm"
           style={{
-            background: 'color-mix(in srgb, var(--status-critical) 12%, transparent)',
-            color: 'var(--text-primary)',
+            background: 'color-mix(in srgb, var(--destructive) 12%, transparent)',
+            color: 'var(--foreground)',
           }}
         >
           {error}
@@ -179,8 +179,8 @@ export function Ask({ language, strings, onSubmit, busy, error }: Props) {
       <button
         type="submit"
         disabled={!ready}
-        className="w-full rounded-lg px-4 py-4 text-base font-semibold text-white transition-opacity disabled:opacity-40"
-        style={{ background: 'var(--accent)' }}
+        className="w-full rounded-lg px-4 py-4 text-base font-semibold text-primary-foreground transition-opacity disabled:opacity-40"
+        style={{ background: 'var(--primary)' }}
       >
         {busy ? strings.working : strings.submit}
       </button>
@@ -198,12 +198,12 @@ function Checkbox({
   label: string
 }) {
   return (
-    <label className="inline-flex items-center gap-2 text-sm text-ink-2">
+    <label className="inline-flex items-center gap-2 text-sm text-muted-foreground">
       <input
         type="checkbox"
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
-        className="size-4 accent-[var(--accent)]"
+        className="size-4 accent-[var(--primary)]"
       />
       {label}
     </label>

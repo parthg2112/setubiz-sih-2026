@@ -70,7 +70,7 @@ setubiz templates                # NABARD-style unit economics
 | **Estimation** (`setubiz/feasibility`) | v0 deterministic. Competitor density from EC13 block z-scores floored by observed OSM POIs; demand from HCES-shaped shares as a band; seasonality from mandi arrivals; SWOT from a YAML rule library. Every estimate is a **band with a stated method**, never a bare number. |
 | **Facts contract** (`setubiz/facts`) | Complete. One frozen object holds every quotable figure plus a `provenance` map from figure → source. Tested: no indexed number may exist without a registered source. |
 | **Language** (`setubiz/narration`) | Three lanes, tried in order: cloud LLM, local Llama 3.1 8B via llama.cpp, template. The template lane (Jinja, en + hi) is the default and needs nothing. Every lane paraphrases the deterministic draft and is checked by the numeric-grounding validator. |
-| **API / CLI / PWA** | FastAPI at `/api/v1`, a Typer CLI, and a React + Vite + Tailwind app with the red-vs-green hero, DSCR and seasonality charts, quarterly schedule, bilingual toggle, and a provenance panel. |
+| **API / CLI / PWA** | FastAPI at `/api/v1`, a Typer CLI, and a React + Vite + Tailwind app: red-vs-green hero, DSCR and seasonality charts, quarterly schedule, sticky contents rail with scroll-spy on desktop, bilingual and light/dark toggles, and a provenance panel. |
 
 ## Offline narration lane (Llama 3.1 8B)
 
@@ -171,5 +171,12 @@ backend/setubiz/
 frontend/src/   pages/{Ask,Report} · components/*                        React + Vite + Tailwind
 ```
 
-Charts are hand-rolled SVG against a CVD-validated palette — no charting dependency, 58 KB gzipped
-total, which matters on a rural connection.
+Charts are hand-rolled SVG against a CVD-validated palette — no charting dependency, 60 KB gzipped
+JS plus 6 KB CSS, which matters on a rural connection. Open Sans and Noto Sans Devanagari are
+self-hosted per subset, so nothing is fetched from a CDN and an English session never downloads
+the ~100 KB of Devanagari faces.
+
+The report is laid out for two audiences at once: a sticky contents rail with scroll-spy, the
+recommended loan and the binding constraint pinned beside it on desktop; the same nav as a
+scrolling chip row on a phone; and a print stylesheet that re-stamps the light palette, so a
+dark-mode viewer's PDF is black on white rather than pale grey on white.

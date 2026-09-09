@@ -48,11 +48,11 @@ export function VillagePicker({ value, onChange, state, language, strings }: Pro
   if (value) {
     return (
       <div>
-        <label className="block text-sm font-medium text-ink-2">{strings.village}</label>
-        <div className="mt-1.5 flex items-center justify-between gap-3 rounded-lg border border-hairline bg-surface px-4 py-3">
-          <span className="text-base font-medium text-ink">
+        <label className="block text-sm font-medium text-muted-foreground">{strings.village}</label>
+        <div className="mt-1.5 flex items-center justify-between gap-3 rounded-lg border border-border bg-card px-4 py-3">
+          <span className="text-base font-medium text-foreground">
             {language === 'hi' && value.name_hi ? value.name_hi : value.name}
-            <span className="ml-2 text-sm font-normal text-ink-2">
+            <span className="ml-2 text-sm font-normal text-muted-foreground">
               {value.block} · {value.district}
             </span>
           </span>
@@ -62,7 +62,7 @@ export function VillagePicker({ value, onChange, state, language, strings }: Pro
               onChange(null)
               setQuery('')
             }}
-            className="shrink-0 text-sm font-medium text-accent underline underline-offset-2"
+            className="shrink-0 text-sm font-medium text-primary underline underline-offset-2"
           >
             {language === 'en' ? 'Change' : 'बदलें'}
           </button>
@@ -73,7 +73,7 @@ export function VillagePicker({ value, onChange, state, language, strings }: Pro
 
   return (
     <div>
-      <label htmlFor="village" className="block text-sm font-medium text-ink-2">
+      <label htmlFor="village" className="block text-sm font-medium text-muted-foreground">
         {strings.village}
       </label>
       <div className="mt-1.5 flex gap-2">
@@ -83,34 +83,34 @@ export function VillagePicker({ value, onChange, state, language, strings }: Pro
           onChange={(e) => setQuery(e.target.value)}
           placeholder={strings.villagePlaceholder}
           autoComplete="off"
-          className="min-w-0 flex-1 rounded-lg border border-hairline bg-surface px-4 py-3 text-base text-ink outline-none focus:border-accent"
+          className="min-w-0 flex-1 rounded-lg border border-border bg-card px-4 py-3 text-base text-foreground outline-none focus:border-primary"
         />
         <MicButton onResult={setQuery} language={language} strings={strings} />
       </div>
 
-      {searching && <p className="mt-2 text-xs text-ink-muted">…</p>}
+      {searching && <p className="mt-2 text-xs text-subtle-foreground">…</p>}
 
       {matches.length > 0 && (
         <div className="mt-2">
-          <p className="mb-1.5 text-xs text-ink-muted">{strings.confirm}</p>
+          <p className="mb-1.5 text-xs text-subtle-foreground">{strings.confirm}</p>
           <ul className="space-y-1.5">
             {matches.map((m) => (
               <li key={m.shrid}>
                 <button
                   type="button"
                   onClick={() => onChange(m)}
-                  className="flex w-full items-center justify-between gap-3 rounded-lg border border-hairline bg-surface px-4 py-3 text-left hover:border-accent"
+                  className="flex w-full items-center justify-between gap-3 rounded-lg border border-border bg-card px-4 py-3 text-left hover:border-primary"
                 >
                   <span>
-                    <span className="text-base font-medium text-ink">
+                    <span className="text-base font-medium text-foreground">
                       {m.name}
-                      {m.name_hi && <span className="ml-2 text-ink-2">{m.name_hi}</span>}
+                      {m.name_hi && <span className="ml-2 text-muted-foreground">{m.name_hi}</span>}
                     </span>
-                    <span className="block text-xs text-ink-2">
+                    <span className="block text-xs text-muted-foreground">
                       {m.block} · {m.district} · {m.reason}
                     </span>
                   </span>
-                  <span className="tabular shrink-0 text-xs text-ink-muted">
+                  <span className="tabular shrink-0 text-xs text-subtle-foreground">
                     {Math.round(m.score * 100)}%
                   </span>
                 </button>
@@ -121,7 +121,7 @@ export function VillagePicker({ value, onChange, state, language, strings }: Pro
       )}
 
       {!searching && query.trim() && matches.length === 0 && (
-        <p className="mt-2 text-xs text-ink-2">
+        <p className="mt-2 text-xs text-muted-foreground">
           {language === 'en'
             ? 'No village matched. Try another spelling.'
             : 'कोई गाँव नहीं मिला। दूसरी वर्तनी आज़माएँ।'}

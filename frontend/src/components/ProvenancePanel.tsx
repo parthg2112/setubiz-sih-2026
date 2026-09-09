@@ -32,19 +32,20 @@ export function ProvenancePanel({ facts, open, onClose, language, closeLabel }: 
         type="button"
         aria-label={closeLabel}
         onClick={onClose}
-        className="absolute inset-0 bg-black/40"
+        className="absolute inset-0"
+        style={{ background: 'var(--scrim)' }}
       />
       <aside
-        className="relative flex h-full w-full max-w-xl flex-col bg-surface shadow-2xl"
+        className="relative flex h-full w-full max-w-xl flex-col border-l border-border bg-card shadow-2xl"
         role="dialog"
         aria-modal="true"
       >
-        <header className="flex items-start justify-between gap-4 border-b border-hairline p-4">
+        <header className="flex items-start justify-between gap-4 border-b border-border p-4">
           <div>
-            <h2 className="text-lg font-semibold text-ink">
+            <h2 className="text-lg font-semibold text-foreground">
               {language === 'en' ? 'Data provenance' : 'आँकड़ों का स्रोत'}
             </h2>
-            <p className="mt-0.5 text-xs text-ink-2">
+            <p className="mt-0.5 text-xs text-muted-foreground">
               {entries.length}{' '}
               {language === 'en'
                 ? 'computed figures. Nothing here was written by a language model.'
@@ -54,18 +55,18 @@ export function ProvenancePanel({ facts, open, onClose, language, closeLabel }: 
           <button
             type="button"
             onClick={onClose}
-            className="rounded-md border border-hairline px-3 py-1.5 text-sm text-ink-2 hover:text-ink"
+            className="rounded-md border border-border px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground"
           >
             {closeLabel}
           </button>
         </header>
 
-        <div className="border-b border-hairline p-4">
+        <div className="border-b border-border p-4">
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={language === 'en' ? 'Filter by name or value…' : 'नाम या मान से खोजें…'}
-            className="w-full rounded-lg border border-hairline bg-page px-3 py-2 text-sm text-ink outline-none focus:border-accent"
+            className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
           />
         </div>
 
@@ -73,10 +74,10 @@ export function ProvenancePanel({ facts, open, onClose, language, closeLabel }: 
           <table className="w-full border-collapse text-sm">
             <tbody>
               {entries.map(([key, value]) => (
-                <tr key={key} className="border-b border-hairline align-top">
+                <tr key={key} className="border-b border-border align-top">
                   <td className="w-1/2 px-4 py-2">
-                    <code className="text-xs text-ink-2">{key}</code>
-                    <div className="tabular font-medium text-ink">{value}</div>
+                    <code className="text-xs text-muted-foreground">{key}</code>
+                    <div className="tabular font-medium text-foreground">{value}</div>
                   </td>
                   <td className="px-4 py-2">
                     <ul className="space-y-1">
@@ -90,20 +91,20 @@ export function ProvenancePanel({ facts, open, onClose, language, closeLabel }: 
                                 href={source.url}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="text-accent underline underline-offset-2"
+                                className="text-primary underline underline-offset-2"
                               >
                                 {source.title}
                               </a>
                             ) : (
-                              <span className="text-ink-2">{source.title}</span>
+                              <span className="text-muted-foreground">{source.title}</span>
                             )}
                             {source.synthetic && (
                               <span
                                 className="ml-1.5 rounded px-1 py-px text-[10px] font-medium"
                                 style={{
                                   background:
-                                    'color-mix(in srgb, var(--status-warning) 25%, transparent)',
-                                  color: 'var(--text-primary)',
+                                    'color-mix(in srgb, var(--warning) 25%, transparent)',
+                                  color: 'var(--foreground)',
                                 }}
                               >
                                 {language === 'en' ? 'sample' : 'नमूना'}

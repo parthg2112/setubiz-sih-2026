@@ -173,7 +173,8 @@ ask for. Not built: PostgreSQL/PostGIS/pgvector · MapLibre · Celery · WeasyPr
 LightGBM · ONNX Runtime. llama.cpp is now wired but unexercised.
 
 Charts are hand-rolled SVG against a CVD-validated palette rather than a charting library, which
-keeps the bundle at 58 KB gzipped. That matters on a rural connection.
+keeps the bundle at 60 KB gzipped JS and 6 KB CSS. Fonts are self-hosted per subset, so the app
+still needs no network. That matters on a rural connection.
 
 ---
 

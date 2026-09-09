@@ -4,10 +4,10 @@ interface Props {
 }
 
 const TONE: Record<string, string> = {
-  strength: 'var(--status-good)',
-  weakness: 'var(--status-warning)',
-  opportunity: 'var(--series-1)',
-  threat: 'var(--status-critical)',
+  strength: 'var(--success)',
+  weakness: 'var(--warning)',
+  opportunity: 'var(--chart-1)',
+  threat: 'var(--destructive)',
 }
 
 const ICON: Record<string, string> = {
@@ -27,12 +27,12 @@ export function SwotGrid({ quadrants, labels }: Props) {
         return (
           <section
             key={key}
-            className="print-block rounded-lg border border-hairline bg-surface p-4"
+            className="print-block rounded-lg border border-border bg-card p-4"
           >
-            <h4 className="flex items-center gap-2 text-sm font-semibold text-ink">
+            <h4 className="flex items-center gap-2 text-sm font-semibold text-foreground">
               <span
                 aria-hidden
-                className="grid size-5 place-items-center rounded text-[11px] font-bold text-white"
+                className="grid size-5 place-items-center rounded text-[11px] font-bold text-primary-foreground"
                 style={{ background: TONE[key] }}
               >
                 {ICON[key]}
@@ -41,7 +41,7 @@ export function SwotGrid({ quadrants, labels }: Props) {
             </h4>
             <ul className="mt-2 space-y-2">
               {items.map((text, i) => (
-                <li key={i} className="text-sm leading-relaxed text-ink-2">
+                <li key={i} className="text-sm leading-relaxed text-muted-foreground">
                   {text}
                 </li>
               ))}

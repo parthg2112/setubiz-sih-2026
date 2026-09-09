@@ -1,5 +1,6 @@
 import { useId, useState } from 'react'
 import { ratio } from '../format'
+import { SERIES } from '../theme'
 import type { DscrYear, StressScenario } from '../types'
 
 interface Props {
@@ -10,7 +11,7 @@ interface Props {
   language: 'en' | 'hi'
 }
 
-const SERIES = ['var(--series-1)', 'var(--series-2)', 'var(--series-3)'] as const
+
 const PAD = { top: 16, right: 16, bottom: 28, left: 40 }
 const W = 560
 const H = 240
@@ -49,7 +50,7 @@ export function DscrChart({ base, scenarios, threshold, stressFloor, language }:
 
   return (
     <figure className="print-block m-0">
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto max-w-[760px]">
         <svg
           viewBox={`0 0 ${W} ${H}`}
           className="h-auto w-full min-w-[420px]"
@@ -75,7 +76,7 @@ export function DscrChart({ base, scenarios, threshold, stressFloor, language }:
                 x2={W - PAD.right}
                 y1={y(t)}
                 y2={y(t)}
-                stroke="var(--gridline)"
+                stroke="var(--border)"
                 strokeWidth={1}
               />
               <text
@@ -83,7 +84,7 @@ export function DscrChart({ base, scenarios, threshold, stressFloor, language }:
                 y={y(t) + 4}
                 textAnchor="end"
                 className="tabular"
-                fill="var(--text-muted)"
+                fill="var(--subtle-foreground)"
                 fontSize={11}
               >
                 {t}
@@ -122,7 +123,7 @@ export function DscrChart({ base, scenarios, threshold, stressFloor, language }:
                     cy={y(v)}
                     r={hover === years[idx] ? 5.5 : 4}
                     fill={SERIES[i]}
-                    stroke="var(--surface-1)"
+                    stroke="var(--card)"
                     strokeWidth={2}
                   />
                 ))}
@@ -137,7 +138,7 @@ export function DscrChart({ base, scenarios, threshold, stressFloor, language }:
                 y={H - 8}
                 textAnchor="middle"
                 className="tabular"
-                fill="var(--text-muted)"
+                fill="var(--subtle-foreground)"
                 fontSize={11}
               >
                 {language === 'en' ? `Y${year}` : `व${year}`}
@@ -148,7 +149,7 @@ export function DscrChart({ base, scenarios, threshold, stressFloor, language }:
                   x2={x(year)}
                   y1={PAD.top}
                   y2={H - PAD.bottom}
-                  stroke="var(--baseline)"
+                  stroke="var(--chart-axis)"
                   strokeWidth={1}
                 />
               )}
@@ -169,7 +170,7 @@ export function DscrChart({ base, scenarios, threshold, stressFloor, language }:
         </svg>
       </div>
 
-      <figcaption className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-ink-2">
+      <figcaption className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
         {series.map((s, i) => {
           const worst = Math.min(...s.points)
           return (
@@ -181,12 +182,12 @@ export function DscrChart({ base, scenarios, threshold, stressFloor, language }:
               />
               {s.label}
               {hover !== null ? (
-                <span className="tabular font-medium text-ink">
+                <span className="tabular font-medium text-foreground">
                   {ratio(s.points[years.indexOf(hover)] ?? 0)}
                 </span>
               ) : (
                 worst <= 0 && (
-                  <span className="font-medium" style={{ color: 'var(--status-critical)' }}>
+                  <span className="font-medium" style={{ color: 'var(--destructive)' }}>
                     {language === 'en' ? 'no surplus to service debt' : 'चुकाने योग्य अधिशेष नहीं'}
                   </span>
                 )
@@ -207,11 +208,11 @@ function ReferenceRule({ y, label, dim }: { y: number; label: string; dim?: bool
         x2={W - PAD.right}
         y1={y}
         y2={y}
-        stroke="var(--baseline)"
+        stroke="var(--chart-axis)"
         strokeWidth={1}
         strokeDasharray={dim ? '2 4' : '5 4'}
       />
-      <text x={W - PAD.right} y={y - 5} textAnchor="end" fill="var(--text-muted)" fontSize={10}>
+      <text x={W - PAD.right} y={y - 5} textAnchor="end" fill="var(--subtle-foreground)" fontSize={10}>
         {label}
       </text>
     </g>

@@ -31,8 +31,8 @@ export function ScheduleTable({
   return (
     <div className="print-block">
       <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
-        <h4 className="text-sm font-semibold text-ink">{strings.schedule}</h4>
-        <p className="text-xs text-ink-2">
+        <h4 className="text-sm font-semibold text-foreground">{strings.schedule}</h4>
+        <p className="text-xs text-muted-foreground">
           {language === 'en' ? 'Moratorium interest: ' : 'अधिस्थगन ब्याज: '}
           <strong className="font-medium">
             {mode === 'serviced'
@@ -54,10 +54,10 @@ export function ScheduleTable({
         </p>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-hairline">
+      <div className="overflow-x-auto rounded-lg border border-border">
         <table className="w-full min-w-[560px] border-collapse text-right text-sm">
           <thead>
-            <tr className="border-b border-hairline text-xs text-ink-muted">
+            <tr className="border-b border-border text-xs text-subtle-foreground">
               {HEAD[language].map((h, i) => (
                 <th key={h} className={`px-3 py-2 font-medium ${i === 0 ? 'text-left' : ''}`}>
                   {h}
@@ -69,26 +69,26 @@ export function ScheduleTable({
             {shown.map((row) => (
               <tr
                 key={row.quarter}
-                className="border-b border-hairline last:border-0"
+                className="border-b border-border last:border-0"
                 style={
                   row.phase === 'moratorium'
-                    ? { background: 'color-mix(in srgb, var(--series-2) 8%, transparent)' }
+                    ? { background: 'color-mix(in srgb, var(--chart-2) 8%, transparent)' }
                     : undefined
                 }
               >
-                <td className="px-3 py-1.5 text-left text-ink-2">
+                <td className="px-3 py-1.5 text-left text-muted-foreground">
                   {row.quarter}
                   {row.phase === 'moratorium' && (
-                    <span className="ml-1 text-[10px] uppercase tracking-wide text-ink-muted">
+                    <span className="ml-1 text-[10px] uppercase tracking-wide text-subtle-foreground">
                       {language === 'en' ? 'mor.' : 'अधि.'}
                     </span>
                   )}
                 </td>
-                <td className="px-3 py-1.5 text-ink-2">{inr(row.opening)}</td>
-                <td className="px-3 py-1.5 text-ink-2">{inr(row.interest)}</td>
-                <td className="px-3 py-1.5 text-ink-2">{inr(row.principal)}</td>
-                <td className="px-3 py-1.5 font-medium text-ink">{inr(row.instalment)}</td>
-                <td className="px-3 py-1.5 text-ink-2">{inr(row.closing)}</td>
+                <td className="px-3 py-1.5 text-muted-foreground">{inr(row.opening)}</td>
+                <td className="px-3 py-1.5 text-muted-foreground">{inr(row.interest)}</td>
+                <td className="px-3 py-1.5 text-muted-foreground">{inr(row.principal)}</td>
+                <td className="px-3 py-1.5 font-medium text-foreground">{inr(row.instalment)}</td>
+                <td className="px-3 py-1.5 text-muted-foreground">{inr(row.closing)}</td>
               </tr>
             ))}
           </tbody>
@@ -99,7 +99,7 @@ export function ScheduleTable({
         <button
           type="button"
           onClick={() => setExpanded((v) => !v)}
-          className="no-print mt-2 text-sm font-medium text-accent underline underline-offset-2"
+          className="no-print mt-2 text-sm font-medium text-primary underline underline-offset-2"
         >
           {expanded ? strings.hideSchedule : `${strings.showSchedule} (${rows.length})`}
         </button>

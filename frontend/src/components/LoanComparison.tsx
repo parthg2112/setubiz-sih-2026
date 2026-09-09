@@ -37,7 +37,7 @@ export function LoanComparison({
   const bindingLabel = BINDING_LABEL[binding]?.[language] ?? binding
 
   return (
-    <section className="print-block rounded-xl border border-hairline bg-surface p-5 sm:p-6">
+    <section className="print-block rounded-xl border border-border bg-card p-5 sm:p-6">
       <div className="grid gap-5 sm:grid-cols-2">
         <Figure
           tone="critical"
@@ -59,7 +59,7 @@ export function LoanComparison({
         />
       </div>
 
-      <dl className="mt-5 grid gap-x-6 gap-y-2 border-t border-hairline pt-4 text-sm sm:grid-cols-3">
+      <dl className="mt-5 grid gap-x-6 gap-y-2 border-t border-border pt-4 text-sm sm:grid-cols-3">
         <Stat label={strings.difference} value={inr(headroom)} emphasis />
         <Stat
           label={language === 'en' ? 'The unit actually costs' : 'इकाई की वास्तविक लागत'}
@@ -91,30 +91,30 @@ function Figure({
   footnote: string
   failing: boolean
 }) {
-  const color = tone === 'critical' ? 'var(--status-critical)' : 'var(--status-good)'
+  const color = tone === 'critical' ? 'var(--destructive)' : 'var(--success)'
   return (
     <div>
-      <div className="flex items-center gap-2 text-sm font-medium text-ink-2">
+      <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
         <span
           aria-hidden
-          className="grid size-5 shrink-0 place-items-center rounded-full text-[11px] font-bold text-white"
+          className="grid size-5 shrink-0 place-items-center rounded-full text-[11px] font-bold text-primary-foreground"
           style={{ background: color }}
         >
           {icon}
         </span>
         {label}
       </div>
-      <p className="mt-1 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+      <p className="mt-1 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
         {inr(amount)}
       </p>
       {/* 4px rounded data-end, anchored to a baseline that both bars share. */}
-      <div className="mt-2 h-3 w-full overflow-hidden rounded-sm bg-gridline">
+      <div className="mt-2 h-3 w-full overflow-hidden rounded-sm bg-muted">
         <div
           className="h-full rounded-r-[4px]"
           style={{ width: `${Math.max(widthPct, 1.5)}%`, background: color }}
         />
       </div>
-      <p className={`mt-2 text-xs ${failing ? 'font-medium' : ''} text-ink-2 tabular`}>
+      <p className={`mt-2 text-xs ${failing ? 'font-medium' : ''} text-muted-foreground tabular`}>
         {failing && (
           <span aria-hidden className="mr-1" style={{ color }}>
             ▲
@@ -129,8 +129,8 @@ function Figure({
 function Stat({ label, value, emphasis }: { label: string; value: string; emphasis?: boolean }) {
   return (
     <div>
-      <dt className="text-xs text-ink-muted">{label}</dt>
-      <dd className={`tabular ${emphasis ? 'text-lg font-semibold' : 'text-base'} text-ink`}>
+      <dt className="text-xs text-subtle-foreground">{label}</dt>
+      <dd className={`tabular ${emphasis ? 'text-lg font-semibold' : 'text-base'} text-foreground`}>
         {value}
       </dd>
     </div>

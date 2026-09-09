@@ -3,12 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#fcfcfb" />
+    <meta name="theme-color" content="#ffffff" />
     <meta
       name="description"
-      content="SetuBiz — hyper-local business advisory and financial structuring for rural micro-entrepreneurs."
+      content="SetuBiz: hyper-local business advisory and financial structuring for rural micro-entrepreneurs."
     />
     <title>SetuBiz</title>
+    <script>
+      // Stamp the theme before first paint, or the page flashes light before React mounts.
+      try {
+        var c = localStorage.getItem('setubiz-theme')
+        var dark =
+          c === 'dark' ||
+          (c !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+        document.documentElement.classList.toggle('dark', dark)
+        document
+          .querySelector('meta[name="theme-color"]')
+          .setAttribute('content', dark ? '#000000' : '#ffffff')
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

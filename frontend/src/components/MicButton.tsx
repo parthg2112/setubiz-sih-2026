@@ -61,7 +61,7 @@ export function MicButton({ onResult, language, strings }: Props) {
 
   if (!supported) {
     return (
-      <p className="mt-1 text-xs text-ink-muted" role="status">
+      <p className="mt-1 text-xs text-subtle-foreground" role="status">
         {strings.micUnsupported}
       </p>
     )
@@ -74,8 +74,8 @@ export function MicButton({ onResult, language, strings }: Props) {
       aria-pressed={listening}
       className="no-print inline-flex shrink-0 items-center gap-2 rounded-lg border px-3 py-3 text-sm font-medium transition-colors"
       style={{
-        borderColor: listening ? 'var(--status-critical)' : 'var(--hairline)',
-        color: listening ? 'var(--status-critical)' : 'var(--text-secondary)',
+        borderColor: listening ? 'var(--destructive)' : 'var(--border)',
+        color: listening ? 'var(--destructive)' : 'var(--muted-foreground)',
       }}
     >
       <span aria-hidden>{listening ? '●' : '🎙'}</span>
