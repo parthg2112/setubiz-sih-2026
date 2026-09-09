@@ -59,6 +59,22 @@ setubiz templates                # NABARD-style unit economics
 
 `make demo` boots the whole thing under Docker Compose.
 
+### Deploying to Vercel
+
+One project serves both halves: the Vite build is the static output, and `api/index.py` runs the
+FastAPI app as a Python function. There are no secrets to set, because the LLM lanes are off by
+default and the sample data is committed.
+
+```bash
+npx vercel login
+npx vercel        # preview
+npx vercel --prod
+```
+
+Smoke-test the function before trusting the UI: `curl https://<deployment>/api/v1/cost-templates`
+should return five templates. `/docs` and `/healthz` are not routed in this deployment; the SPA
+owns everything outside `/api`.
+
 ---
 
 ## What is built

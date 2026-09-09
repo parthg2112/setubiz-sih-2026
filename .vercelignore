@@ -1,0 +1,12 @@
+.venv
+node_modules
+frontend/dist
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.ruff_cache
+htmlcov
+.coverage
+backend/tests
+docs
+PLAN.md
