@@ -18,3 +18,7 @@ facts.json
 .DS_Store
 
 frontend/tsconfig.tsbuildinfo
+
+# ETL inputs — multi-GB SHRUG/census extracts, never committed
+datasets/
+etl/.cache/

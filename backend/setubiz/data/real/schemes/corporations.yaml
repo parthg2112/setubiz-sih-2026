@@ -1,0 +1,91 @@
+# Apex corporations under MoSJE that on-lend through State Channelizing Agencies (SCAs).
+# Figures verified against the official portals; see PLAN.md §0.1-0.2.
+
+corporations:
+  - id: nsfdc
+    name: National Scheduled Castes Finance and Development Corporation
+    name_hi: राष्ट्रीय अनुसूचित जाति वित्त एवं विकास निगम
+    social_categories: [sc]
+    income_ceiling: 500000
+    income_ceiling_note: >-
+      Family income ceiling raised to ₹5.00 lakh per annum w.e.f. 07-01-2026 (PIB).
+    max_loan: 4500000
+    finance_share: 0.90
+    portal: https://nsfdc.nic.in/
+    source: https://www.dosje.gov.in/schemes-and-services/micro-finance-scheme/
+
+  - id: nskfdc
+    name: National Safai Karamcharis Finance and Development Corporation
+    name_hi: राष्ट्रीय सफाई कर्मचारी वित्त एवं विकास निगम
+    social_categories: [safai_karamchari]
+    income_ceiling: null
+    income_ceiling_note: No income ceiling applies to safai karamcharis and their dependants.
+    max_loan: 1500000
+    finance_share: 0.90
+    portal: https://nskfdc.nic.in/
+    source: https://nskfdc.nic.in/en/schemes
+
+  - id: nbcfdc
+    name: National Backward Classes Finance and Development Corporation
+    name_hi: राष्ट्रीय पिछड़ा वर्ग वित्त एवं विकास निगम
+    social_categories: [obc, ebc]
+    income_ceiling: 300000
+    income_ceiling_note: Annual family income ceiling of ₹3.00 lakh.
+    max_loan: 1500000
+    finance_share: 0.85
+    portal: https://nbcfdc.gov.in/
+    source: https://nbcfdc.gov.in/scheme/
+
+logics:
+  - id: nsfdc_micro_finance
+    corporation: nsfdc
+    name: Micro Finance Scheme
+    name_hi: सूक्ष्म वित्त योजना
+    project_cost_max: 140000
+    loan_cap: 125000
+    beneficiary_rate: 0.065
+    sca_rate: 0.025
+    tenure_years: 3
+    moratorium_months: 3
+    instalment_frequency: quarterly
+    source: https://www.dosje.gov.in/schemes-and-services/micro-finance-scheme/
+
+  - id: nsfdc_term_loan
+    corporation: nsfdc
+    name: Term Loan Scheme
+    name_hi: सावधि ऋण योजना
+    project_cost_max: 5000000
+    loan_cap: 4500000
+    beneficiary_rate: 0.080
+    sca_rate: 0.040
+    tenure_years: 7
+    moratorium_months: 6
+    moratorium_months_plantation: 12
+    instalment_frequency: quarterly
+    source: https://www.dosje.gov.in/schemes-and-services/2998/
+
+documents:
+  common:
+    - {en: Aadhaar card, hi: आधार कार्ड}
+    - {en: Caste certificate issued by the competent authority, hi: सक्षम प्राधिकारी द्वारा जारी जाति प्रमाण पत्र}
+    - {en: Annual family income certificate, hi: वार्षिक पारिवारिक आय प्रमाण पत्र}
+    - {en: Residence proof / domicile certificate, hi: निवास प्रमाण पत्र}
+    - {en: Passport-size photographs (4), hi: पासपोर्ट आकार की तस्वीरें (4)}
+    - {en: Bank account passbook (first page), hi: बैंक पासबुक (पहला पृष्ठ)}
+    - {en: Project report / unit cost estimate, hi: परियोजना रिपोर्ट}
+    - {en: Quotation for machinery or livestock to be purchased, hi: मशीनरी/पशु का कोटेशन}
+  by_corporation:
+    nskfdc:
+      - {en: Safai karamchari occupation certificate or dependant proof, hi: सफाई कर्मचारी व्यवसाय प्रमाण पत्र}
+    nbcfdc:
+      - {en: OBC/EBC certificate with non-creamy-layer declaration, hi: ओबीसी/ईबीसी प्रमाण पत्र}
+  by_activity:
+    dairy:
+      - {en: Cattle purchase quotation and veterinary fitness certificate, hi: पशु क्रय कोटेशन एवं पशु चिकित्सा प्रमाण पत्र}
+      - {en: Proof of land or shed availability, hi: भूमि/शेड उपलब्धता प्रमाण}
+    kirana:
+      - {en: Shop rent agreement or ownership proof, hi: दुकान किराया अनुबंध}
+      - {en: Trade licence from the gram panchayat, hi: ग्राम पंचायत व्यापार लाइसेंस}
+    flour_mill:
+      - {en: Electricity load sanction letter, hi: बिजली भार स्वीकृति पत्र}
+      - {en: Gram panchayat NOC for the premises, hi: ग्राम पंचायत अनापत्ति प्रमाण पत्र}

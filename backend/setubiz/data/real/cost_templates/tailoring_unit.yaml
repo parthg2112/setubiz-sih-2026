@@ -1,0 +1,25 @@
+id: tailoring_unit
+name: Tailoring unit with 2 machines
+name_hi: सिलाई इकाई, 2 मशीन
+category: tailoring
+unit: 2 sewing machines, 1 operator + 1 helper
+activity_kind: general
+source: "NABARD Model Bankable Project: Rural Tailoring / MoSJE skill-linked micro unit norms"
+fixed_capital:
+  - {item: 2 sewing machines with motor, item_hi: 2 सिलाई मशीन, amount: 34000}
+  - {item: Overlock / interlock machine, item_hi: ओवरलॉक मशीन, amount: 22000}
+  - {item: Cutting table, chairs, storage rack, item_hi: कटिंग टेबल एवं फर्नीचर, amount: 14000}
+  - {item: Shop fit-out, wiring and signage, item_hi: दुकान सज्जा एवं वायरिंग, amount: 18000}
+  - {item: Iron, scissors, tools, item_hi: प्रेस एवं औजार, amount: 7000}
+working_capital_months: 2
+monthly_revenue:
+  - {item: "Stitching charges, 220 pieces @ ₹180", item_hi: सिलाई शुल्क, amount: 39600}
+  - {item: Fall-pico, alteration and repair work, item_hi: फॉल-पिको एवं मरम्मत, amount: 4200}
+monthly_opex:
+  - {item: Cloth, thread, lining and trims, item_hi: कपड़ा एवं धागा, amount: 15600}
+  - {item: Helper wage, item_hi: सहायक मजदूरी, amount: 7000}
+  - {item: Shop rent, item_hi: दुकान किराया, amount: 3000}
+  - {item: Electricity and maintenance, item_hi: बिजली एवं रखरखाव, amount: 1400}
+assumptions:
+  - 220 garments/month at a rural stitching rate; festive months run 40-60% higher.
+  - Owner's own labour is not charged to opex; helper wage is.

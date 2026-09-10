@@ -1,0 +1,69 @@
+# Informational comparison cards. These are NOT eligibility decisions; the engine only
+# surfaces them alongside the routed NSFDC/NSKFDC/NBCFDC verdict (PLAN.md §5).
+
+schemes:
+  - id: pmmy
+    name: Pradhan Mantri MUDRA Yojana (Shishu / Kishore / Tarun)
+    name_hi: प्रधानमंत्री मुद्रा योजना
+    ministry: Ministry of Finance
+    loan_range: [50000, 2000000]
+    collateral_free: true
+    highlights:
+      - Shishu up to ₹50,000; Kishore ₹50,001–₹5 L; Tarun ₹5 L–₹10 L; Tarun Plus to ₹20 L.
+      - Interest rate is set by the lending bank, not by the scheme.
+    when_to_prefer: No caste-category eligibility; useful when the income ceiling is exceeded.
+    portal: https://www.mudra.org.in/
+
+  - id: pmegp
+    name: Prime Minister's Employment Generation Programme
+    name_hi: प्रधानमंत्री रोजगार सृजन कार्यक्रम
+    ministry: Ministry of MSME / KVIC
+    loan_range: [100000, 5000000]
+    collateral_free: false
+    highlights:
+      - Capital subsidy of 25–35% in rural areas for special categories (SC/ST/women/OBC).
+      - Manufacturing projects up to ₹50 L; service units up to ₹20 L.
+    when_to_prefer: Larger units, and where a capital subsidy beats a concessional rate.
+    portal: https://www.kviconline.gov.in/pmegpeportal/
+
+  - id: cgtmse
+    name: Credit Guarantee Fund Trust for Micro and Small Enterprises
+    name_hi: सीजीटीएमएसई ऋण गारंटी
+    ministry: Ministry of MSME
+    loan_range: [100000, 50000000]
+    collateral_free: true
+    highlights:
+      - A guarantee cover, not a loan. It removes the collateral demand from a bank loan.
+    when_to_prefer: When the bank asks for collateral the applicant does not have.
+    portal: https://www.cgtmse.in/
+
+  - id: dri
+    name: Differential Rate of Interest scheme
+    name_hi: विभेदक ब्याज दर योजना
+    ministry: Reserve Bank of India / scheduled banks
+    loan_range: [0, 20000]
+    collateral_free: true
+    highlights:
+      - 4% p.a. fixed rate for the weakest borrowers; strict income ceilings apply.
+    when_to_prefer: Very small top-up needs below ₹20,000.
+    portal: https://www.rbi.org.in/
+
+  - id: stand_up_india
+    name: Stand-Up India
+    name_hi: स्टैंड-अप इंडिया
+    ministry: Department of Financial Services
+    loan_range: [1000000, 10000000]
+    collateral_free: false
+    highlights:
+      - Greenfield enterprise loans of ₹10 L–₹1 Cr for SC/ST and women entrepreneurs.
+    when_to_prefer: Projects that exceed the NSFDC term loan envelope.
+    portal: https://www.standupmitra.in/
+
+handoffs:
+  - id: pm_daksh
+    name: PM-DAKSH skilling portal
+    name_hi: पीएम-दक्ष
+    note: >-
+      Free skill training for SC/OBC/EBC/safai karamchari beneficiaries. Recommended before
+      disbursement where the applicant has no prior experience in the chosen activity.
+    portal: https://pmdaksh.dosje.gov.in/

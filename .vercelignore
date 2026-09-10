@@ -10,3 +10,6 @@ htmlcov
 backend/tests
 docs
 PLAN.md
+
+datasets
+etl

@@ -45,7 +45,7 @@ _SOURCES: tuple[Source, ...] = (
         id="agmarknet_sample",
         title="AGMARKNET mandi arrivals and modal prices",
         kind=SourceKind.MARKET_PRICES,
-        url="https://data.gov.in/resource/9ef84268-d588-465a-a308-a864a43c0075",
+        url="https://data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070",
         synthetic=True,
     ),
     Source(

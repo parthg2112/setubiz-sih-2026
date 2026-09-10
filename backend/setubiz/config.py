@@ -22,6 +22,11 @@ class Settings(BaseSettings):
     competitor_estimator: str = "ec13_zscore"
     demand_estimator: str = "hces_mean_band"
 
+    #: data.gov.in key for the AGMARKNET mandi resource, used by the ETL only — the app never
+    #: calls the network at request time. The portal's documented sample key is rate-limited and
+    #: caps at 10 records, so a personal key from "My Account -> Generate API Key" is required.
+    data_gov_api_key: str | None = None
+
     # --- decision layer ---
     dscr_threshold: Decimal = Decimal("1.5")
     stress_factors: tuple[Decimal, ...] = (Decimal("0.85"), Decimal("0.70"))

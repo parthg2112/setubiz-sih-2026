@@ -17,7 +17,7 @@
 2. **Category-aware routing:** NSFDC (Scheduled Castes; family income ceiling **raised to ₹5 L w.e.f. 2026-01-07** — PIB), NSKFDC (safai karamcharis & dependents; **no income ceiling**), NBCFDC (OBC/EBC; **₹3 L** ceiling, loans to ₹15 L @85%). All via SCAs/RRBs/banks.
 3. **Census 2027 is underway** (Phase 1 house-listing from April 2026) → 2011 village data + intercensal scaling is the story every data-grounded team must tell. Source: <https://www.pib.gov.in/PressNoteDetails.aspx?id=154867>
 4. **SHRUG v2.2** (devdatalab.org/shrug — take v2.2, NOT v1.5; IDs don't match): village polygons + Census PCA/VD + Economic Census 2013 + Mission Antyodaya + night lights, all joined on one `shrid`. Solves village coordinates AND EC13 competitor ground truth.
-5. **AGMARKNET** live API on data.gov.in (resource `9ef84268-d588-465a-a308-a864a43c0075`, 3,000+ mandis, free key) — prices **and arrivals** (arrivals = seasonality signal for Threats).
+5. **AGMARKNET** live API on data.gov.in (resource `9ef84268-d588-465a-a308-a864a43d0070`, 3,000+ mandis, free key) — prices **and arrivals** (arrivals = seasonality signal for Threats).
 6. **LGD** (<https://lgdirectory.gov.in/>, 658k inhabited villages; LGD↔pincode on data.gov.in) — official geo join key alongside shrid.
 7. **Bhashini** (bhashini.gov.in; org registration → ASR/TTS/translation, 22 languages) — cloud fallback for the voice layer.
 8. **SIH judging:** novelty, complexity, clarity, feasibility, practicability, sustainability, scalability + live demo & code walkthrough; evaluators actively penalize "AI-generated slop." Every number must be **computed deterministically, never LLM-generated**.
