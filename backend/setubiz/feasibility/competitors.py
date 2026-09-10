@@ -52,8 +52,8 @@ class Ec13ZScoreEstimator:
         self, centre: Village, reach: MarketReach, category: str, source: DataSource
     ) -> CompetitorEstimate:
         observed = len(source.pois_near(centre.lat, centre.lon, reach.radius_km, category))
-        density = source.block_density(centre.district, centre.block, category)
-        stats = source.district_density_stats(centre.district, category)
+        density = source.block_density(centre.state, centre.district, centre.block, category)
+        stats = source.district_density_stats(centre.state, centre.district, category)
         notes: list[Advisory] = []
 
         if density is None:

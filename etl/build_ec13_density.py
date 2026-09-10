@@ -42,6 +42,7 @@ from common import (
 
 EC13 = DATASETS / "shrug-ec13-csv" / "ec13_shrid.csv"
 EC13_RURAL_KEY = DATASETS / "shrug-ec-keys-csv" / "ec13r_shrid_key.csv"
+NAMES = DATASETS / "shrug-shrid-keys-csv" / "shrid_loc_names.csv"
 ANTYODAYA = DATASETS / "shrug-antyodaya-csv" / "antyodaya_shrid.csv"
 MAPPING = Path(__file__).resolve().parent / "shric_categories.json"
 
@@ -82,6 +83,27 @@ def main() -> None:
     print(f"EC13 density for {len(wanted)} state(s): {sorted(state_name(s) for s in wanted)}")
 
     categories = load_mapping()
+
+    # Block and district names, so the emitted keys match what Village.district / .block carry.
+    # Keys are "State|District|Block": block names repeat across districts and districts repeat
+    # across states, so a bare name is ambiguous the moment more than one state ships.
+    block_name: dict[str, str] = {}
+    district_name: dict[str, str] = {}
+    for n, row in enumerate(read_csv(NAMES, ["shrid2", "state_name", "district_name",
+                                             "subdistrict_name"]), 1):
+        progress("loc names", n)
+        shrid = row["shrid2"].strip()
+        if shrid.split("-")[1] not in wanted:
+            continue
+        bk, dk = block_key(shrid), district_key(shrid)
+        st = (row["state_name"] or "").strip().title()
+        di = (row["district_name"] or "").strip().title()
+        sd = (row["subdistrict_name"] or "").strip().title()
+        if bk and st and di and sd:
+            block_name[bk] = f"{st}|{di}|{sd}"
+        if dk and st and di:
+            district_name[dk] = f"{st}|{di}"
+    print(f"  named {len(block_name):,} blocks, {len(district_name):,} districts")
 
     # Rural shrids only — see the module docstring. Antyodaya has no urban rows, so an urban
     # numerator over a rural denominator is a category error, not an outlier to clip.
@@ -127,20 +149,20 @@ def main() -> None:
     # --- densities per 1,000 households ---
     blocks: dict[str, dict[str, float]] = {}
     for key, hh in households.items():
-        if hh < MIN_BLOCK_HOUSEHOLDS or key not in counts:
-            continue  # too few households for a per-1,000 rate to be meaningful
+        if hh < MIN_BLOCK_HOUSEHOLDS or key not in counts or key not in block_name:
+            continue  # too few households for a per-1,000 rate, or no name to key it by
         total = counts[key]
         row: dict[str, float] = {"all": round(total * 1000 / hh, 2)}
         if emp_all[key] > 0:
             for cat in categories:
                 share = emp_cat[key][cat] / emp_all[key]
                 row[cat] = round(total * share * 1000 / hh, 2)
-        blocks[key] = row
+        blocks[block_name[key]] = row
 
     # --- district mean/std across blocks, for the z-score ---
     by_district: dict[str, dict[str, list[float]]] = defaultdict(lambda: defaultdict(list))
     for key, row in blocks.items():
-        dk = "-".join(key.split("-")[:3])
+        dk = "|".join(key.split("|")[:2])  # "State|District" from "State|District|Block"
         for cat, value in row.items():
             by_district[dk][cat].append(value)
 
@@ -164,7 +186,10 @@ def main() -> None:
             "Antyodaya (antyodaya_shrid.csv)",
             "Real observations. Block = PC11 subdistrict, aggregated from village-level rows.",
             unit="enterprises per 1,000 households",
-            key_type="shrid2 prefix (11-<state>-<district>-<subdistrict>); names attach later",
+            key_type=(
+                "blocks keyed 'State|District|Block', district_stats 'State|District' — matching "
+                "Village.state / .district / .block"
+            ),
             universe=(
                 f"rural shrids only (ec13r_shrid_key.csv); blocks with at least "
                 f"{MIN_BLOCK_HOUSEHOLDS} households"

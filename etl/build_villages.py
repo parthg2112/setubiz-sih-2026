@@ -161,23 +161,33 @@ def main() -> None:
     pca_cols = resolve_pca_columns(pca_path)
     print(f"  PCA: {pca_path.name} -> {pca_cols}")
 
-    # --- names ---
+    # --- names (rural villages only) ---
     names: dict[str, dict] = {}
+    towns = unnamed = 0
     for n, row in enumerate(read_csv(NAMES, ["shrid2", "state_name", "district_name",
-                                             "subdistrict_name", "village_name", "place_name"]), 1):
+                                             "subdistrict_name", "town_name", "village_name"]), 1):
         progress("loc names", n)
         shrid = row["shrid2"].strip()
         if state_id_of(shrid) not in wanted:
             continue
-        label = (row["village_name"] or row["place_name"] or "").strip()
+        # Rural villages only. `town_name` marks a census town, and towns must be excluded:
+        # Mission Antyodaya has no urban rows, so a town would carry fabricated amenity flags
+        # (a town of 20,000 defaulting to has_bank=False), and ec13_density.json is likewise
+        # built on the rural shrid universe. Keeping them would mix two different universes.
+        if (row["town_name"] or "").strip():
+            towns += 1
+            continue
+        label = (row["village_name"] or "").strip()
         if not label:
+            unnamed += 1
             continue  # a village we cannot name is a village the user can never search for
         names[shrid] = {
             "name": label.title(),
             "district": (row["district_name"] or "").strip().title(),
             "block": (row["subdistrict_name"] or "").strip().title(),
         }
-    print(f"  {len(names):,} named villages")
+    print(f"  {len(names):,} named rural villages "
+          f"({towns:,} census towns excluded, {unnamed:,} unnamed)")
 
     # --- centroids and town distance ---
     geo: dict[str, dict] = {}
@@ -240,8 +250,9 @@ def main() -> None:
             continue
         am = amenity.get(shrid)
         if am is None:
-            # Antyodaya is rural-only and not exhaustive; keep the village, flag the gap, and
-            # let the amenity booleans default to False rather than inventing a bank.
+            # Antyodaya is not exhaustive even within rural India. Keep the village so it stays
+            # searchable, count the gap, and leave the flags False -- understating amenities is
+            # the safe direction for an advisory that must not promise a bank that is not there.
             no_amenities += 1
             am = {f: False for f in AMENITIES} | {
                 "has_power": False, "self_help_groups": 0, "population_survey_2019": 0}
@@ -273,6 +284,8 @@ def main() -> None:
                     census_year="2011",
                     amenities_year="2019",
                     villages=len(rows),
+                    universe="rural villages only; census towns excluded",
+                    census_towns_excluded=towns,
                     without_amenity_row=no_amenities,
                     method_note=(
                         "Population and households are Census 2011 PCA, so the intercensal "

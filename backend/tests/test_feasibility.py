@@ -213,8 +213,8 @@ def test_swot_compound_and_missing_metric_conditions():
 def test_sample_data_source_reports_itself_as_synthetic(source):
     assert source.synthetic is True
     assert source.village_by_shrid("does-not-exist") is None
-    assert source.block_density("Ranchi", "Nowhere", "dairy") is None
-    assert source.district_density_stats("Nowhere", "dairy") is None
+    assert source.block_density("Jharkhand", "Ranchi", "Nowhere", "dairy") is None
+    assert source.district_density_stats("Jharkhand", "Nowhere", "dairy") is None
     assert source.demand_profile("Nowhere", "dairy") is None
     assert source.income_segments("Nowhere") == ()
     assert source.arrivals("tailoring") is None
