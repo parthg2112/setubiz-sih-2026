@@ -18,7 +18,7 @@ SETUBIZ_DATA_DIR=backend/setubiz/data/real make api
 | `hces_demand.json` | **real** | HCES 2023-24 Fact Sheet, Statements 4 & 7 and Figure 1R |
 | `pois/<ST>.json.gz` | **real** | OpenStreetMap via Overpass |
 | `arrivals.json` | live prices only | data.gov.in; needs a personal key and a portal history export |
-| `villages/<ST>.json.gz` | **blocked** | needs three SHRUG modules — run `build_villages.py` for the list |
+| `villages/<ST>.json.gz` | **blocked on one input** | needs the PC11 Primary Census Abstract; names, centroids and amenities all resolve |
 | `schemes/`, `cost_templates/`, `swot_rules.yaml` | real already | copied from `data/sample/`, unchanged |
 
 ## Commands
@@ -57,6 +57,10 @@ These are deliberate and should survive refactors:
 * **Rural OSM coverage is very sparse.** All of Jharkhand has 120 mapped POIs across the six
   categories: 87 kirana, 23 marketplaces, 7 dairy, 2 poultry, 1 tailor, 0 flour mills. This is
   why `feasibility/competitors.py` treats an observed count as a floor and never as a census.
+* **`dist_to_town_km` is measured, not estimated.** SHRUG's `shrid2_spatial_stats.csv` publishes
+  `tdist_50`, the km distance to the nearest town of 50,000+ — the smallest settlement that
+  reliably has a bank branch, a wholesale market and transport links. The same file publishes the
+  authoritative centroid, which is why the 874 MB shrid GeoPackage is not needed.
 * **The AGMARKNET API is a daily snapshot, not a history.** The seasonality index needs 12 months,
   which must be exported from the portal and passed with `--history`. Without it the file carries
   no `series` and `threats.assess` drops the seasonality threat rather than inventing one.
