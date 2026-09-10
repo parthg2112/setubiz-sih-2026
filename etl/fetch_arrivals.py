@@ -17,6 +17,7 @@ threat, so the report simply says less rather than saying something invented.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import csv
 import json
 import os
@@ -27,7 +28,7 @@ import urllib.request
 from collections import defaultdict
 from pathlib import Path
 
-from common import CACHE, DEFAULT_OUT, meta, meta as _m, resolve_state, state_name, write_json
+from common import CACHE, DEFAULT_OUT, meta, resolve_state, state_name, write_json
 
 RESOURCE = "9ef84268-d588-465a-a308-a864a43d0070"
 ENDPOINT = f"https://api.data.gov.in/resource/{RESOURCE}"
@@ -128,10 +129,10 @@ def parse_history(path: Path) -> dict[str, dict[str, list[int]]]:
             i = MONTHS.index(month)
             comm = (row[c_comm] or "").strip().title()
             for raw, sink in ((row[c_arr], arrivals), (row[c_price], prices)):
-                try:
+                # A blank or malformed cell just means that month is unreported; the 12/12
+                # completeness check below is what decides whether the series is usable.
+                with contextlib.suppress(TypeError, ValueError):
                     sink[comm][i] = float(str(raw).replace(",", "").strip())
-                except (TypeError, ValueError):
-                    pass
 
     series: dict[str, dict[str, list[int]]] = {}
     for comm in set(arrivals) | set(prices):

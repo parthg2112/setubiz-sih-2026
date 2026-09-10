@@ -21,7 +21,16 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
-from common import CACHE, DEFAULT_OUT, PC11_STATES, meta, resolve_state, state_code, state_name, write_json
+from common import (
+    CACHE,
+    DEFAULT_OUT,
+    PC11_STATES,
+    meta,
+    resolve_state,
+    state_code,
+    state_name,
+    write_json,
+)
 
 ENDPOINT = "https://overpass-api.de/api/interpreter"
 USER_AGENT = "SetuBiz-ETL/0.1 (SIH26091 rural advisory prototype; contact via repo)"
@@ -54,7 +63,10 @@ def query_for(iso: str, tags: list[str]) -> str:
     clauses = "".join(
         f"  node[{t}](area.a);\n  way[{t}](area.a);\n  relation[{t}](area.a);\n" for t in tags
     )
-    return f'[out:json][timeout:300];\narea["ISO3166-2"="{iso}"]->.a;\n(\n{clauses});\nout center tags;\n'
+    return (
+        f'[out:json][timeout:300];\narea["ISO3166-2"="{iso}"]->.a;\n'
+        f"(\n{clauses});\nout center tags;\n"
+    )
 
 
 def fetch(query: str, *, pause: float, retries: int = 3) -> dict:

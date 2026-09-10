@@ -62,6 +62,13 @@ def _context(facts: Facts, language: Language) -> dict[str, Any]:
         "lang": language.value,
         "binding_reason_en": reasons["en"],
         "binding_reason_hi": reasons["hi"],
+        # Engine advisories about the competitor estimate itself. These fire when a block has no
+        # Economic Census row for the category, which real data does hit -- and a band of 0-0
+        # presented without that caveat reads as "no competition here", the opposite of what it
+        # means. Rendering them is what keeps the band honest.
+        "competitor_notes": tuple(
+            n.text_en if language is Language.EN else n.text_hi for n in facts.competitors.notes
+        ),
     }
 
 

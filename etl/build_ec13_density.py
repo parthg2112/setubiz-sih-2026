@@ -61,14 +61,31 @@ def district_key(shrid: str) -> str | None:
     return "-".join(parts[:3]) if len(parts) >= 5 else None
 
 
-def load_mapping() -> dict[str, list[int]]:
-    """category -> [shric codes]. Absent is fine; we then emit only the total density."""
+SHRIC_DESC = DATASETS / "shrug-shric-desc-csv" / "shric_descriptions.csv"
+
+
+def load_mapping() -> tuple[dict[str, list[int]], dict[str, str]]:
+    """category -> [shric codes], plus the reasoning. Absent is fine; we emit the total only."""
     if not MAPPING.exists():
         print(f"  note: {MAPPING.name} absent — emitting total enterprise density only.")
-        print("        Download the SHRUG 'SHRIC Industry Code' module to unlock the split.")
-        return {}
-    mapping = json.loads(MAPPING.read_text(encoding="utf-8"))
-    return {k: [int(c) for c in v] for k, v in mapping.items() if not k.startswith("_")}
+        print("        Download the SHRUG 'Shric descriptions' module to unlock the split.")
+        return {}, {}
+    raw = json.loads(MAPPING.read_text(encoding="utf-8"))
+    mapping = {k: [int(c) for c in v["codes"]] for k, v in raw.items() if not k.startswith("_")}
+    why = {k: v["why"] for k, v in raw.items() if not k.startswith("_")}
+
+    # Validate every code against the published description table, so a typo becomes an error
+    # rather than a column of silent zeros.
+    if SHRIC_DESC.exists():
+        desc = {int(float(r["shric"])): r["shric_desc"]
+                for r in read_csv(SHRIC_DESC, ["shric", "shric_desc"])}
+        for cat, codes in mapping.items():
+            unknown = [c for c in codes if c not in desc]
+            if unknown:
+                raise SystemExit(f"{MAPPING.name}: category {cat!r} has unknown shric codes "
+                                 f"{unknown}; valid range is {min(desc)}-{max(desc)}")
+            print(f"  {cat:<11} <- " + "; ".join(f"{c} {desc[c]}" for c in codes))
+    return mapping, why
 
 
 def main() -> None:
@@ -82,7 +99,7 @@ def main() -> None:
               else {resolve_state(s) for s in args.states})
     print(f"EC13 density for {len(wanted)} state(s): {sorted(state_name(s) for s in wanted)}")
 
-    categories = load_mapping()
+    categories, category_why = load_mapping()
 
     # Block and district names, so the emitted keys match what Village.district / .block carry.
     # Keys are "State|District|Block": block names repeat across districts and districts repeat
@@ -196,6 +213,7 @@ def main() -> None:
             ),
             states=sorted(state_name(s) for s in wanted),
             categories=sorted(categories) or ["all"],
+            category_mapping={k: category_why[k] for k in sorted(category_why)},
             method_note=(
                 "'all' is the observed EC13 establishment count. Per-category figures are "
                 "apportioned as count_all x (emp_shric_category / emp_all): EC13 publishes "

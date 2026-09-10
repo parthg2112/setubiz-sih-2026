@@ -1,0 +1,23 @@
+{
+  "_source": "datasets/shrug-shric-desc-csv/shric_descriptions.csv (SHRUG v2.2, 90 codes)",
+  "_note": "Maps business categories onto SHRUG industrial classification codes. This is a judgement about which published industry a business competes in, so every entry records its reasoning and is auditable against the description table. A category that has no honest match is deliberately absent rather than approximated.",
+  "_unmapped": {
+    "poultry": "SHRIC has no livestock-rearing code. The nearest is 5 'Processing of meat', which is a different business: a backyard poultry unit rears birds and sells eggs and live birds, it does not run a meat-processing establishment. Real competitors are other backyard units, which the Economic Census does not register as establishments at all. Mapping poultry to code 5 would answer a different question than the one asked, so it is left unmapped and competitors.py falls back to the observed OSM floor with its 'no_ec13_row' advisory."
+  },
+  "dairy": {
+    "codes": [7],
+    "why": "Code 7 is literally 'Dairy'. Exact match, no interpretation needed."
+  },
+  "flour_mill": {
+    "codes": [8],
+    "why": "Code 8 is 'Grain milling and grain products' — precisely what an atta chakki does. Exact match."
+  },
+  "kirana": {
+    "codes": [47, 49],
+    "why": "47 'Retail of food, beverages, and tobacco' plus 49 'Retail in non-specialized stores'. A kirana is by definition non-specialized food retail. 48 'Retail in specialized stores' is excluded: a specialist shop is not a kirana and including it would inflate the competitor count."
+  },
+  "tailoring": {
+    "codes": [14, 50],
+    "why": "14 'Manufacturing of clothing' is the core of a made-to-order village tailor. 50 'Repair of personal goods, finishing of textiles, preparation of textile fiber' covers the alteration and repair work that makes up the rest of the trade."
+  }
+}

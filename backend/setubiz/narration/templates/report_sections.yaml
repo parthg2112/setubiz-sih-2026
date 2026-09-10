@@ -66,12 +66,14 @@ sections:
       {{ n.households_per_competitor }} households per enterprise.
       This is a band, not a count: rural mapping is incomplete, and we say so rather than
       presenting a single confident number.
+      {% for note in competitor_notes %}{{ note }} {% endfor %}
     body_hi: |
       {{ n.radius_km }} किमी में इस श्रेणी की अनुमानित {{ n.competitors_low }}–{{ n.competitors_high }}
       इकाइयाँ हैं, जबकि OpenStreetMap में केवल {{ n.competitors_observed_osm }} दर्ज हैं।
       यह प्रति 1,000 परिवार {{ n.competitor_density_per_1k_households }} का घनत्व है, अर्थात्
       लगभग {{ n.households_per_competitor }} परिवार प्रति इकाई।
       यह एक श्रेणी है, गिनती नहीं। ग्रामीण मानचित्रण अधूरा है, और हम इसे छिपाते नहीं।
+      {% for note in competitor_notes %}{{ note }} {% endfor %}
 
   - id: loan_structure
     heading_en: How much you can borrow, and how much you should

@@ -129,8 +129,14 @@ def flag(value: str | None) -> bool:
 
 
 def meta(source: str, note: str, **extra: Any) -> dict[str, Any]:
-    """Every emitted file carries where it came from and when. The provenance layer depends on it."""
-    return {"source": source, "note": note, "built": date.today().isoformat(), **extra}
+    """Every emitted file carries where it came from and when.
+
+    `synthetic: False` is the load-bearing part: the loader reads it back to decide whether a
+    report may be cited. Files without the key are assumed synthetic, so the committed sample
+    dataset keeps its warning without needing to be touched.
+    """
+    return {"source": source, "note": note, "built": date.today().isoformat(),
+            "synthetic": False, **extra}
 
 
 def write_json(path: Path, payload: dict[str, Any], *, compress: bool = False) -> None:

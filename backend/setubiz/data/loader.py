@@ -72,6 +72,7 @@ class DataSource(Protocol):
     """The seam between the estimation layer and whatever is actually supplying rows."""
 
     synthetic: bool
+    source_synthetic: dict[str, bool]
 
     def village_by_shrid(self, shrid: str) -> Village | None: ...
     def all_villages(self) -> tuple[Village, ...]: ...
@@ -102,10 +103,23 @@ def _read_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-class SampleDataSource:
-    """Reads the committed synthetic dataset. Deterministic, offline, zero dependencies."""
+#: Which registered provenance source each data file backs. Used to report per-source, rather
+#: than repo-wide, whether the underlying rows are real.
+_FILE_SOURCE_IDS = {
+    "villages": "shrug_sample",
+    "pois": "osm_sample",
+    "ec13_density": "ec13_sample",
+    "hces_demand": "hces_sample",
+    "arrivals": "agmarknet_sample",
+}
 
-    synthetic = True
+
+class SampleDataSource:
+    """Reads a committed dataset directory. Deterministic, offline, zero dependencies.
+
+    Whether the rows are real is read from each file's `_meta.synthetic`, not hardcoded: the same
+    class serves the synthetic sample and the real build, and a report must state which it got.
+    """
 
     def __init__(self, root: Path | None = None) -> None:
         self.root = root or get_settings().data_dir
@@ -116,10 +130,11 @@ class SampleDataSource:
         if not self._manifest:
             # Flat layout: small enough to hold entirely in memory.
             self._shards[""] = (
-                tuple(Village.model_validate(v)
-                      for v in _read_json(self.root / "villages.json")["villages"]),
-                tuple(Poi.model_validate(p)
-                      for p in _read_json(self.root / "pois.json")["pois"]),
+                tuple(
+                    Village.model_validate(v)
+                    for v in _read_json(self.root / "villages.json")["villages"]
+                ),
+                tuple(Poi.model_validate(p) for p in _read_json(self.root / "pois.json")["pois"]),
             )
 
         self._ec13 = _read_json(self.root / "ec13_density.json")
@@ -127,13 +142,35 @@ class SampleDataSource:
         self._arrivals = _read_json(self.root / "arrivals.json")
         self._index: dict[str, Village] = {}
 
+        # A file that does not declare itself real is treated as synthetic, so the sample dataset
+        # keeps its warning without needing a marker added to it.
+        metas = {"ec13_density": self._ec13, "hces_demand": self._hces, "arrivals": self._arrivals}
+        if self._manifest:
+            first = next(iter(self._manifest.values()))
+            metas["villages"] = _read_json(self.root / first["village_shard"])
+            if first.get("poi_shard"):
+                metas["pois"] = _read_json(self.root / first["poi_shard"])
+        else:
+            metas["villages"] = _read_json(self.root / "villages.json")
+            metas["pois"] = _read_json(self.root / "pois.json")
+
+        self.source_synthetic = {
+            _FILE_SOURCE_IDS[name]: bool(payload.get("_meta", {}).get("synthetic", True))
+            for name, payload in metas.items()
+        }
+        self.synthetic = any(self.source_synthetic.values())
+
     # --- shard loading ---
 
     def list_states(self) -> tuple[dict[str, Any], ...]:
         """What the state switcher offers. Empty for the flat synthetic layout."""
         return tuple(
-            {"code": s["code"], "name": s["name"], "villages": s["villages"],
-             "districts": s["districts"]}
+            {
+                "code": s["code"],
+                "name": s["name"],
+                "villages": s["villages"],
+                "districts": s["districts"],
+            }
             for s in sorted(self._manifest.values(), key=lambda s: s["name"])
         )
 
@@ -148,9 +185,9 @@ class SampleDataSource:
             for v in _read_json(self.root / entry["village_shard"])["villages"]
         )
         pois = (
-            tuple(Poi.model_validate(p)
-                  for p in _read_json(self.root / entry["poi_shard"])["pois"])
-            if entry.get("poi_shard") else ()
+            tuple(Poi.model_validate(p) for p in _read_json(self.root / entry["poi_shard"])["pois"])
+            if entry.get("poi_shard")
+            else ()
         )
         self._shards[code] = (villages, pois)
         self._index.update({v.shrid: v for v in villages})
@@ -216,9 +253,7 @@ class SampleDataSource:
 
     # --- enterprise density (Economic Census 2013) ---
 
-    def block_density(
-        self, state: str, district: str, block: str, category: str
-    ) -> float | None:
+    def block_density(self, state: str, district: str, block: str, category: str) -> float | None:
         # Real shards key on "State|District|Block" because block names repeat across districts
         # and district names across states. The flat synthetic file keys on the bare block name,
         # so try the qualified key first and fall back.

@@ -23,14 +23,26 @@ being assumed — the microdata needed for a survey-based figure is still behind
 from __future__ import annotations
 
 import argparse
-import statistics
 from collections import defaultdict
 from pathlib import Path
 
-from common import DATASETS, DEFAULT_OUT, meta, num, progress, read_csv, state_id_of, state_name, write_json
+from common import (
+    DATASETS,
+    DEFAULT_OUT,
+    meta,
+    num,
+    progress,
+    read_csv,
+    state_id_of,
+    state_name,
+    write_json,
+)
 
 ANTYODAYA = DATASETS / "shrug-antyodaya-csv" / "antyodaya_shrid.csv"
-SOURCE_URL = "https://www.mospi.gov.in/sites/default/files/publication_reports/HCES%20FactSheet%202023-24.pdf"
+SOURCE_URL = (
+    "https://www.mospi.gov.in/sites/default/files/publication_reports/"
+    "HCES%20FactSheet%202023-24.pdf"
+)
 
 #: Statement 7 — average MPCE (Rs.) for each State/UT in 2023-24. Keyed by the state names the
 #: village records use, so `demand_profile(village.state, ...)` resolves directly.
@@ -91,7 +103,8 @@ CATEGORIES: dict[str, tuple[list[str], float, str]] = {
         ["cereals & cereal substitutes", "pulses & their products", "sugar & salt",
          "edible oil", "spices", "beverages, refreshments, processed food"], 0.62,
         "Staples bought through shops rather than PDS, own production or weekly haat. Excludes "
-        "vegetables, fruits and meat, which rural households mostly buy from vendors, not a kirana.",
+        "vegetables, fruits and meat, which rural households mostly buy from vendors, "
+        "not a kirana.",
     ),
     "tailoring": (
         ["consumer services excluding conveyance"], 0.30,

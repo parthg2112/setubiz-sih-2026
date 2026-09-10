@@ -413,7 +413,15 @@ def build_facts(request: AdvisoryRequest, source: DataSource | None = None) -> F
             )
         )
     )
-    sources = resolve(source_ids)
+    # The registry declares each source synthetic by default. The loader knows what it actually
+    # read, so let it correct the record -- otherwise a report built on real data still disclaims
+    # itself as sample data, which is its own kind of false statement.
+    sources = tuple(
+        s.model_copy(update={"synthetic": source.source_synthetic[s.id]})
+        if s.id in source.source_synthetic
+        else s
+        for s in resolve(source_ids)
+    )
 
     provenance: dict[str, tuple[str, ...]] = {}
     for key in index:

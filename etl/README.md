@@ -14,7 +14,7 @@ SETUBIZ_DATA_DIR=backend/setubiz/data/real make api
 
 | Output | State | Source |
 |---|---|---|
-| `ec13_density.json` | **real** | Economic Census 2013 via SHRUG `ec13_shrid.csv`, households from Mission Antyodaya |
+| `ec13_density.json` | **real**, per-category | Economic Census 2013 via SHRUG `ec13_shrid.csv`, split by SHRIC code, households from Mission Antyodaya |
 | `hces_demand.json` | **real** | HCES 2023-24 Fact Sheet, Statements 4 & 7 and Figure 1R |
 | `pois/<ST>.json.gz` | **real** | OpenStreetMap via Overpass |
 | `arrivals.json` | live prices only | data.gov.in; needs a personal key and a portal history export |
@@ -62,10 +62,15 @@ These are deliberate and should survive refactors:
   `has_bank: False` — and `ec13_density.json` is likewise built on the rural universe. Validation:
   the resulting population totals **25,054,425 against the published Jharkhand rural Census 2011
   figure of 25,055,073**, a difference of 648 (0.003%).
-* **The EC13 category split is still gated.** `ec13_density.json` currently carries only the `all`
-  density. `block_density(..., "dairy")` therefore returns None and `competitors.py` falls back to
-  the OSM floor. Substituting the `all` figure would claim ~94 *dairies* per 1,000 households when
-  94 is enterprises of every kind. The SHRIC Industry Code module is what unblocks this.
+* **The SHRIC category mapping is a judgement, and is written down.** `etl/shric_categories.json`
+  maps each business category onto SHRUG industry codes and records *why* for each; every code is
+  validated against `shric_descriptions.csv` at build time, so a typo is an error rather than a
+  column of silent zeros. `dairy` (code 7) and `flour_mill` (code 8) are exact matches.
+* **`poultry` is deliberately unmapped.** SHRIC has no livestock-rearing code. The nearest, 5
+  'Processing of meat', is a different business — a backyard unit rears birds and sells eggs, it
+  does not run a processing establishment — and its real competitors are other backyard units the
+  Economic Census never registers. So the category is left out, `competitors.py` falls back to the
+  OSM floor, and the report says so in words.
 * **Rural OSM coverage is very sparse.** All of Jharkhand has 120 mapped POIs across the six
   categories: 87 kirana, 23 marketplaces, 7 dairy, 2 poultry, 1 tailor, 0 flour mills. This is
   why `feasibility/competitors.py` treats an observed count as a floor and never as a census.
