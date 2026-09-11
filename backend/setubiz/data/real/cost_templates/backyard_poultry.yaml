@@ -6,19 +6,26 @@ unit: 500-bird shed, 5 batches/year
 activity_kind: general
 source: "NABARD Model Bankable Project: Broiler Farming (small holder), Jharkhand norms"
 fixed_capital:
-  - {item: Low-cost poultry shed 500 sq ft, item_hi: मुर्गी शेड, amount: 95000}
-  - {item: Feeders, drinkers, brooders, item_hi: दाना-पानी एवं ब्रूडर उपकरण, amount: 18000}
-  - {item: Electrical, water connection and fencing, item_hi: बिजली-पानी एवं बाड़, amount: 16000}
+  - {item: Low-cost poultry shed 500 sq ft, item_hi: मुर्गी शेड, amount: 95000, scaling: linear}
+  - {item: "Feeders, drinkers, brooders", item_hi: दाना-पानी एवं ब्रूडर उपकरण, amount: 18000, scaling: step, step_capacity: 500, scaling: linear}
+  - {item: "Electrical, water connection and fencing", item_hi: बिजली-पानी एवं बाड़, amount: 16000, scaling: fixed}
 working_capital_months: 2
+base_units: 500
+unit_label: bird
+unit_label_hi: पक्षी
+unit_range: [250, 2000]
+unit_step: 250
 monthly_revenue:
-  - {item: "Live bird sales, 208 birds @ ₹185", item_hi: पक्षी बिक्री, amount: 38480}
-  - {item: Manure sales, item_hi: खाद बिक्री, amount: 900}
+  - {item: "Live bird sales, 208 birds @ ₹185", item_hi: पक्षी बिक्री, amount: 38480, scaling: linear}
+  - {item: Manure sales, item_hi: खाद बिक्री, amount: 900, scaling: linear}
 monthly_opex:
-  - {item: Day-old chicks, item_hi: चूजे, amount: 8300}
+  - {item: Day-old chicks, item_hi: चूजे, amount: 8300, scaling: linear}
   - {item: Feed, item_hi: दाना, amount: 21500}
-  - {item: Vaccination and medicines, item_hi: टीकाकरण एवं दवा, amount: 1500}
-  - {item: Litter, electricity, water, item_hi: बिछावन, बिजली, पानी, amount: 1200}
-  - {item: Mortality provision (6%), item_hi: मृत्यु दर प्रावधान, amount: 2300}
+  - {item: Vaccination and medicines, item_hi: टीकाकरण एवं दवा, amount: 1500, scaling: linear}
+  - {item: "Litter, electricity, water", item_hi: "बिछावन, बिजली, पानी", amount: 1200, scaling: linear}
+  - {item: Mortality provision (6%), item_hi: मृत्यु दर प्रावधान, amount: 2300, scaling: linear}
 assumptions:
   - 5 batches/year of 500 birds; monthly figures are the annual total ÷ 12.
   - Broiler rates swing sharply; the seasonality index in the threats section applies here.
+  - Sized in birds per batch. Shed cost follows floor area; feeders and drinkers are bought as sets for 500 birds.
+  - This template carries no labour line, so its surplus is not net of what the household draws and no phased expansion is offered from it.

@@ -190,10 +190,102 @@ class TemplateNarrator:
                 )
             )
 
+        sections.append(_alternatives_section(facts, language))
         sections.append(_swot_section(facts, language))
         sections.append(_threats_section(facts, language))
         return Report(language=language, narrator=self.name, sections=tuple(sections))
 
+
+def _alternatives_section(facts: Facts, language: Language) -> ReportSection:
+    """Sizes of the same business that do work.
+
+    Built programmatically rather than from a Jinja template because the number of rows varies
+    and because the honest empty case carries bilingual advisories the engine already wrote.
+    """
+    en = language is Language.EN
+    alt = facts.alternatives
+    label = alt.unit_label if en else (alt.unit_label_hi or alt.unit_label)
+
+    rows = [
+        {
+            "units": c.units,
+            "project_cost": c.project_cost,
+            "loan": c.loan,
+            "instalment": c.instalment,
+            "min_dscr": c.min_dscr,
+            "comfort": c.comfort,
+            "self_financed": c.self_financed,
+        }
+        for c in alt.configurations
+    ]
+
+    if rows:
+        lead = (
+            f"{len(rows)} size(s) of this business both clear the appraisal norm and are fully "
+            f"funded by your savings plus the loan they support."
+            if en
+            else f"इस व्यवसाय के {len(rows)} आकार ऐसे हैं जो मानक भी पूरा करते हैं और आपकी बचत "
+            f"एवं ऋण से पूरी तरह वित्तपोषित भी हो जाते हैं।"
+        )
+        parts = [lead]
+        for c in alt.configurations:
+            if c.self_financed:
+                parts.append(
+                    f"{c.units} {label}: {format_inr(c.project_cost)}, no borrowing needed."
+                    if en
+                    else f"{c.units} {label}: {format_inr(c.project_cost)}, ऋण की आवश्यकता नहीं।"
+                )
+            else:
+                parts.append(
+                    f"{c.units} {label}: {format_inr(c.project_cost)}, borrow "
+                    f"{format_inr(c.loan)}, {format_inr(c.instalment)} a quarter."
+                    if en
+                    else f"{c.units} {label}: {format_inr(c.project_cost)}, ऋण "
+                    f"{format_inr(c.loan)}, प्रति तिमाही {format_inr(c.instalment)}।"
+                )
+    else:
+        parts = [a.text_en if en else a.text_hi for a in alt.why_not]
+
+    phased = None
+    if alt.phased is not None:
+        p = alt.phased
+        phased = {
+            "start_units": p.start_units,
+            "target_units": p.target_units,
+            "expansion_cost": p.expansion_cost,
+            "annual_retained": p.annual_retained,
+            "years_to_expand": p.years_to_expand,
+        }
+        parts.append(
+            f"You could start at {p.start_units} {label} and reach {p.target_units} in about "
+            f"{p.years_to_expand} year(s) from what the business retains, without a second loan."
+            if en
+            else f"आप {p.start_units} {label} से शुरू करके लगभग {p.years_to_expand} वर्ष में "
+            f"{p.target_units} तक पहुँच सकते हैं, बिना दूसरा ऋण लिए।"
+        )
+
+    return ReportSection(
+        id="alternatives",
+        heading="Sizes that work" if en else "जो आकार चल सकते हैं",
+        body=" ".join(parts),
+        cites=alt.sources,
+        data={
+            "unit_label": label,
+            "configurations": rows,
+            "considered": [
+                {
+                    "units": c.units,
+                    "project_cost": c.project_cost,
+                    "shortfall": c.shortfall,
+                    "funded": c.funded,
+                }
+                for c in alt.considered
+            ],
+            "closest_units": alt.closest.units if alt.closest else None,
+            "additional_margin_needed": alt.additional_margin_needed,
+            "phased": phased,
+        },
+    )
 
 def _swot_section(facts: Facts, language: Language) -> ReportSection:
     en = language is Language.EN

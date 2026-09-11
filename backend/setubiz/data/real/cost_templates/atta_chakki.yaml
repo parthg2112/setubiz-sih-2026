@@ -6,19 +6,24 @@ unit: 1 mill, 5 HP motor
 activity_kind: general
 source: "NABARD Model Bankable Project: Agro Processing / Flour Mill unit"
 fixed_capital:
-  - {item: 5 HP flour mill with motor and starter, item_hi: 5 एचपी चक्की एवं मोटर, amount: 78000}
-  - {item: Civil work, platform and shed, item_hi: निर्माण कार्य एवं शेड, amount: 65000}
-  - {item: Electrical connection and load sanction, item_hi: बिजली कनेक्शन, amount: 22000}
-  - {item: Weighing scale, sieves, storage bins, item_hi: तराजू, छलनी, भंडारण, amount: 15000}
+  - {item: 5 HP flour mill with motor and starter, item_hi: 5 एचपी चक्की एवं मोटर, amount: 78000, scaling: linear}
+  - {item: "Civil work, platform and shed", item_hi: निर्माण कार्य एवं शेड, amount: 65000, scaling: linear}
+  - {item: Electrical connection and load sanction, item_hi: बिजली कनेक्शन, amount: 22000, scaling: linear}
+  - {item: "Weighing scale, sieves, storage bins", item_hi: "तराजू, छलनी, भंडारण", amount: 15000, scaling: step, step_capacity: 2}
 working_capital_months: 2
+base_units: 1
+unit_label: mill
+unit_label_hi: चक्की
+unit_range: [1, 3]
 monthly_revenue:
-  - {item: "Custom grinding, 18 t @ ₹1.6/kg", item_hi: पिसाई शुल्क, amount: 28800}
-  - {item: Bran and by-product sales, item_hi: चोकर बिक्री, amount: 3400}
+  - {item: "Custom grinding, 18 t @ ₹1.6/kg", item_hi: पिसाई शुल्क, amount: 28800, scaling: linear}
+  - {item: Bran and by-product sales, item_hi: चोकर बिक्री, amount: 3400, scaling: linear}
 monthly_opex:
-  - {item: Electricity, item_hi: बिजली, amount: 7800}
-  - {item: Operator wage, item_hi: संचालक मजदूरी, amount: 6000}
-  - {item: Maintenance, stones and spares, item_hi: रखरखाव एवं पुर्जे, amount: 2200}
-  - {item: Packing and miscellaneous, item_hi: पैकिंग एवं विविध, amount: 1100}
+  - {item: Electricity, item_hi: बिजली, amount: 7800, scaling: linear}
+  - {item: Operator wage, item_hi: संचालक मजदूरी, amount: 6000, scaling: step, step_capacity: 2}
+  - {item: "Maintenance, stones and spares", item_hi: रखरखाव एवं पुर्जे, amount: 2200, scaling: linear}
+  - {item: Packing and miscellaneous, item_hi: पैकिंग एवं विविध, amount: 1100, scaling: linear}
 assumptions:
   - Custom grinding (pisai) model, not trading, so there is no grain purchase working capital.
   - Volumes peak after kharif and rabi harvests; two lean months are already averaged in.
+  - A second mill needs its own machine, platform and power connection; one operator can run two.

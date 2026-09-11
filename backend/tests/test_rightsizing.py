@@ -201,13 +201,19 @@ def test_every_shipped_template_loads_and_is_internally_consistent():
         assert tpl.assumptions
 
 
-def test_template_scaling_is_linear(dairy):
-    doubled = dairy.scaled(2)
-    assert doubled.required_capital == dairy.required_capital * 2
-    assert doubled.annual_noi == dairy.annual_noi * 2
-    assert "× 2" in doubled.unit
+def test_template_resizing_is_per_line_item_not_a_blanket_multiplier(dairy):
+    """Doubling the herd does not double the chaff cutter."""
+    four = dairy.at_units(4)
+    assert four.required_capital < dairy.required_capital * 2
+    # The cows do double.
+    cows = next(li for li in four.fixed_capital if "cows" in li.item)
+    assert cows.amount == money(300000)
+    # The chaff cutter does not move at all.
+    cutter = next(li for li in four.fixed_capital if "Chaff cutter" in li.item)
+    assert cutter.amount == money(25000)
+    assert "4 animals" in four.unit
     with pytest.raises(ValueError, match="units must be positive"):
-        dairy.scaled(0)
+        dairy.at_units(0)
 
 
 def test_templates_are_findable_by_business_category():
