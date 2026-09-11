@@ -143,12 +143,15 @@ export function VillagePicker({ value, onChange, state, language, strings }: Pro
               <li className="ux4g-list-item" key={m.shrid}>
                 <button className="ux4g-list-item-row" type="button" onClick={() => onChange(m)}>
                   <span className="ux4g-list-item-start">
+                    {/* The village name is the thing being chosen, so it is the largest type on
+                        the row. It previously sat at label size above a body-size district line,
+                        which made the supporting detail louder than the choice itself. */}
                     <span className="ux4g-d-flex ux4g-flex-column ux4g-gap-y-xs">
-                      <span className="ux4g-label-l-strong">
+                      <span className="ux4g-title-s-strong">
                         {m.name}
                         {m.name_hi ? ` · ${m.name_hi}` : ''}
                       </span>
-                      <span className="ux4g-body-m-default ux4g-text-neutral-secondary">
+                      <span className="ux4g-body-s-default ux4g-text-neutral-secondary">
                         {m.block} · {m.district}
                       </span>
                       <span className="ux4g-body-s-default ux4g-text-neutral-tertiary">
