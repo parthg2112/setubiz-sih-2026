@@ -36,6 +36,7 @@ CONTENT_FILES = [
     SAMPLE_DATA_DIR / "schemes" / "corporations.yaml",
     SAMPLE_DATA_DIR / "schemes" / "sca_directory.yaml",
     SAMPLE_DATA_DIR / "schemes" / "stacking.yaml",
+    SAMPLE_DATA_DIR / "schemes" / "shg_routing.yaml",
     *sorted((SAMPLE_DATA_DIR / "cost_templates").glob("*.yaml")),
 ]
 

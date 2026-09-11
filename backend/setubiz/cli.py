@@ -16,12 +16,33 @@ from setubiz.facts import build_facts
 from setubiz.matching.village_matcher import match_villages
 from setubiz.money import format_inr, money
 from setubiz.narration import narrate
-from setubiz.schemas import AdvisoryRequest, Language
+from setubiz.schemas import AdvisoryRequest, GroupMember, Language
 
 app = typer.Typer(
     help="SetuBiz: rural business advisory and financial structuring.", no_args_is_help=True
 )
 console = Console()
+
+
+def _parse_member(spec: str) -> GroupMember:
+    """`category:income:contribution[:name]`, e.g. `sc:180000:25000:Sunita`.
+
+    Income may be blank to mean "not provided", which the eligibility engine treats as a
+    condition rather than a failure.
+    """
+    parts = spec.split(":")
+    if len(parts) < 3:
+        raise typer.BadParameter(
+            f"{spec!r}: expected category:income:contribution[:name], "
+            "for example sc:180000:25000:Sunita"
+        )
+    category, income, contribution, *rest = parts
+    return GroupMember(
+        name=rest[0] if rest else None,
+        social_category=category,
+        annual_family_income=money(income) if income else None,
+        contribution=money(contribution),
+    )
 
 
 @app.command()
@@ -35,6 +56,13 @@ def advise(
     radius_km: float = 10.0,
     lang: Annotated[str, typer.Option(help="en | hi")] = "en",
     moratorium_mode: str = "serviced",
+    member: Annotated[
+        list[str] | None,
+        typer.Option(
+            help="Group member as category:income:contribution[:name]. Repeat for each member."
+        ),
+    ] = None,
+    liability_split: Annotated[str, typer.Option(help="equal | proportional")] = "equal",
     out: Annotated[Path | None, typer.Option(help="Write facts.json here")] = None,
 ) -> None:
     """Produce a full advisory report and optionally lock the facts to disk."""
@@ -48,6 +76,8 @@ def advise(
         radius_km=radius_km,
         moratorium_mode=moratorium_mode,  # type: ignore[arg-type]
         language=Language(lang),
+        members=tuple(_parse_member(m) for m in (member or ())),
+        liability_split=liability_split,  # type: ignore[arg-type]
     )
     facts = build_facts(request)
     result = narrate(facts, Language(lang))
@@ -94,6 +124,35 @@ def advise(
                 str(config.min_dscr) if config.loan else "-",
                 format_inr(config.shortfall) if config.shortfall else "-",
                 verdict,
+            )
+        console.print()
+        console.print(table)
+
+    if facts.group is not None:
+        g = facts.group
+        table = Table(
+            title=f"Group of {len(g.members)}, pooled margin {format_inr(g.pooled_margin)}",
+            show_edge=False,
+        )
+        for column in (
+            "#",
+            "Name",
+            "Category",
+            "Contribution",
+            "Share of instalment",
+            "Corporation",
+            "Verdict",
+        ):
+            table.add_column(column)
+        for m in g.members:
+            table.add_row(
+                str(m.index),
+                m.name or "-",
+                m.social_category,
+                format_inr(m.contribution),
+                format_inr(m.liability),
+                m.corporation_name or "-",
+                "[green]qualifies[/green]" if m.qualifies else "[red]does NOT qualify[/red]",
             )
         console.print()
         console.print(table)

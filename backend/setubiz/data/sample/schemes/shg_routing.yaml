@@ -1,0 +1,42 @@
+# How a self-help group whose members fall under different apex corporations is routed.
+#
+# `policy: null` is deliberate and is the shipped state. Whether a mixed-category group applies
+# to one corporation, splits into separate applications, or is financed outside the apex
+# corporations altogether is a policy question, not something to infer from the lending rules.
+# Until it carries a sourced answer, the engine reports per-member eligibility in full and tells
+# the group to confirm the routing with the District Welfare Officer.
+#
+# To turn it on, set `policy` to one of the ids below and add a `source`.
+
+policy: null
+source: null
+
+policies:
+  - id: majority
+    description_en: >-
+      The group routes to the corporation serving the largest bloc of its members; minority
+      members are listed separately for confirmation.
+    description_hi: >-
+      समूह उस निगम के अंतर्गत जाता है जो उसके सबसे बड़े हिस्से की सेवा करता है; शेष सदस्यों की
+      अलग से पुष्टि करनी होती है।
+  - id: split
+    description_en: >-
+      Each member applies through the corporation that serves their own category, and the group
+      files one application per corporation.
+    description_hi: >-
+      प्रत्येक सदस्य अपनी श्रेणी के निगम से आवेदन करता है, और समूह प्रति निगम एक आवेदन देता है।
+  - id: single_category_only
+    description_en: >-
+      Only single-category groups are financed through an apex corporation; mixed groups are
+      routed to NRLM self-help group bank linkage instead.
+    description_hi: >-
+      केवल एक ही श्रेणी के समूहों को शीर्ष निगम से वित्त मिलता है; मिश्रित समूहों को एनआरएलएम
+      स्वयं सहायता समूह बैंक लिंकेज में भेजा जाता है।
+
+unconfirmed_en: >-
+  The members of this group fall under more than one corporation. Which corporation a mixed
+  group applies through is a policy question we have not been able to confirm, so ask the
+  District Welfare Officer before filing.
+unconfirmed_hi: >-
+  इस समूह के सदस्य एक से अधिक निगमों के अंतर्गत आते हैं। मिश्रित समूह किस निगम से आवेदन करे, यह
+  नीति का प्रश्न है जिसकी पुष्टि हम नहीं कर सके, इसलिए आवेदन से पहले जिला कल्याण अधिकारी से पूछें।

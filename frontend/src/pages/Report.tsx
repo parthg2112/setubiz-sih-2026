@@ -7,6 +7,7 @@ import { LoanComparison } from '../components/LoanComparison'
 import { OutOfScope } from '../components/OutOfScope'
 import { ProvenancePanel } from '../components/ProvenancePanel'
 import { ScheduleTable } from '../components/ScheduleTable'
+import { GroupPanel } from '../components/GroupPanel'
 import { SchemeStacking } from '../components/SchemeStacking'
 import { WhatIf } from '../components/WhatIf'
 import { SizesThatWork } from '../components/SizesThatWork'
@@ -154,6 +155,7 @@ function Loaded({
   const scheme = section('scheme')
   const alternatives = section('alternatives')
   const stacking = section('stacking')
+  const group = section('group')
 
 
   /* The scheme cannot fund this applicant: project cost outside the envelope, or no loan size
@@ -235,6 +237,8 @@ function Loaded({
           </div>
         </div>
       )}
+
+      {group && <GroupPanel data={group.data} body={group.body} strings={strings} />}
 
       {/* ---- The answer. One number, one reason, before anything that justifies it.
               When the scheme cannot fund this applicant at all the backend returns max_loan 0 and

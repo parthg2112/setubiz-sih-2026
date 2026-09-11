@@ -15,6 +15,7 @@ from pydantic import BaseModel, ConfigDict
 from setubiz.config import get_settings
 from setubiz.data.loader import DataSource, Village, get_data_source
 from setubiz.eligibility import EligibilityResult, SocialCategory, assess
+from setubiz.eligibility.group import GroupEligibility, assess_group
 from setubiz.eligibility.stacking import StackingResult, combinations
 from setubiz.facts.provenance import resolve
 from setubiz.feasibility import competitors as competitors_mod
@@ -58,6 +59,8 @@ class Facts(BaseModel):
     eligibility: EligibilityResult
     #: Which of the schemes on this report may be held together.
     stacking: StackingResult
+    #: Present only in group mode; None for a single applicant.
+    group: GroupEligibility | None
 
     numeric_index: dict[str, Decimal]
     provenance: dict[str, tuple[str, ...]]
@@ -369,7 +372,9 @@ def build_facts(request: AdvisoryRequest, source: DataSource | None = None) -> F
     )
     threat = threats_mod.assess(reach, request.business_category, source)
 
-    scheme = route(request.savings, ActivityKind(request.activity_kind))
+    # Pooled contributions are the margin in group mode; `pooled_margin` falls back to
+    # `savings` for a single applicant, so this line is unchanged for them.
+    scheme = route(request.pooled_margin, ActivityKind(request.activity_kind))
     mode = MoratoriumMode(request.moratorium_mode)
     rs = right_size(scheme, template, mode)
     alternatives = viable_configurations(scheme, template, mode)
@@ -423,6 +428,17 @@ def build_facts(request: AdvisoryRequest, source: DataSource | None = None) -> F
     # The scheme the applicant was actually routed to is the anchor every pair is measured
     # against; an out-of-scope route has none, and the stacking layer returns nothing.
     stacking = combinations(eligibility, scheme.logic_id)
+
+    # Group mode is additive: with no members this is None and every existing path is untouched.
+    group = None
+    if request.members:
+        group = assess_group(
+            request.members,
+            state=request.state,
+            activity_category=request.business_category,
+            instalment=amort_rec.instalment if amort_rec else ZERO,
+            liability_split=request.liability_split,
+        )
 
     metrics = _swot_metrics(village, reach, comp, dem, threat, rs, scheme, template)
     swot = swot_mod.evaluate(metrics)
@@ -536,6 +552,7 @@ def build_facts(request: AdvisoryRequest, source: DataSource | None = None) -> F
         amortization_alternate_mode=amort_alt,
         eligibility=eligibility,
         stacking=stacking,
+        group=group,
         numeric_index=index,
         provenance=provenance,
         sources=sources,

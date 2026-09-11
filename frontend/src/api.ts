@@ -49,6 +49,16 @@ export interface AdvisoryInput {
   radius_km: number
   moratorium_mode: 'serviced' | 'capitalized'
   language: Language
+  members?: GroupMemberInput[]
+  liability_split?: 'equal' | 'proportional'
+}
+
+export interface GroupMemberInput {
+  name?: string | null
+  social_category: string
+  annual_family_income?: number | null
+  contribution: number
+  is_woman?: boolean
 }
 
 export interface FinanceInput {

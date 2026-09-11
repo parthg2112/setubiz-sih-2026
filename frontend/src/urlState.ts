@@ -1,4 +1,4 @@
-import type { AdvisoryInput } from './api'
+import type { AdvisoryInput, GroupMemberInput } from './api'
 import type { Language } from './types'
 
 /** The report is a POST result and the backend persists nothing, so there is no report id to link
@@ -33,7 +33,30 @@ export function toSearchParams(input: AdvisoryInput): URLSearchParams {
   if (!input.has_prior_experience) p.set('new', '1')
   if (input.radius_km !== DEFAULTS.radius_km) p.set('radius', String(input.radius_km))
   p.set('lang', input.language)
+  // Group members ride in the URL like everything else, so a group report is as shareable as an
+  // individual one. `category:income:contribution:name`, one `m` per member.
+  for (const m of input.members ?? []) {
+    p.append(
+      'm',
+      [m.social_category, m.annual_family_income ?? '', m.contribution, m.name ?? ''].join(':'),
+    )
+  }
+  if (input.liability_split && input.liability_split !== 'equal') {
+    p.set('split', input.liability_split)
+  }
   return p
+}
+
+function parseMember(raw: string): GroupMemberInput | null {
+  const [social_category, income, contribution, ...name] = raw.split(':')
+  const amount = Number(contribution)
+  if (!social_category || !Number.isFinite(amount) || amount <= 0) return null
+  return {
+    social_category,
+    annual_family_income: income ? Number(income) : null,
+    contribution: amount,
+    name: name.join(':') || null,
+  }
 }
 
 /** Returns null when the URL does not carry enough to run an advisory — the report route treats
@@ -64,6 +87,8 @@ export function fromSearchParams(p: URLSearchParams, language: Language): Adviso
     radius_km: Number.isFinite(radius) && radius > 0 ? radius : DEFAULTS.radius_km,
     moratorium_mode: DEFAULTS.moratorium_mode,
     language,
+    members: p.getAll('m').map(parseMember).filter((m): m is GroupMemberInput => m !== null),
+    liability_split: p.get('split') === 'proportional' ? 'proportional' : 'equal',
   }
 }
 

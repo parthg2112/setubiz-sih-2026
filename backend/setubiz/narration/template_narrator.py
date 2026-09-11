@@ -190,6 +190,8 @@ class TemplateNarrator:
                 )
             )
 
+        if facts.group is not None:
+            sections.append(_group_section(facts, language))
         sections.append(_alternatives_section(facts, language))
         sections.append(_stacking_section(facts, language))
         sections.append(_swot_section(facts, language))
@@ -370,6 +372,61 @@ def _stacking_section(facts: Facts, language: Language) -> ReportSection:
             "needs_verification": _render(st.needs_verification),
             "mutually_exclusive": _render(st.mutually_exclusive),
             "considered": list(st.considered),
+        },
+    )
+
+
+def _group_section(facts: Facts, language: Language) -> ReportSection:
+    """The group's position, member by member.
+
+    Anyone who does not qualify is named. A group-level verdict that quietly absorbed a failing
+    member would send the group to the counter to discover it.
+    """
+    en = language is Language.EN
+    g = facts.group
+    assert g is not None  # only called in group mode
+
+    rows = [
+        {
+            "index": m.index,
+            "name": m.name,
+            "social_category": m.social_category,
+            "contribution": m.contribution,
+            "liability": m.liability,
+            "corporation": m.corporation_name,
+            "verdict": m.verdict.value,
+            "qualifies": m.qualifies,
+        }
+        for m in g.members
+    ]
+
+    parts = [
+        f"Group of {len(g.members)} members pooling {format_inr(g.pooled_margin)}."
+        if en
+        else f"{len(g.members)} सदस्यों का समूह, कुल {format_inr(g.pooled_margin)} की पूँजी।"
+    ]
+    if g.all_qualify:
+        parts.append("Every member qualifies." if en else "सभी सदस्य पात्र हैं।")
+    else:
+        parts.append(
+            f"{len(g.qualifying)} of {len(g.members)} members qualify."
+            if en
+            else f"{len(g.members)} में से {len(g.qualifying)} सदस्य पात्र हैं।"
+        )
+    parts.extend(n.text_en if en else n.text_hi for n in g.notes)
+
+    return ReportSection(
+        id="group",
+        heading="Your group" if en else "आपका समूह",
+        body=" ".join(parts),
+        cites=g.sources,
+        data={
+            "members": rows,
+            "pooled_margin": g.pooled_margin,
+            "liability_split": g.liability_split,
+            "mixed_categories": g.mixed_categories,
+            "routing_policy": g.routing_policy,
+            "all_qualify": g.all_qualify,
         },
     )
 

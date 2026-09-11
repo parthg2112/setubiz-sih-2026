@@ -12,6 +12,8 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from setubiz.money import ZERO, q
+
 
 class Confidence(str, Enum):
     HIGH = "high"
@@ -92,6 +94,22 @@ class Advisory(BaseModel):
         return self.text_hi if Language(language) is Language.HI else self.text_en
 
 
+class GroupMember(BaseModel):
+    """One member of a self-help group.
+
+    Each member keeps their own social category and income, because eligibility is assessed per
+    person even when the enterprise is shared. Averaging them would hide the member who fails.
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    name: str | None = None
+    social_category: str = "sc"
+    annual_family_income: Decimal | None = Field(default=None, ge=0)
+    contribution: Decimal = Field(gt=0, description="This member's share of the margin money")
+    is_woman: bool = False
+
+
 class AdvisoryRequest(BaseModel):
     """What the voice/PWA layer collects before anything is computed."""
 
@@ -111,10 +129,33 @@ class AdvisoryRequest(BaseModel):
     activity_kind: Literal["general", "plantation", "construction"] = "general"
     language: Language = Language.EN
 
+    #: Empty is the single-applicant path, unchanged. A non-empty list turns on group mode, where
+    #: pooled contributions become the margin and eligibility is assessed member by member.
+    members: tuple[GroupMember, ...] = ()
+    #: How the group instalment is shared out. Real SHGs do both.
+    liability_split: Literal["equal", "proportional"] = "equal"
+
+    @property
+    def is_group(self) -> bool:
+        return bool(self.members)
+
+    @property
+    def pooled_margin(self) -> Decimal:
+        """The margin the finance engine sees. Falls back to `savings` for a single applicant."""
+        if not self.members:
+            return self.savings
+        return q(sum((m.contribution for m in self.members), ZERO))
+
     @model_validator(mode="after")
     def _needs_a_village(self) -> AdvisoryRequest:
         if not self.village_shrid and not self.village_query:
             raise ValueError("provide either village_shrid or village_query")
+        return self
+
+    @model_validator(mode="after")
+    def _a_group_needs_more_than_one_member(self) -> AdvisoryRequest:
+        if self.members and len(self.members) < 2:
+            raise ValueError("a group needs at least two members; omit members for one applicant")
         return self
 
 

@@ -114,6 +114,22 @@ export interface SectionData {
     shortfall: string
     funded: boolean
   }[]
+  // group
+  members?: {
+    index: number
+    name: string | null
+    social_category: string
+    contribution: string
+    liability: string
+    corporation: string | null
+    verdict: string
+    qualifies: boolean
+  }[]
+  pooled_margin?: string
+  liability_split?: string
+  mixed_categories?: boolean
+  routing_policy?: string | null
+  all_qualify?: boolean
   // stacking
   combinable?: SchemeCombination[]
   needs_verification?: SchemeCombination[]
