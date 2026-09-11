@@ -136,9 +136,14 @@
  * a dark-mode viewer prints pale grey text onto white paper and the handout is unreadable.
  *
  * These re-point UX4G's semantic tokens at the same primitive steps the light theme uses, so the
- * ramp stays the system's own — no invented colour values. */
+ * ramp stays the system's own — no invented colour values.
+ *
+ * Specificity matters here: UX4G declares its dark tokens at `:root[data-theme=dark]` (0-2-0),
+ * so a bare `[data-theme='dark']` (0-1-0) loses and the whole re-stamp silently does nothing —
+ * which is the worst possible failure for a print rule, because nobody sees it until the paper
+ * comes out of the printer. */
 @media print {
-  [data-theme='dark'] {
+  :root[data-theme='dark'] {
     color-scheme: light;
     --ux4g-bg-neutral: var(--ux4g-color-neutral-50);
     --ux4g-bg-neutral-elevated: var(--ux4g-color-neutral-0);
