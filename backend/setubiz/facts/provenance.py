@@ -46,9 +46,7 @@ _SOURCES: tuple[Source, ...] = (
         id="economic_census_2013",
         title="Sixth Economic Census 2013: establishment counts by industry",
         kind=SourceKind.ECONOMIC_CENSUS,
-        publisher=(
-            "Central Statistics Office, Ministry of Statistics & Programme Implementation"
-        ),
+        publisher=("Central Statistics Office, Ministry of Statistics & Programme Implementation"),
         url="https://www.mospi.gov.in",
         year="2013",
         note=(
@@ -61,9 +59,7 @@ _SOURCES: tuple[Source, ...] = (
         id="hces_2023_24",
         title="Household Consumption Expenditure Survey 2023-24",
         kind=SourceKind.CONSUMPTION_SURVEY,
-        publisher=(
-            "National Statistics Office, Ministry of Statistics & Programme Implementation"
-        ),
+        publisher=("National Statistics Office, Ministry of Statistics & Programme Implementation"),
         url="https://www.mospi.gov.in/publication/household-consumption-expenditure-survey-2023-24",
         year="2023-24",
         note=(

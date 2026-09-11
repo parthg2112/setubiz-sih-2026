@@ -116,7 +116,7 @@ export const T = {
     themeLight: 'Light',
     themeDark: 'Dark',
 
-    // Chrome. Short, literal, no welcome copy — every string here has to do work.
+    // Chrome. Short, literal, no welcome copy; every string here has to do work.
     govOfIndia: 'Government of India',
     ministry: 'Ministry of Social Justice and Empowerment',
     skipToMain: 'Skip to main content',
