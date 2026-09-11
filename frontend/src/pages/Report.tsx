@@ -7,6 +7,7 @@ import { LoanComparison } from '../components/LoanComparison'
 import { OutOfScope } from '../components/OutOfScope'
 import { ProvenancePanel } from '../components/ProvenancePanel'
 import { ScheduleTable } from '../components/ScheduleTable'
+import { SizesThatWork } from '../components/SizesThatWork'
 import { SeasonalityChart } from '../components/SeasonalityChart'
 import { SwotGrid } from '../components/SwotGrid'
 import { inr, lakh, type Strings } from '../format'
@@ -149,6 +150,7 @@ function Loaded({
   const swot = section('swot')
   const threats = section('threats')
   const scheme = section('scheme')
+  const alternatives = section('alternatives')
 
   /* The scheme cannot fund this applicant: project cost outside the envelope, or no loan size
      that services. Backend signals it with max_loan 0 plus a referral list. */
@@ -254,6 +256,12 @@ function Loaded({
           />
         </section>
         )
+      )}
+
+      {/* ---- What actually works. Shown whenever the engine found something to say: either
+              sizes that fit, or an honest account of why none does. ---- */}
+      {!outOfScope && alternatives && (
+        <SizesThatWork data={alternatives.data} language={language} strings={strings} />
       )}
 
       {/* ---- Warnings. Never collapsed: these are the reasons someone defaults. ---- */}

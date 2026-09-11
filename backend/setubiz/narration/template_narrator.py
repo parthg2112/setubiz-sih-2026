@@ -196,6 +196,14 @@ class TemplateNarrator:
         return Report(language=language, narrator=self.name, sections=tuple(sections))
 
 
+def _plural(count: int, word: str) -> str:
+    """English pluralisation for the one section that counts things in prose.
+
+    Hindi does not take an English plural, so the Hindi branches never call this.
+    """
+    return f"{count} {word}" if count == 1 else f"{count} {word}s"
+
+
 def _alternatives_section(facts: Facts, language: Language) -> ReportSection:
     """Sizes of the same business that do work.
 
@@ -221,8 +229,13 @@ def _alternatives_section(facts: Facts, language: Language) -> ReportSection:
 
     if rows:
         lead = (
-            f"{len(rows)} size(s) of this business both clear the appraisal norm and are fully "
-            f"funded by your savings plus the loan they support."
+            (
+                "One size of this business clears the appraisal norm and is fully funded by "
+                "your savings plus the loan it supports."
+                if len(rows) == 1
+                else f"{len(rows)} sizes of this business clear the appraisal norm and are "
+                f"fully funded by your savings plus the loan they support."
+            )
             if en
             else f"इस व्यवसाय के {len(rows)} आकार ऐसे हैं जो मानक भी पूरा करते हैं और आपकी बचत "
             f"एवं ऋण से पूरी तरह वित्तपोषित भी हो जाते हैं।"
@@ -231,13 +244,13 @@ def _alternatives_section(facts: Facts, language: Language) -> ReportSection:
         for c in alt.configurations:
             if c.self_financed:
                 parts.append(
-                    f"{c.units} {label}: {format_inr(c.project_cost)}, no borrowing needed."
+                    f"{_plural(c.units, label)}: {format_inr(c.project_cost)}, no borrowing needed."
                     if en
                     else f"{c.units} {label}: {format_inr(c.project_cost)}, ऋण की आवश्यकता नहीं।"
                 )
             else:
                 parts.append(
-                    f"{c.units} {label}: {format_inr(c.project_cost)}, borrow "
+                    f"{_plural(c.units, label)}: {format_inr(c.project_cost)}, borrow "
                     f"{format_inr(c.loan)}, {format_inr(c.instalment)} a quarter."
                     if en
                     else f"{c.units} {label}: {format_inr(c.project_cost)}, ऋण "
@@ -257,8 +270,9 @@ def _alternatives_section(facts: Facts, language: Language) -> ReportSection:
             "years_to_expand": p.years_to_expand,
         }
         parts.append(
-            f"You could start at {p.start_units} {label} and reach {p.target_units} in about "
-            f"{p.years_to_expand} year(s) from what the business retains, without a second loan."
+            f"You could start at {_plural(p.start_units, label)} and reach "
+            f"{_plural(p.target_units, label)} in about {_plural(p.years_to_expand, 'year')} "
+            f"from what the business retains, without a second loan."
             if en
             else f"आप {p.start_units} {label} से शुरू करके लगभग {p.years_to_expand} वर्ष में "
             f"{p.target_units} तक पहुँच सकते हैं, बिना दूसरा ऋण लिए।"
@@ -286,6 +300,7 @@ def _alternatives_section(facts: Facts, language: Language) -> ReportSection:
             "phased": phased,
         },
     )
+
 
 def _swot_section(facts: Facts, language: Language) -> ReportSection:
     en = language is Language.EN

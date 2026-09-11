@@ -142,8 +142,10 @@ class CostTemplate(BaseModel):
         what the family draws. `backyard_poultry` does not, and treating its surplus as retained
         earnings would quietly assume the family lives on nothing.
         """
-        return any("labour" in li.item.lower() or "wage" in li.item.lower() or
-                   "help" in li.item.lower() for li in self.monthly_opex)
+        return any(
+            "labour" in li.item.lower() or "wage" in li.item.lower() or "help" in li.item.lower()
+            for li in self.monthly_opex
+        )
 
     def at_units(self, units: int) -> CostTemplate:
         """The same business costed at a different size.

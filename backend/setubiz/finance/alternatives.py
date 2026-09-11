@@ -70,15 +70,15 @@ class Configuration:
         because the applicant happens to be able to pay for it.
         """
         return (
-            self.funded
-            and self.annual_noi > 0
-            and self.binding is not BindingConstraint.NOT_VIABLE
+            self.funded and self.annual_noi > 0 and self.binding is not BindingConstraint.NOT_VIABLE
         )
 
     @property
     def comfort(self) -> Comfort:
-        return "tight" if self.min_dscr < get_settings().dscr_threshold + COMFORT_MARGIN else (
-            "comfortable"
+        return (
+            "tight"
+            if self.min_dscr < get_settings().dscr_threshold + COMFORT_MARGIN
+            else ("comfortable")
         )
 
 
@@ -115,8 +115,9 @@ class AlternativeSet:
         return bool(self.configurations)
 
 
-def _configuration(units: int, sized: CostTemplate, rs: RightSizing, scheme: SchemeRoute,
-                   mode: MoratoriumMode) -> Configuration:
+def _configuration(
+    units: int, sized: CostTemplate, rs: RightSizing, scheme: SchemeRoute, mode: MoratoriumMode
+) -> Configuration:
     instalment = ZERO
     if rs.recommended_loan > 0:
         instalment = amortize_route(scheme, rs.recommended_loan, mode).instalment
@@ -134,8 +135,9 @@ def _configuration(units: int, sized: CostTemplate, rs: RightSizing, scheme: Sch
     )
 
 
-def _phased(funded: tuple[Configuration, ...], considered: tuple[Configuration, ...],
-            template: CostTemplate) -> PhasedPlan | None:
+def _phased(
+    funded: tuple[Configuration, ...], considered: tuple[Configuration, ...], template: CostTemplate
+) -> PhasedPlan | None:
     """Offer a phased build only when the arithmetic actually supports it.
 
     Retained earnings are net operating income less debt service. That is only a household's
@@ -176,8 +178,9 @@ def _phased(funded: tuple[Configuration, ...], considered: tuple[Configuration, 
     )
 
 
-def _why_not(considered: tuple[Configuration, ...], closest: Configuration | None,
-             extra_margin: Decimal | None, label: str) -> tuple[Advisory, ...]:
+def _why_not(
+    closest: Configuration | None, extra_margin: Decimal | None, label: str, label_hi: str
+) -> tuple[Advisory, ...]:
     """Never return an empty result with no explanation."""
     if closest is None:
         return (
@@ -198,22 +201,23 @@ def _why_not(considered: tuple[Configuration, ...], closest: Configuration | Non
             ),
             text_hi=(
                 f"इस व्यवसाय का कोई भी आकार आपकी बचत और मिलने वाले ऋण से पूरी तरह वित्तपोषित नहीं "
-                f"हो पाता। सबसे नज़दीक {closest.units} {label} है, फिर भी कमी रह जाती है।"
+                f"हो पाता। सबसे नज़दीक {closest.units} {label_hi} है, फिर भी कमी रह जाती है।"
             ),
         )
     ]
     if extra_margin is not None and extra_margin > 0:
+        gap = format_inr(extra_margin)
         out.append(
             Advisory(
                 id="additional_margin",
                 text_en=(
-                    f"About {format_inr(extra_margin)} more of your own money would close that gap "
-                    f"at {closest.units} {label}{'s' if closest.units != 1 else ''}. A larger unit "
+                    f"About {gap} more of your own money would close that gap at "
+                    f"{closest.units} {label}{'s' if closest.units != 1 else ''}. A larger unit "
                     f"often needs less of your own money, not more, because its running costs are "
                     f"spread over more output."
                 ),
                 text_hi=(
-                    f"{closest.units} {label} पर यह कमी पूरी करने के लिए लगभग {format_inr(extra_margin)} "
+                    f"{closest.units} {label_hi} पर यह कमी पूरी करने के लिए लगभग {gap} "
                     f"की अतिरिक्त अपनी पूँजी चाहिए। बड़ी इकाई में प्रायः अपनी पूँजी कम लगती "
                     f"है, क्योंकि खर्च अधिक उत्पादन पर बँट जाता है।"
                 ),
@@ -263,7 +267,12 @@ def viable_configurations(
         # is unchanged, so the shortfall is what it would take. Stated as "about" because the
         # binding constraint can shift once the numbers move.
         extra_margin = closest.shortfall if closest else None
-        why_not = _why_not(rows, closest, extra_margin, template.unit_label)
+        why_not = _why_not(
+            closest,
+            extra_margin,
+            template.unit_label,
+            template.unit_label_hi or template.unit_label,
+        )
 
     return AlternativeSet(
         base_units=template.base_units,

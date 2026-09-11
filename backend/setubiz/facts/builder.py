@@ -21,9 +21,9 @@ from setubiz.feasibility import demand as demand_mod
 from setubiz.feasibility import market_reach as reach_mod
 from setubiz.feasibility import swot as swot_mod
 from setubiz.feasibility import threats as threats_mod
+from setubiz.finance.alternatives import AlternativeSet, viable_configurations
 from setubiz.finance.amortization import AmortizationResult, MoratoriumMode, amortize
 from setubiz.finance.cost_templates import CostTemplate, find_template_for_category
-from setubiz.finance.alternatives import AlternativeSet, viable_configurations
 from setubiz.finance.rightsizing import RightSizing, right_size
 from setubiz.finance.router import ActivityKind, SchemeRoute, route
 from setubiz.money import ZERO, format_inr, q

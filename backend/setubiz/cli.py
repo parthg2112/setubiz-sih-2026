@@ -69,6 +69,35 @@ def advise(
         console.print(f"\n[bold cyan]{section.heading}[/bold cyan]")
         console.print(section.body)
 
+    alt = facts.alternatives
+    if len(alt.considered) > 1:
+        table = Table(title=f"Sizes considered ({alt.unit_label})", show_edge=False)
+        for column in ("Size", "Project cost", "Loan", "Instalment", "DSCR", "Gap", "Verdict"):
+            table.add_column(column)
+        for config in alt.considered:
+            if config.viable:
+                verdict = f"[green]works, {config.comfort}[/green]"
+            elif config.shortfall > 0:
+                verdict = "[red]not fully funded[/red]"
+            else:
+                verdict = "[red]loses money[/red]"
+            table.add_row(
+                str(config.units),
+                format_inr(config.project_cost),
+                # A zero loan means "none needed" only when the margin already covers the unit;
+                # otherwise it means nothing was serviceable, which is the opposite.
+                format_inr(config.loan)
+                if config.loan
+                else ("none needed" if config.self_financed else "none serviceable"),
+                format_inr(config.instalment) if config.instalment else "-",
+                # 999 is the no-debt-service sentinel, never a coverage ratio.
+                str(config.min_dscr) if config.loan else "-",
+                format_inr(config.shortfall) if config.shortfall else "-",
+                verdict,
+            )
+        console.print()
+        console.print(table)
+
     if rs.recommended_dscr:
         table = Table(title="Debt service coverage by loan year", show_edge=False)
         for column in ("Year", "Net income", "Debt service", "DSCR", "Passes"):

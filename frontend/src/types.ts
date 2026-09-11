@@ -101,6 +101,34 @@ export interface SectionData {
   // swot
   quadrants?: Record<string, string[]>
   rules_fired?: string[]
+  // alternatives
+  unit_label?: string
+  configurations?: AltConfiguration[]
+  considered?: {
+    units: number
+    project_cost: string
+    shortfall: string
+    funded: boolean
+  }[]
+  closest_units?: number | null
+  additional_margin_needed?: string | null
+  phased?: {
+    start_units: number
+    target_units: number
+    expansion_cost: string
+    annual_retained: string
+    years_to_expand: number
+  } | null
+}
+
+export interface AltConfiguration {
+  units: number
+  project_cost: string
+  loan: string
+  instalment: string
+  min_dscr: string
+  comfort: 'comfortable' | 'tight'
+  self_financed: boolean
 }
 
 export interface ReportSection {

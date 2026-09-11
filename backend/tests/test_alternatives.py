@@ -107,6 +107,14 @@ def test_the_demo_persona_cannot_fund_any_dairy_size(dairy, logic_b_route):
     assert all(a.text_en and a.text_hi for a in result.why_not)
 
 
+def test_the_explanation_names_the_unit_in_the_readers_own_language(dairy, logic_b_route):
+    """A Hindi report saying "4 animal" is the bilingual bug this codebase exists to avoid."""
+    why = viable_configurations(logic_b_route, dairy).why_not
+    assert all("animal" in a.text_en for a in why)
+    assert all("animal" not in a.text_hi for a in why)
+    assert all("पशु" in a.text_hi for a in why)
+
+
 def test_a_bigger_unit_needs_less_of_the_applicants_own_money(dairy, logic_b_route):
     """The counterintuitive result, and the reason this feature is worth having.
 
@@ -233,9 +241,9 @@ def test_a_unit_you_can_afford_but_that_loses_money_is_still_refused(dairy):
         }
     )
     # One size only, and a margin that already covers it, so nothing needs borrowing.
-    result = viable_configurations(route(400000), loss_making.model_copy(
-        update={"unit_range": (1, 1)}
-    ))
+    result = viable_configurations(
+        route(400000), loss_making.model_copy(update={"unit_range": (1, 1)})
+    )
     assert result.any_viable is False
     assert all(c.shortfall == 0 for c in result.considered)
     assert result.closest is None
