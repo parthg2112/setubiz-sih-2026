@@ -23,6 +23,7 @@ from setubiz.feasibility import swot as swot_mod
 from setubiz.feasibility import threats as threats_mod
 from setubiz.finance.amortization import AmortizationResult, MoratoriumMode, amortize
 from setubiz.finance.cost_templates import CostTemplate, find_template_for_category
+from setubiz.finance.alternatives import AlternativeSet, viable_configurations
 from setubiz.finance.rightsizing import RightSizing, right_size
 from setubiz.finance.router import ActivityKind, SchemeRoute, route
 from setubiz.money import ZERO, format_inr, q
@@ -47,6 +48,8 @@ class Facts(BaseModel):
 
     scheme: SchemeRoute
     right_sizing: RightSizing
+    #: Sizes of the same business that do work, when the one as costed does not.
+    alternatives: AlternativeSet
     amortization_max: AmortizationResult | None
     amortization_recommended: AmortizationResult | None
     amortization_alternate_mode: AmortizationResult | None
@@ -214,6 +217,7 @@ def _numeric_index(
     amort_max: AmortizationResult | None,
     amort_rec: AmortizationResult | None,
     eligibility: EligibilityResult,
+    alternatives: AlternativeSet,
     metrics: dict[str, Any],
 ) -> dict[str, Decimal]:
     index: dict[str, Decimal] = {
@@ -311,6 +315,28 @@ def _numeric_index(
         index["price_low"] = threat.price_band.low
         index["price_point"] = threat.price_band.point
         index["price_high"] = threat.price_band.high
+    for config in alternatives.considered:
+        n = config.units
+        # The size itself is quoted in the prose ("750 birds"), so it needs grounding too.
+        index[f"alt_{n}_units"] = Decimal(n)
+        index[f"alt_{n}_project_cost"] = config.project_cost
+        index[f"alt_{n}_debt_need"] = config.debt_need
+        index[f"alt_{n}_loan"] = config.loan
+        index[f"alt_{n}_instalment"] = config.instalment
+        index[f"alt_{n}_annual_noi"] = config.annual_noi
+        index[f"alt_{n}_shortfall"] = config.shortfall
+        # 999 is the no-debt-service sentinel, not a ratio; indexing it would let the narrator
+        # quote it as one.
+        if config.loan > 0:
+            index[f"alt_{n}_min_dscr"] = config.min_dscr
+    if alternatives.closest is not None:
+        index["alt_closest_units"] = Decimal(alternatives.closest.units)
+    if alternatives.additional_margin_needed is not None:
+        index["alt_additional_margin_needed"] = alternatives.additional_margin_needed
+    if alternatives.phased is not None:
+        index["alt_phased_expansion_cost"] = alternatives.phased.expansion_cost
+        index["alt_phased_annual_retained"] = alternatives.phased.annual_retained
+        index["alt_phased_years"] = Decimal(alternatives.phased.years_to_expand)
     if eligibility.income_ceiling is not None:
         index["income_ceiling"] = eligibility.income_ceiling
     if eligibility.annual_family_income is not None:
@@ -343,6 +369,7 @@ def build_facts(request: AdvisoryRequest, source: DataSource | None = None) -> F
     scheme = route(request.savings, ActivityKind(request.activity_kind))
     mode = MoratoriumMode(request.moratorium_mode)
     rs = right_size(scheme, template, mode)
+    alternatives = viable_configurations(scheme, template, mode)
 
     amort_max = (
         amortize(
@@ -394,7 +421,18 @@ def build_facts(request: AdvisoryRequest, source: DataSource | None = None) -> F
     metrics = _swot_metrics(village, reach, comp, dem, threat, rs, scheme, template)
     swot = swot_mod.evaluate(metrics)
     index = _numeric_index(
-        reach, comp, dem, threat, rs, scheme, template, amort_max, amort_rec, eligibility, metrics
+        reach,
+        comp,
+        dem,
+        threat,
+        rs,
+        scheme,
+        template,
+        amort_max,
+        amort_rec,
+        eligibility,
+        alternatives,
+        metrics,
     )
 
     source_ids = tuple(
@@ -409,6 +447,7 @@ def build_facts(request: AdvisoryRequest, source: DataSource | None = None) -> F
                 "finance_engine",
                 "nabard_templates",
                 *eligibility.sources,
+                *alternatives.sources,
                 *(c for item in swot.items for c in item.cites),
             )
         )
@@ -452,6 +491,11 @@ def build_facts(request: AdvisoryRequest, source: DataSource | None = None) -> F
             ("monthly_", "fixed_capital", "working_capital", "required_capital", "annual_noi")
         ):
             provenance[key] = ("nabard_templates",)
+        elif key.startswith("alt_"):
+            # The size search re-costs the NABARD template and re-runs the finance engine, so it
+            # cites both. Stated here rather than left to the catch-all below, which would be
+            # right by accident.
+            provenance[key] = alternatives.sources
         elif key.startswith(("income_", "annual_family")):
             provenance[key] = eligibility.sources
         elif key in {
@@ -479,6 +523,7 @@ def build_facts(request: AdvisoryRequest, source: DataSource | None = None) -> F
         swot=swot,
         scheme=scheme,
         right_sizing=rs,
+        alternatives=alternatives,
         amortization_max=amort_max,
         amortization_recommended=amort_rec,
         amortization_alternate_mode=amort_alt,

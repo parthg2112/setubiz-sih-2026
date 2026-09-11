@@ -6,24 +6,30 @@ unit: 2 crossbred cows
 activity_kind: general
 source: "NABARD Model Bankable Project: Dairy Farming (2-animal unit), Jharkhand cost norms"
 fixed_capital:
-  - {item: 2 crossbred cows @ ₹75,000, item_hi: 2 संकर नस्ल गाय, amount: 150000}
-  - {item: Semi-pucca cattle shed, item_hi: पशु शेड, amount: 140000}
-  - {item: Chaff cutter, feed trough and equipment, item_hi: चारा कटर एवं उपकरण, amount: 25000}
-  - {item: Milk cans and utensils, item_hi: दूध के बर्तन, amount: 8000}
-  - {item: Cattle insurance premium (3 years), item_hi: पशु बीमा, amount: 12000}
-  - {item: Transport and procurement of animals, item_hi: पशु परिवहन, amount: 6000}
-  - {item: Fodder plot development, item_hi: चारा भूमि विकास, amount: 5000}
+  - {item: "2 crossbred cows @ ₹75,000", item_hi: 2 संकर नस्ल गाय, amount: 150000, scaling: linear}
+  - {item: Semi-pucca cattle shed, item_hi: पशु शेड, amount: 140000, scaling: linear}
+  - {item: "Chaff cutter, feed trough and equipment", item_hi: चारा कटर एवं उपकरण, amount: 25000, scaling: fixed}
+  - {item: Milk cans and utensils, item_hi: दूध के बर्तन, amount: 8000, scaling: step, step_capacity: 4}
+  - {item: Cattle insurance premium (3 years), item_hi: पशु बीमा, amount: 12000, scaling: linear}
+  - {item: Transport and procurement of animals, item_hi: पशु परिवहन, amount: 6000, scaling: linear}
+  - {item: Fodder plot development, item_hi: चारा भूमि विकास, amount: 5000, scaling: linear}
 working_capital_months: 3
+base_units: 2
+unit_label: animal
+unit_label_hi: पशु
+unit_range: [1, 6]
 monthly_revenue:
-  - {item: "Milk, 600 L @ ₹46/L", item_hi: दूध बिक्री, amount: 27600}
-  - {item: Dung and manure, item_hi: गोबर एवं खाद, amount: 1800}
+  - {item: "Milk, 600 L @ ₹46/L", item_hi: दूध बिक्री, amount: 27600, scaling: linear}
+  - {item: Dung and manure, item_hi: गोबर एवं खाद, amount: 1800, scaling: linear}
 monthly_opex:
-  - {item: Green and dry fodder, item_hi: हरा एवं सूखा चारा, amount: 11500}
-  - {item: Concentrate feed, item_hi: दाना मिश्रण, amount: 5600}
-  - {item: Veterinary and medicines, item_hi: पशु चिकित्सा, amount: 900}
-  - {item: Labour (imputed family labour), item_hi: श्रम, amount: 2800}
-  - {item: Electricity, transport and miscellaneous, item_hi: बिजली एवं विविध, amount: 800}
+  - {item: Green and dry fodder, item_hi: हरा एवं सूखा चारा, amount: 11500, scaling: linear}
+  - {item: Concentrate feed, item_hi: दाना मिश्रण, amount: 5600, scaling: linear}
+  - {item: Veterinary and medicines, item_hi: पशु चिकित्सा, amount: 900, scaling: linear}
+  - {item: Labour (imputed family labour), item_hi: श्रम, amount: 2800, scaling: step, step_capacity: 4}
+  - {item: "Electricity, transport and miscellaneous", item_hi: बिजली एवं विविध, amount: 800, scaling: fixed}
 assumptions:
   - Average yield 10 litres/animal/day over a 300-day lactation, staggered calving.
   - Milk price is the local cooperative procurement rate; private buyers may pay less.
   - Family labour is costed at shadow wage; excluding it overstates the true margin.
+  - Shed cost scales with floor area, so it is per animal; the chaff cutter and the electricity line do not move with herd size.
+  - One person tends up to four animals, so imputed labour steps rather than scaling.
