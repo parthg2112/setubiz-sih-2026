@@ -15,6 +15,7 @@ from pydantic import BaseModel, ConfigDict
 from setubiz.config import get_settings
 from setubiz.data.loader import DataSource, Village, get_data_source
 from setubiz.eligibility import EligibilityResult, SocialCategory, assess
+from setubiz.eligibility.stacking import StackingResult, combinations
 from setubiz.facts.provenance import resolve
 from setubiz.feasibility import competitors as competitors_mod
 from setubiz.feasibility import demand as demand_mod
@@ -55,6 +56,8 @@ class Facts(BaseModel):
     amortization_alternate_mode: AmortizationResult | None
 
     eligibility: EligibilityResult
+    #: Which of the schemes on this report may be held together.
+    stacking: StackingResult
 
     numeric_index: dict[str, Decimal]
     provenance: dict[str, tuple[str, ...]]
@@ -417,6 +420,9 @@ def build_facts(request: AdvisoryRequest, source: DataSource | None = None) -> F
         has_prior_experience=request.has_prior_experience,
         requested_loan=rs.recommended_loan or None,
     )
+    # The scheme the applicant was actually routed to is the anchor every pair is measured
+    # against; an out-of-scope route has none, and the stacking layer returns nothing.
+    stacking = combinations(eligibility, scheme.logic_id)
 
     metrics = _swot_metrics(village, reach, comp, dem, threat, rs, scheme, template)
     swot = swot_mod.evaluate(metrics)
@@ -448,6 +454,7 @@ def build_facts(request: AdvisoryRequest, source: DataSource | None = None) -> F
                 "nabard_templates",
                 *eligibility.sources,
                 *alternatives.sources,
+                *stacking.sources,
                 *(c for item in swot.items for c in item.cites),
             )
         )
@@ -528,6 +535,7 @@ def build_facts(request: AdvisoryRequest, source: DataSource | None = None) -> F
         amortization_recommended=amort_rec,
         amortization_alternate_mode=amort_alt,
         eligibility=eligibility,
+        stacking=stacking,
         numeric_index=index,
         provenance=provenance,
         sources=sources,

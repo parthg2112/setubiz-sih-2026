@@ -58,6 +58,19 @@ class SchemeRoute:
         return self.annual_rate / 4
 
     @property
+    def logic_id(self) -> str | None:
+        """The scheme id as it appears in `corporations.yaml` under `logics:`.
+
+        The stacking layer keys its rules on this, so it must be the id the data files use and
+        not the A/B letter. An out-of-scope route has no scheme, and therefore nothing to stack.
+        """
+        if self.logic is SchemeLogic.A:
+            return "nsfdc_micro_finance"
+        if self.logic is SchemeLogic.B:
+            return "nsfdc_term_loan"
+        return None
+
+    @property
     def in_scope(self) -> bool:
         return self.logic is not SchemeLogic.OUT_OF_SCOPE
 

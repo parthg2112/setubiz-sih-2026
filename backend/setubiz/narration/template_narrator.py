@@ -191,6 +191,7 @@ class TemplateNarrator:
             )
 
         sections.append(_alternatives_section(facts, language))
+        sections.append(_stacking_section(facts, language))
         sections.append(_swot_section(facts, language))
         sections.append(_threats_section(facts, language))
         return Report(language=language, narrator=self.name, sections=tuple(sections))
@@ -298,6 +299,71 @@ def _alternatives_section(facts: Facts, language: Language) -> ReportSection:
             "closest_units": alt.closest.units if alt.closest else None,
             "additional_margin_needed": alt.additional_margin_needed,
             "phased": phased,
+        },
+    )
+
+
+def _stacking_section(facts: Facts, language: Language) -> ReportSection:
+    """Which of the schemes on this report may be held together.
+
+    Confirmed combinations and unverified ones are kept in separate buckets all the way to the
+    UI. Collapsing them into one list is how "confirm this at the district office" turns into
+    "you qualify for both", which is the failure this feature exists to prevent.
+    """
+    en = language is Language.EN
+    st = facts.stacking
+
+    def _render(combos):
+        return [
+            {
+                "schemes": list(c.schemes),
+                "names": list(c.names if en else c.names_hi),
+                "reason": c.reason_en if en else c.reason_hi,
+                "source": c.source,
+                "sequencing": c.sequencing,
+                "combined_cap": c.combined_cap,
+                "subsidy_delta_pct": c.subsidy_delta_pct,
+            }
+            for c in combos
+        ]
+
+    parts: list[str] = []
+    if st.combinable:
+        parts.append(
+            f"{len(st.combinable)} of the schemes on this report can be held together."
+            if en
+            else f"इस रिपोर्ट की {len(st.combinable)} योजनाएँ साथ ली जा सकती हैं।"
+        )
+        parts.extend(c.reason_en if en else c.reason_hi for c in st.combinable)
+    if st.needs_verification:
+        parts.append(
+            "These may combine, but we could not find an authoritative source either way. "
+            "Confirm at the district office before counting on both."
+            if en
+            else "ये साथ मिल सकती हैं, किंतु हमें कोई आधिकारिक स्रोत नहीं मिला। दोनों पर भरोसा "
+            "करने से पहले जिला कार्यालय से पुष्टि करें।"
+        )
+        parts.extend(c.reason_en if en else c.reason_hi for c in st.needs_verification)
+    if st.mutually_exclusive:
+        parts.append("These cannot be held together." if en else "ये साथ नहीं ली जा सकतीं।")
+        parts.extend(c.reason_en if en else c.reason_hi for c in st.mutually_exclusive)
+    if not parts:
+        parts.append(
+            "No scheme combinations apply to this application."
+            if en
+            else "इस आवेदन पर कोई योजना संयोजन लागू नहीं होता।"
+        )
+
+    return ReportSection(
+        id="stacking",
+        heading="Schemes you can hold together" if en else "साथ ली जा सकने वाली योजनाएँ",
+        body=" ".join(parts),
+        cites=st.sources,
+        data={
+            "combinable": _render(st.combinable),
+            "needs_verification": _render(st.needs_verification),
+            "mutually_exclusive": _render(st.mutually_exclusive),
+            "considered": list(st.considered),
         },
     )
 

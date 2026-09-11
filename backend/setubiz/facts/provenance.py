@@ -136,6 +136,55 @@ _SOURCES: tuple[Source, ...] = (
         kind=SourceKind.SCHEME,
         url="https://nbcfdc.gov.in/",
     ),
+    # The five comparison schemes. Registered because the stacking layer cites them; without a
+    # Source record here, any figure or verdict attributed to them fails the facts contract.
+    Source(
+        id="pmmy",
+        title="Pradhan Mantri MUDRA Yojana",
+        kind=SourceKind.SCHEME,
+        publisher="Ministry of Finance",
+        url="https://www.mudra.org.in/",
+        note="Collateral-free term lending with no caste-category test. Rate set by the bank.",
+    ),
+    Source(
+        id="pmegp",
+        title="Prime Minister's Employment Generation Programme",
+        kind=SourceKind.SCHEME,
+        publisher="Ministry of Micro, Small and Medium Enterprises / KVIC",
+        url="https://www.kviconline.gov.in/pmegpeportal/",
+        note=(
+            "Carries a capital subsidy for rural and special-category applicants. The published "
+            "rate is a range rather than a single figure, so this build quotes no subsidy "
+            "percentage and computes none."
+        ),
+    ),
+    Source(
+        id="cgtmse",
+        title="Credit Guarantee Fund Trust for Micro and Small Enterprises",
+        kind=SourceKind.SCHEME,
+        publisher="Ministry of Micro, Small and Medium Enterprises",
+        url="https://www.cgtmse.in/",
+        note="A guarantee cover, not a loan. Removes a collateral demand rather than adding money.",
+    ),
+    Source(
+        id="dri",
+        title="Differential Rate of Interest scheme",
+        kind=SourceKind.SCHEME,
+        publisher="Reserve Bank of India",
+        url="https://www.rbi.org.in/",
+        note=(
+            "4% fixed lending for the weakest borrowers, capped at Rs 20,000 with its own "
+            "income test."
+        ),
+    ),
+    Source(
+        id="stand_up_india",
+        title="Stand-Up India",
+        kind=SourceKind.SCHEME,
+        publisher="Department of Financial Services",
+        url="https://www.standupmitra.in/",
+        note="Greenfield lending for Scheduled Caste, Scheduled Tribe and women entrepreneurs.",
+    ),
     Source(
         id="finance_engine",
         title="SetuBiz deterministic finance engine",

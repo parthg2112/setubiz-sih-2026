@@ -1,0 +1,91 @@
+# Which schemes may be held together, and which may not.
+#
+# The default verdict is `needs_verification`, and the engine refuses to emit `combinable`
+# without a `source`. Wrongly telling an applicant that two schemes stack is worse than telling
+# them to check: they build a project cost around assistance that never arrives.
+#
+# `subsidy_delta_pct` stays null until someone produces a citable rate. PMEGP's "25 to 35%"
+# exists in comparison.yaml only as English prose inside a highlight, and CGTMSE's guarantee
+# cover is not in the data at all, so no effective-subsidy arithmetic is possible yet.
+
+rules:
+  - schemes: [nsfdc_term_loan, pmegp]
+    verdict: needs_verification
+    reason_en: >-
+      A concessional NSFDC term loan and a PMEGP capital subsidy are administered by different
+      ministries, so whether one project may carry both is a district-level determination.
+      Confirm before counting the subsidy in your project cost.
+    reason_hi: >-
+      एनएसएफडीसी रियायती ऋण और पीएमईजीपी पूँजी सब्सिडी अलग-अलग मंत्रालयों की योजनाएँ हैं, इसलिए
+      एक ही परियोजना पर दोनों मिलेंगी या नहीं, यह जिला स्तर पर तय होता है। परियोजना लागत में
+      सब्सिडी जोड़ने से पहले पुष्टि करें।
+    source: null
+    sequencing: null
+    combined_cap: null
+    subsidy_delta_pct: null
+
+  - schemes: [nsfdc_term_loan, cgtmse]
+    verdict: needs_verification
+    reason_en: >-
+      CGTMSE is a guarantee cover rather than a loan, so it does not compete with an NSFDC term
+      loan for the same rupee. Whether an SCA-channelled loan is eligible for that cover needs
+      confirmation from the lending bank.
+    reason_hi: >-
+      सीजीटीएमएसई ऋण नहीं, बल्कि गारंटी कवर है, इसलिए यह एनएसएफडीसी सावधि ऋण से टकराता नहीं।
+      एससीए से मिले ऋण पर यह कवर मिलेगा या नहीं, यह ऋण देने वाले बैंक से पुष्टि करें।
+    source: null
+    sequencing: null
+    combined_cap: null
+    subsidy_delta_pct: null
+
+  - schemes: [nsfdc_term_loan, pmmy]
+    verdict: needs_verification
+    reason_en: >-
+      Both are term lending for the same working asset, so they are usually alternatives rather
+      than companions. Confirm at the district office which one your project should apply under.
+    reason_hi: >-
+      दोनों एक ही परिसंपत्ति के लिए सावधि ऋण हैं, इसलिए प्रायः ये विकल्प हैं, साथ लेने की
+      योजनाएँ नहीं। जिला कार्यालय से पुष्टि करें कि आपकी परियोजना किसके अंतर्गत आवेदन करे।
+    source: null
+    sequencing: null
+    combined_cap: null
+    subsidy_delta_pct: null
+
+  - schemes: [nsfdc_term_loan, stand_up_india]
+    verdict: needs_verification
+    reason_en: >-
+      Stand-Up India covers greenfield projects above the NSFDC term loan envelope, so the two
+      rarely apply to one project at once. Confirm which envelope your project cost falls in.
+    reason_hi: >-
+      स्टैंड-अप इंडिया एनएसएफडीसी सावधि ऋण सीमा से बड़ी नई परियोजनाओं के लिए है, इसलिए एक ही
+      परियोजना पर दोनों कम ही लागू होती हैं। पुष्टि करें कि आपकी परियोजना किस सीमा में आती है।
+    source: null
+    sequencing: null
+    combined_cap: null
+    subsidy_delta_pct: null
+
+  - schemes: [pmegp, cgtmse]
+    verdict: needs_verification
+    reason_en: >-
+      A capital subsidy and a guarantee cover address different problems, but PMEGP units carry
+      their own margin and lock-in conditions. Confirm with the implementing agency.
+    reason_hi: >-
+      पूँजी सब्सिडी और गारंटी कवर अलग-अलग समस्याएँ हल करते हैं, किंतु पीएमईजीपी इकाइयों पर अपनी
+      मार्जिन एवं लॉक-इन शर्तें लागू होती हैं। कार्यान्वयन एजेंसी से पुष्टि करें।
+    source: null
+    sequencing: null
+    combined_cap: null
+    subsidy_delta_pct: null
+
+  - schemes: [nsfdc_micro_finance, dri]
+    verdict: needs_verification
+    reason_en: >-
+      DRI lending is capped at Rs 20,000 and carries its own income test, so it is usually a
+      small top-up rather than a companion to a micro finance loan. Confirm with the bank.
+    reason_hi: >-
+      डीआरआई ऋण की सीमा 20,000 रुपये है और इसकी अपनी आय शर्त है, इसलिए यह प्रायः सूक्ष्म वित्त
+      ऋण का साथी नहीं, बल्कि छोटी अतिरिक्त राशि होती है। बैंक से पुष्टि करें।
+    source: null
+    sequencing: null
+    combined_cap: null
+    subsidy_delta_pct: null

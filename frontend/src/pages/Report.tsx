@@ -7,6 +7,7 @@ import { LoanComparison } from '../components/LoanComparison'
 import { OutOfScope } from '../components/OutOfScope'
 import { ProvenancePanel } from '../components/ProvenancePanel'
 import { ScheduleTable } from '../components/ScheduleTable'
+import { SchemeStacking } from '../components/SchemeStacking'
 import { SizesThatWork } from '../components/SizesThatWork'
 import { SeasonalityChart } from '../components/SeasonalityChart'
 import { SwotGrid } from '../components/SwotGrid'
@@ -151,6 +152,7 @@ function Loaded({
   const threats = section('threats')
   const scheme = section('scheme')
   const alternatives = section('alternatives')
+  const stacking = section('stacking')
 
 
   /* The scheme cannot fund this applicant: project cost outside the envelope, or no loan size
@@ -334,6 +336,8 @@ function Loaded({
           )}
         </div>
       </section>
+
+      {stacking && <SchemeStacking data={stacking.data} strings={strings} />}
 
       {/* ---- Everything that explains the answer, opened on demand. ---- */}
       <h2 className="ux4g-heading-m-strong ux4g-mt-xl ux4g-mb-s">{strings.whyThis}</h2>

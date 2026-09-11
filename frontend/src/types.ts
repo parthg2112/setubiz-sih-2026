@@ -110,6 +110,10 @@ export interface SectionData {
     shortfall: string
     funded: boolean
   }[]
+  // stacking
+  combinable?: SchemeCombination[]
+  needs_verification?: SchemeCombination[]
+  mutually_exclusive?: SchemeCombination[]
   closest_units?: number | null
   additional_margin_needed?: string | null
   phased?: {
@@ -119,6 +123,16 @@ export interface SectionData {
     annual_retained: string
     years_to_expand: number
   } | null
+}
+
+export interface SchemeCombination {
+  schemes: string[]
+  names: string[]
+  reason: string
+  source: string | null
+  sequencing: string | null
+  combined_cap: string | null
+  subsidy_delta_pct: string | null
 }
 
 export interface AltConfiguration {
