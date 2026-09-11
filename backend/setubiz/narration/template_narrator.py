@@ -286,6 +286,12 @@ def _alternatives_section(facts: Facts, language: Language) -> ReportSection:
         cites=alt.sources,
         data={
             "unit_label": label,
+            # The what-if sliders need the same bounds the search used, so a reader cannot drag
+            # to a size the cost template was never meant to describe.
+            "base_units": facts.template.base_units,
+            "unit_range": list(facts.template.unit_range),
+            "unit_step": facts.template.unit_step,
+            "category": facts.template.category,
             "configurations": rows,
             "considered": [
                 {

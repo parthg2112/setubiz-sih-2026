@@ -103,6 +103,10 @@ export interface SectionData {
   rules_fired?: string[]
   // alternatives
   unit_label?: string
+  base_units?: number
+  unit_range?: [number, number]
+  unit_step?: number
+  category?: string
   configurations?: AltConfiguration[]
   considered?: {
     units: number

@@ -14,11 +14,12 @@ async function get<T>(
   return response.json()
 }
 
-async function post<T>(path: string, body: unknown): Promise<T> {
+async function post<T>(path: string, body: unknown, signal?: AbortSignal): Promise<T> {
   const response = await fetch(BASE + path, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
+    signal,
   })
   if (!response.ok) throw new Error(await describe(response))
   return response.json()
@@ -50,6 +51,29 @@ export interface AdvisoryInput {
   language: Language
 }
 
+export interface FinanceInput {
+  margin: number
+  business_category: string
+  units?: number
+  revenue_factor?: number
+}
+
+/** The finance layer only. The feasibility estimators are not re-run, which is what makes this
+ *  fast enough to sit behind a slider. */
+export interface FinanceResult {
+  scheme: { max_loan: string; scheme_name: string }
+  right_sizing: {
+    recommended_loan: string
+    required_capital: string
+    debt_need: string
+    capital_shortfall: string
+    recommended_min_dscr: string
+    dscr_threshold: string
+    binding: string
+  }
+  schedules: { recommended_loan: { instalment: string } | null }
+}
+
 export const api = {
   /** `signal` lets the typeahead abandon a superseded request, so a slow early response cannot
    *  overwrite a fast later one. */
@@ -57,4 +81,6 @@ export const api = {
     get<VillageMatch[]>('/villages/search', state ? { q, state } : { q }, signal),
   costTemplates: () => get<CostTemplate[]>('/cost-templates'),
   advisory: (input: AdvisoryInput) => post<AdvisoryResponse>('/advisory', input),
+  financeStructure: (input: FinanceInput, signal?: AbortSignal) =>
+    post<FinanceResult>('/finance/structure', input, signal),
 }

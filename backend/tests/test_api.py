@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from decimal import Decimal
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -160,3 +162,47 @@ def test_metrics_exposes_the_validator_catch_rate(client, advisory_payload):
     assert 0.0 <= body["validator"]["catch_rate"] <= 1.0
     assert body["narrator"] == "template"
     assert body["data_source"] == "sample"
+
+
+def test_finance_structure_resizes_the_unit_for_a_what_if(client):
+    """The slider path: same margin, a bigger unit, recomputed from the finance layer alone."""
+    base = client.post(
+        "/api/v1/finance/structure", json={"margin": 100000, "business_category": "dairy"}
+    ).json()
+    bigger = client.post(
+        "/api/v1/finance/structure",
+        json={"margin": 100000, "business_category": "dairy", "units": 4},
+    ).json()
+
+    assert base["right_sizing"]["required_capital"] == "410800.00"
+    assert bigger["right_sizing"]["required_capital"] == "777800.00"
+    # The scheme ceiling follows the margin, which did not move.
+    assert bigger["scheme"]["max_loan"] == base["scheme"]["max_loan"]
+
+
+def test_finance_structure_applies_a_revenue_sensitivity(client):
+    """Revenue down 20% must reduce the serviceable loan, not the unit cost."""
+    base = client.post(
+        "/api/v1/finance/structure", json={"margin": 100000, "business_category": "dairy"}
+    ).json()
+    stressed = client.post(
+        "/api/v1/finance/structure",
+        json={"margin": 100000, "business_category": "dairy", "revenue_factor": "0.8"},
+    ).json()
+
+    assert stressed["right_sizing"]["required_capital"] == base["right_sizing"]["required_capital"]
+    assert Decimal(stressed["right_sizing"]["recommended_loan"]) < Decimal(
+        base["right_sizing"]["recommended_loan"]
+    )
+
+
+@pytest.mark.parametrize(
+    ("payload", "why"),
+    [
+        ({"margin": 100000, "units": 0}, "a unit of zero animals is not a smaller unit"),
+        ({"margin": 100000, "revenue_factor": "0.1"}, "a 90% shortfall is a different business"),
+        ({"margin": 100000, "revenue_factor": "3"}, "tripling revenue is not a sensitivity"),
+    ],
+)
+def test_finance_structure_rejects_what_ifs_the_template_cannot_describe(client, payload, why):
+    assert client.post("/api/v1/finance/structure", json=payload).status_code == 422, why

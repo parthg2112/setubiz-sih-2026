@@ -8,6 +8,7 @@ import { OutOfScope } from '../components/OutOfScope'
 import { ProvenancePanel } from '../components/ProvenancePanel'
 import { ScheduleTable } from '../components/ScheduleTable'
 import { SchemeStacking } from '../components/SchemeStacking'
+import { WhatIf } from '../components/WhatIf'
 import { SizesThatWork } from '../components/SizesThatWork'
 import { SeasonalityChart } from '../components/SeasonalityChart'
 import { SwotGrid } from '../components/SwotGrid'
@@ -336,6 +337,20 @@ function Loaded({
           )}
         </div>
       </section>
+
+      {/* Sliders sit under the answer, labelled so a hypothetical never reads as the
+              applicant's own figures. Recompute touches only the finance endpoint. */}
+      {!outOfScope && alternatives?.data.unit_range && (
+        <WhatIf
+          margin={Number(facts.scheme.margin)}
+          category={alternatives.data.category ?? ''}
+          baseUnits={alternatives.data.base_units ?? 1}
+          unitLabel={alternatives.data.unit_label ?? ''}
+          unitRange={alternatives.data.unit_range}
+          unitStep={alternatives.data.unit_step ?? 1}
+          strings={strings}
+        />
+      )}
 
       {stacking && <SchemeStacking data={stacking.data} strings={strings} />}
 

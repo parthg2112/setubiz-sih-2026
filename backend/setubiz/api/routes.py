@@ -19,6 +19,7 @@ from setubiz.finance.cost_templates import find_template_for_category, list_temp
 from setubiz.finance.rightsizing import right_size
 from setubiz.finance.router import ActivityKind, route
 from setubiz.matching.village_matcher import match_villages
+from setubiz.money import q
 from setubiz.narration import CATCH_RATE, local_narrator, narrate, select_narrator
 from setubiz.narration.base import Report
 from setubiz.narration.validator import ValidationReport
@@ -42,6 +43,14 @@ class FinanceRequest(BaseModel):
     business_category: str = "dairy"
     activity_kind: Literal["general", "plantation", "construction"] = "general"
     moratorium_mode: Literal["serviced", "capitalized"] = "serviced"
+    #: Resize the unit before costing it. None keeps the template's published size.
+    units: int | None = Field(default=None, gt=0, description="Unit size, e.g. number of animals")
+    #: Sensitivity lever: 0.8 asks what happens if revenue comes in 20% under the template.
+    #: Bounded because a what-if outside this range is not a sensitivity, it is a different
+    #: business, and the cost template stops describing it.
+    revenue_factor: Decimal | None = Field(
+        default=None, gt=Decimal("0.5"), le=Decimal("1.5"), description="Revenue multiplier"
+    )
 
 
 @router.post("/advisory", response_model=AdvisoryResponse, summary="Run the full advisory pipeline")
@@ -61,6 +70,21 @@ def finance_structure(request: FinanceRequest) -> dict[str, Any]:
         raise HTTPException(
             status_code=404, detail=f"no cost template for category {request.business_category!r}"
         )
+    # Finance only. The feasibility layer (village lookup, competitor and demand estimation) is
+    # untouched, which is what lets a slider recompute in milliseconds instead of re-running the
+    # whole advisory pipeline.
+    if request.units is not None:
+        template = template.at_units(request.units)
+    if request.revenue_factor is not None:
+        template = template.model_copy(
+            update={
+                "monthly_revenue": tuple(
+                    li.model_copy(update={"amount": q(li.amount * request.revenue_factor)})
+                    for li in template.monthly_revenue
+                )
+            }
+        )
+
     scheme = route(request.margin, ActivityKind(request.activity_kind))
     mode = MoratoriumMode(request.moratorium_mode)
     sizing = right_size(scheme, template, mode)
