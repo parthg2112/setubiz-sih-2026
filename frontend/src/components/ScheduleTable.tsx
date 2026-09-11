@@ -93,7 +93,7 @@ export function ScheduleTable({
         <button
           type="button"
           onClick={() => setExpanded(!expanded)}
-          className="ux4g-btn ux4g-btn-text-primary ux4g-btn-md setubiz-no-print"
+          className="ux4g-btn ux4g-btn-text-primary ux4g-btn-lg setubiz-no-print"
         >
           {expanded ? strings.hideSchedule : `${strings.showSchedule} (${rows.length})`}
         </button>

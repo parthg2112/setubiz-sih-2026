@@ -12,7 +12,7 @@ export function NotFound({ strings }: { strings: Strings }) {
           <h1 className="ux4g-title-l-strong">{strings.notFoundTitle}</h1>
           <p className="ux4g-body-l-default setubiz-measure">{strings.notFoundBody}</p>
         </div>
-        <Link className="ux4g-btn ux4g-btn-tonal-primary ux4g-btn-md" to="/">
+        <Link className="ux4g-btn ux4g-btn-tonal-primary ux4g-btn-lg" to="/">
           {strings.home}
         </Link>
       </div>

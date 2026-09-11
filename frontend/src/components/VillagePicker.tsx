@@ -68,7 +68,7 @@ export function VillagePicker({ value, onChange, state, language, strings }: Pro
           </span>
           <button
             type="button"
-            className="ux4g-btn ux4g-btn-text-primary ux4g-btn-md"
+            className="ux4g-btn ux4g-btn-text-primary ux4g-btn-lg"
             onClick={() => {
               onChange(null)
               setQuery('')

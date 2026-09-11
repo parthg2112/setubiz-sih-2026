@@ -185,7 +185,7 @@ function Loaded({
         <div className="ux4g-d-flex ux4g-gap-x-s setubiz-no-print">
           <button
             type="button"
-            className="ux4g-btn ux4g-btn-tonal-primary ux4g-btn-md ux4g-gap-x-xs"
+            className="ux4g-btn ux4g-btn-tonal-primary ux4g-btn-lg ux4g-gap-x-xs"
             onClick={() => window.print()}
           >
             <span className="ux4g-icon-outlined" aria-hidden="true">
@@ -195,7 +195,7 @@ function Loaded({
           </button>
           <button
             type="button"
-            className="ux4g-btn ux4g-btn-text-neutral ux4g-btn-md"
+            className="ux4g-btn ux4g-btn-text-neutral ux4g-btn-lg"
             onClick={onRestart}
           >
             {strings.newReport}
@@ -458,7 +458,7 @@ function Loaded({
       <div className="ux4g-mt-l setubiz-no-print">
         <button
           type="button"
-          className="ux4g-btn ux4g-btn-outline-primary ux4g-btn-md ux4g-gap-x-xs"
+          className="ux4g-btn ux4g-btn-outline-primary ux4g-btn-lg ux4g-gap-x-xs"
           onClick={() => setProvenanceOpen(true)}
         >
           <span className="ux4g-icon-outlined" aria-hidden="true">

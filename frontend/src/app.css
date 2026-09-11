@@ -92,7 +92,24 @@
 }
 
 /* ---------------------------------------------------------------------------------------------
- * 4. Motion.
+ * 4. Touch targets in the accessibility bar.  [CONTRACT EXCEPTION — see the completion notes]
+ *
+ * `.ux4g-topbar__iconbtn` is a fixed `height: 2.25rem` (36px) and the select buttons match it.
+ * Design.md section 9 sets the baseline for this very design system at "44x44px minimum target",
+ * so the Accessibility Bar — the component whose entire purpose is accessibility — ships below
+ * the system's own WCAG 2.5.5 floor.
+ *
+ * Raising it here rather than living with it, because these are the text-size controls: the
+ * people most likely to reach for them are the people least able to hit a 36px target. Also
+ * worth reporting upstream. */
+.ux4g-topbar__iconbtn,
+.ux4g-topbar__selectbtn {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* ---------------------------------------------------------------------------------------------
+ * 5. Motion.
  *
  * UX4G animates several components. Anyone who has asked their OS to stop that gets it stopped. */
 @media (prefers-reduced-motion: reduce) {
@@ -107,7 +124,7 @@
 }
 
 /* ---------------------------------------------------------------------------------------------
- * 5. Print.
+ * 6. Print.
  *
  * UX4G ships no print layer, and the printed report is a core deliverable: the beneficiary
  * carries it to the bank or the District Welfare Officer. Without re-stamping the light aliases,
