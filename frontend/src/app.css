@@ -12,10 +12,15 @@
  * be proposed rather than hardcoded, so these are app-namespaced aliases onto UX4G primitive
  * ramps. They are --setubiz-*, never --ux4g-*, so they cannot collide with the system.
  *
- * Slots 1-3 are the DSCR series and read as a severity ramp: base case, revenue -15%, -30%. */
+ * Slots 1-3 are the DSCR series and read as a severity ramp: base case, revenue -15%, -30%.
+ *
+ * Steps were picked by measuring, not by eye. A plotted line is a non-text graphical object, so
+ * WCAG 1.4.11 asks for 3:1 against its background. gold-600 came out at 1.92:1 on the light card
+ * — invisible to a low-vision reader on exactly the series that shows the first stress case — so
+ * slot 2 sits two steps darker at gold-800 (4.01:1). Every other slot clears 3:1 at 600. */
 :root {
   --setubiz-chart-1: var(--ux4g-color-blue-600);
-  --setubiz-chart-2: var(--ux4g-color-gold-600);
+  --setubiz-chart-2: var(--ux4g-color-gold-800);
   --setubiz-chart-3: var(--ux4g-color-pink-600);
   --setubiz-chart-4: var(--ux4g-color-green-600);
   --setubiz-chart-5: var(--ux4g-color-red-600);
@@ -145,7 +150,7 @@
     --ux4g-border-color-neutral-default: var(--ux4g-color-neutral-300);
     --ux4g-border-color-neutral-subtle: var(--ux4g-color-neutral-200);
     --setubiz-chart-1: var(--ux4g-color-blue-600);
-    --setubiz-chart-2: var(--ux4g-color-gold-600);
+    --setubiz-chart-2: var(--ux4g-color-gold-800);
     --setubiz-chart-3: var(--ux4g-color-pink-600);
     --setubiz-chart-4: var(--ux4g-color-green-600);
     --setubiz-chart-5: var(--ux4g-color-red-600);

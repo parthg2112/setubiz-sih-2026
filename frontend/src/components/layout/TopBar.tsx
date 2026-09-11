@@ -31,6 +31,15 @@ export function TopBar({
             page gained a horizontal scrollbar. The text-size control is deliberately kept on small
             screens — a phone is exactly where this reader needs it. */}
         <div className="ux4g-topbar__wrap ux4g-d-flex ux4g-jc-between ux4g-ai-center ux4g-flex-wrap ux4g-gap-xs">
+          {/* First in the DOM, and therefore first in the tab order. The canonical Accessibility
+              Bar markup puts the masthead link ahead of the skip link, which means a keyboard user
+              has to tab past an external link to India.gov.in before they can skip the navigation
+              — which defeats the point of having one. Order changed deliberately; the classes and
+              structure are unchanged. */}
+          <a className="ux4g-label-m-default ux4g-topbar__skip" href="#main-content">
+            {strings.skipToMain}
+          </a>
+
           <a
             className="ux4g-d-flex ux4g-ai-center ux4g-gap-x-xs"
             href="https://www.india.gov.in/"
@@ -47,11 +56,6 @@ export function TopBar({
             aria-label={strings.textSize}
             className="ux4g-d-flex ux4g-ai-center ux4g-flex-wrap ux4g-gap-xs"
           >
-            {/* First thing a keyboard user reaches on the page. */}
-            <a className="ux4g-label-m-default ux4g-topbar__skip" href="#main-content">
-              {strings.skipToMain}
-            </a>
-
             <span className="ux4g-divider-vertical ux4g-d-none ux4g-md-d-block" />
 
             <div
