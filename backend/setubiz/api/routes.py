@@ -11,6 +11,20 @@ from pydantic import BaseModel, ConfigDict, Field
 from setubiz import __version__
 from setubiz.config import get_settings
 from setubiz.data.loader import get_data_source
+from setubiz.documents import (
+    CasteCertificateFields,
+    DocumentKind,
+    IncomeCertificateFields,
+    QuotationFields,
+    check_caste_certificate,
+    check_income_certificate,
+    check_names_match,
+    check_quotation,
+    classify,
+    extract_caste_certificate,
+    extract_income_certificate,
+    extract_quotation,
+)
 from setubiz.eligibility import comparison_schemes, corporations
 from setubiz.facts import build_facts
 from setubiz.facts.builder import Facts
@@ -159,4 +173,110 @@ def metrics() -> dict[str, Any]:
         "demand_estimator": settings.demand_estimator,
         "dscr_threshold": settings.dscr_threshold,
         "data_source": "sample" if get_data_source().synthetic else "live",
+    }
+
+
+class DocumentTextRequest(BaseModel):
+    """OCR text, not an image.
+
+    The endpoint deliberately cannot accept a file. OCR runs in the applicant's browser, so a
+    caste certificate never leaves their device; accepting an upload here would quietly undo that
+    and there would be no way to tell from the outside.
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    text: str = Field(min_length=1, max_length=20000)
+
+
+class DocumentCheckRequest(BaseModel):
+    """Fields the applicant has already seen and confirmed."""
+
+    model_config = ConfigDict(frozen=True)
+
+    kind: Literal["quotation", "income_certificate", "caste_certificate"]
+    business_category: str = "dairy"
+    social_category: str = "sc"
+    margin: Decimal | None = Field(default=None, gt=0)
+    units: int | None = Field(default=None, gt=0)
+    months_old: int | None = Field(default=None, ge=0, le=600)
+    quotation: QuotationFields | None = None
+    income_certificate: IncomeCertificateFields | None = None
+    caste_certificate: CasteCertificateFields | None = None
+    #: Names read off other documents, for the cross-document consistency check.
+    other_names: dict[str, str] = Field(default_factory=dict)
+
+
+@router.post("/documents/read", summary="Classify OCR text and propose fields for confirmation")
+def documents_read(request: DocumentTextRequest) -> dict[str, Any]:
+    """Turn OCR text into proposed fields. Proposed, never applied: the applicant confirms.
+
+    No verdict is returned here. Extraction is calibrated on typed text, not on photographs, so
+    anything it produces has to pass through a human before it can mean anything.
+    """
+    kind, scores = classify(request.text)
+    proposed: dict[str, Any] = {}
+    if kind is DocumentKind.QUOTATION:
+        proposed = extract_quotation(request.text).model_dump()
+    elif kind is DocumentKind.INCOME_CERTIFICATE:
+        proposed = extract_income_certificate(request.text).model_dump()
+    elif kind is DocumentKind.CASTE_CERTIFICATE:
+        proposed = extract_caste_certificate(request.text).model_dump()
+    return {"kind": kind.value, "scores": scores, "proposed": proposed, "confirmed": False}
+
+
+@router.post("/documents/check", summary="Deterministic checks on confirmed document fields")
+def documents_check(request: DocumentCheckRequest) -> dict[str, Any]:
+    """Judge a document against the published rules. Advisory only; nothing is auto-rejected."""
+    if request.kind == "quotation":
+        if request.quotation is None:
+            raise HTTPException(status_code=422, detail="quotation fields are required")
+        template = find_template_for_category(request.business_category)
+        if template is None:
+            raise HTTPException(
+                status_code=404,
+                detail=f"no cost template for category {request.business_category!r}",
+            )
+        if request.units is not None:
+            template = template.at_units(request.units)
+        report = check_quotation(
+            request.quotation,
+            template,
+            margin=request.margin,
+            months_old=request.months_old,
+        )
+    elif request.kind == "income_certificate":
+        if request.income_certificate is None:
+            raise HTTPException(status_code=422, detail="income certificate fields are required")
+        report = check_income_certificate(
+            request.income_certificate, request.social_category, months_old=request.months_old
+        )
+    else:
+        if request.caste_certificate is None:
+            raise HTTPException(status_code=422, detail="caste certificate fields are required")
+        report = check_caste_certificate(
+            request.caste_certificate, request.social_category, months_old=request.months_old
+        )
+
+    names = dict(request.other_names)
+    for label, fields in (
+        ("income certificate", request.income_certificate),
+        ("caste certificate", request.caste_certificate),
+    ):
+        if fields is not None and fields.applicant_name:
+            names[label] = fields.applicant_name
+    name_check = check_names_match(names)
+
+    checks = list(report.checks)
+    if name_check is not None:
+        checks.append(name_check)
+
+    return {
+        "kind": report.kind.value,
+        "severity": report.severity.value,
+        "ready": report.ready and (name_check is None or name_check.severity.value == "ok"),
+        "checks": checks,
+        "matched_lines": report.matched_lines,
+        "figures": report.figures,
+        "sources": report.sources,
     }

@@ -186,6 +186,17 @@ _SOURCES: tuple[Source, ...] = (
         note="Greenfield lending for Scheduled Caste, Scheduled Tribe and women entrepreneurs.",
     ),
     Source(
+        id="applicant_document",
+        title="Document supplied by the applicant",
+        kind=SourceKind.COMPUTED,
+        publisher="The applicant",
+        note=(
+            "Read on the applicant's own device and confirmed by them field by field before any "
+            "check ran. It is evidence they provided, not a published source, and it is recorded "
+            "as such: a figure carrying this id has not been verified against any authority."
+        ),
+    ),
+    Source(
         id="finance_engine",
         title="SetuBiz deterministic finance engine",
         kind=SourceKind.COMPUTED,

@@ -27,7 +27,8 @@ dev: ## Run both, API in the background
 
 test: ## Run the suite; the deterministic decision layer must stay at 100%
 	$(PY) -m pytest backend/tests \
-		--cov=setubiz.finance --cov=setubiz.eligibility --cov-fail-under=100
+		--cov=setubiz.finance --cov=setubiz.eligibility --cov=setubiz.documents \
+		--cov-fail-under=100
 
 lint: ## Lint and typecheck both halves
 	$(PY) -m ruff check backend

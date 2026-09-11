@@ -45,7 +45,7 @@ testpaths = ["backend/tests"]
 addopts = "-q"
 
 [tool.coverage.run]
-source = ["setubiz.finance", "setubiz.eligibility"]
+source = ["setubiz.finance", "setubiz.eligibility", "setubiz.documents"]
 
 [tool.ruff]
 line-length = 100
