@@ -10,6 +10,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 PACKAGE_ROOT = Path(__file__).resolve().parent
 SAMPLE_DATA_DIR = PACKAGE_ROOT / "data" / "sample"
+#: The real build: Census 2011 PCA, SHRUG v2.2, Economic Census 2013, HCES 2023-24, OpenStreetMap.
+REAL_DATA_DIR = PACKAGE_ROOT / "data" / "real"
 
 
 class Settings(BaseSettings):
@@ -50,7 +52,10 @@ class Settings(BaseSettings):
     local_llm_threads: int | None = None
     local_llm_max_tokens: int = 2048
 
-    data_dir: Path = SAMPLE_DATA_DIR
+    #: Serve real observations by default. `data/sample` remains as a synthetic fallback and
+    #: declares itself as such, so a report built on it still carries the demonstration-data
+    #: warning -- that warning is driven by the data, never hardcoded off.
+    data_dir: Path = REAL_DATA_DIR
 
 
 @lru_cache

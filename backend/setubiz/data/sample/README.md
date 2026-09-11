@@ -1,5 +1,10 @@
 # Sample data — synthetic placeholders
 
+> **Not the default any more.** The application serves `../real/`, built by `etl/` from Census
+> 2011, SHRUG v2.2, Economic Census 2013, HCES 2023-24 and OpenStreetMap. This directory remains
+> as an offline fallback and as the fixture the test suite pins to. Point at it with
+> `SETUBIZ_DATA_DIR=backend/setubiz/data/sample`.
+
 **Every file in this directory is synthetic.** The numbers are *shaped* like the real sources so
 the pipeline, the schemas and the demo work offline, but they are **not real observations and must
 never be quoted as findings** — not in the deck, not in the report, not to a judge.

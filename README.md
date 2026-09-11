@@ -83,7 +83,8 @@ owns everything outside `/api`.
 |---|---|
 | **Decision — finance** (`setubiz/finance`) | Complete. Logic A/B router with the real NSFDC caps, quarterly amortization in both moratorium treatments, DSCR right-sizing, stress tests, NABARD-style cost templates. 100% test coverage, golden vectors asserted to the paisa. |
 | **Decision — eligibility** (`setubiz/eligibility`) | Complete. SC→NSFDC (₹5 L ceiling, w.e.f. 07-01-2026), safai karamchari→NSKFDC (no ceiling), OBC/EBC→NBCFDC (₹3 L). Verdict, conditions, bilingual document checklist, SCA address, PM-DAKSH handoff, comparison cards. 100% coverage. |
-| **Estimation** (`setubiz/feasibility`) | v0 deterministic. Competitor density from EC13 block z-scores floored by observed OSM POIs; demand from HCES-shaped shares as a band; seasonality from mandi arrivals; SWOT from a YAML rule library. Every estimate is a **band with a stated method**, never a bare number. |
+| **Estimation** (`setubiz/feasibility`) | v0 deterministic. Competitor density from EC13 block z-scores floored by observed OSM POIs; demand from published HCES shares as a band; seasonality from mandi arrivals; SWOT from a YAML rule library. Every estimate is a **band with a stated method**, never a bare number. |
+| **Data** (`setubiz/data/real`, built by `etl/`) | Real. Census 2011 PCA + SHRUG v2.2 names and centroids + Mission Antyodaya amenities (29,480 Jharkhand villages, totalling to the published rural census figure within 0.003%); Economic Census 2013 density split by SHRIC industry code; HCES 2023-24 Fact Sheet consumption for 29 states; OpenStreetMap POIs. `data/sample/` remains as a synthetic fallback and declares itself so. |
 | **Facts contract** (`setubiz/facts`) | Complete. One frozen object holds every quotable figure plus a `provenance` map from figure → source. Tested: no indexed number may exist without a registered source. |
 | **Language** (`setubiz/narration`) | Three lanes, tried in order: cloud LLM, local Llama 3.1 8B via llama.cpp, template. The template lane (Jinja, en + hi) is the default and needs nothing. Every lane paraphrases the deterministic draft and is checked by the numeric-grounding validator. |
 | **API / CLI / PWA** | FastAPI at `/api/v1`, a Typer CLI, and a React + Vite + Tailwind app: red-vs-green hero, DSCR and seasonality charts, quarterly schedule, sticky contents rail with scroll-spy on desktop, bilingual and light/dark toggles, and a provenance panel. |
@@ -117,10 +118,15 @@ judge will ask:
   `NotImplementedError` with a pointer to PLAN.md §3 — it needs Udyam labels whose granularity is
   still unverified. Local demand uses a state mean ± CV, not Fay–Herriot small-area estimation. No
   intent/slot classifier; no price-seasonality model beyond the arrivals index.
-- **No real datasets.** Everything in `backend/setubiz/data/sample/` is **synthetic** and shaped to
-  match SHRUG v2.2 / OSM / EC13 / HCES / AGMARKNET. The scheme parameters in `data/sample/schemes/`
-  are the exception — those are transcribed from the official portals and each carries its source
-  URL. See [`data/sample/README.md`](backend/setubiz/data/sample/README.md).
+- **Mandi seasonality has no history.** The data.gov.in AGMARKNET resource publishes only the
+  current day's prices, so the 12-month arrivals series behind the seasonality index needs a
+  portal export from agmarknet.gov.in. Until then `threats.assess` drops the seasonality threat
+  rather than inventing one, and the chart does not render.
+- **One state so far.** The dataset ships Jharkhand (29,480 villages). The ETL is national —
+  `python etl/build_villages.py --states BR OD WB` adds more — but each state costs an Overpass
+  pass for its POIs.
+- **`poultry` has no Economic Census density.** SHRIC has no livestock-rearing code, so the
+  competitor estimate falls back to the observed OSM floor and says so in the report.
 - **No ASR/TTS.** The mic button uses the browser Web Speech API and degrades to typing. The
   Indic ASR / Bhashini lane is not wired.
 - **No PostGIS, no pgvector, no RAG, no ministry dashboard.** Geography is haversine over committed
