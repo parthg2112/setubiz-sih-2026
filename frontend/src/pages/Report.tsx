@@ -156,6 +156,10 @@ function Loaded({
      that services. Backend signals it with max_loan 0 plus a referral list. */
   const outOfScope = Number(facts.right_sizing.max_loan) <= 0
 
+  /* The scheme cannot fund this applicant: project cost outside the envelope, or no loan size
+     that services. Backend signals it with max_loan 0 plus a referral list. */
+  const outOfScope = Number(facts.right_sizing.max_loan) <= 0
+
   const sourceTitles = (cites: string[]) =>
     cites.map((id) => facts.sources.find((s) => s.id === id)?.title).filter(Boolean) as string[]
 
