@@ -129,7 +129,7 @@ export function VillagePicker({ value, onChange, state, language, strings }: Pro
       </div>
 
       {searching && (
-        <p className="ux4g-d-flex ux4g-ai-center ux4g-gap-x-s ux4g-body-m-default" role="status">
+        <p className="ux4g-body-m-default ux4g-d-flex ux4g-ai-center ux4g-gap-x-s" role="status">
           <span className="ux4g-spinner ux4g-spinner-sm" aria-hidden="true" />
           {strings.searching}
         </p>

@@ -52,8 +52,12 @@ export function LoanComparison({
           <p className="ux4g-display-s-strong ux4g-text-primary setubiz-tabular">
             {inr(recommendedLoan)}
           </p>
-          <p className="ux4g-body-l-default setubiz-measure">
-            {strings.answerBecause} {bindingLabel}.
+          {/* Rendered as a labelled phrase rather than a sentence. BINDING_LABEL entries are
+              already clauses ("limited by what survives a bad year"), so prefixing "because"
+              produced "because limited by…" in English, and Hindi would have needed its copula
+              moved to the end. A label and its value read correctly in both. */}
+          <p className="ux4g-body-l-default ux4g-text-neutral-secondary setubiz-measure">
+            {strings.bindingGloss}: {bindingLabel}
           </p>
         </div>
 
@@ -115,13 +119,20 @@ function Figure({
   footnote: string
   failing: boolean
 }) {
-  // The component reads its own --ux4g-progress-value token; this is how it is parameterised,
-  // not a hardcoded style.
-  const fill = { '--ux4g-progress-value': Math.max(pct, 1.5) } as CSSProperties
+  /* All three are the progress bar's own documented tokens — the bundle already ships a warning
+     variant defined exactly this way — so this parameterises the component rather than restyling
+     it. Tone matters here: with both bars in the default brand purple, the permitted maximum was
+     the longest, boldest bar on the page, which is precisely the reading this product exists to
+     argue against. Green for the serviceable loan, red for the one that fails the DSCR norm. */
+  const fill = {
+    '--ux4g-progress-value': Math.max(pct, 1.5),
+    '--ux4g-progress-fill-start': `var(--ux4g-bg-${tone}-soft)`,
+    '--ux4g-progress-fill-end': `var(--ux4g-bg-${tone}-strong)`,
+  } as CSSProperties
 
   return (
     <div className="ux4g-d-flex ux4g-flex-column ux4g-gap-y-xs">
-      <p className="ux4g-d-flex ux4g-ai-center ux4g-gap-x-xs ux4g-label-l-strong">
+      <p className="ux4g-label-l-strong ux4g-d-flex ux4g-ai-center ux4g-gap-x-xs">
         <span className={`ux4g-icon-outlined ux4g-text-${tone}`} aria-hidden="true">
           {icon}
         </span>
@@ -148,10 +159,10 @@ function Stat({ label, value, emphasis }: { label: string; value: string; emphas
   return (
     <div>
       <dt className="ux4g-body-s-default ux4g-text-neutral-tertiary">{label}</dt>
+      {/* Typescale class first: UX4G applies the scale through `[class^=ux4g-title-]`-style
+          starts-with selectors, so it only takes effect when it heads the class attribute. */}
       <dd
-        className={`setubiz-tabular ${
-          emphasis ? 'ux4g-title-m-strong' : 'ux4g-body-l-default'
-        }`}
+        className={`${emphasis ? 'ux4g-title-m-strong' : 'ux4g-body-l-default'} setubiz-tabular`}
       >
         {value}
       </dd>

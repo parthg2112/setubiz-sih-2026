@@ -159,7 +159,6 @@ export const T = {
     // Report. The answer comes first and is one sentence; evidence is opened on demand.
     answerTitle: 'Your answer',
     answerLead: 'You should borrow',
-    answerBecause: 'because',
     whyThis: 'Why this amount?',
     showDetail: 'Show details',
     hideDetail: 'Hide details',
@@ -299,7 +298,6 @@ export const T = {
 
     answerTitle: 'आपका उत्तर',
     answerLead: 'आपको लेना चाहिए',
-    answerBecause: 'क्योंकि',
     whyThis: 'यही राशि क्यों?',
     showDetail: 'विवरण दिखाएँ',
     hideDetail: 'विवरण छिपाएँ',

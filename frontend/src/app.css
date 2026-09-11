@@ -67,7 +67,32 @@
 }
 
 /* ---------------------------------------------------------------------------------------------
- * 3. Motion.
+ * 3. Restoring the typescale inside cards.  [CONTRACT EXCEPTION — see the completion notes]
+ *
+ * UX4G ships `.ux4g-card-body p { font-size: var(--ux4g-fs-14) }`. That is a descendant selector
+ * (0-1-1) and it outranks the typescale utilities, which are applied through attribute
+ * starts-with selectors like `[class^="ux4g-body-"]` (0-1-0). The effect is that every paragraph
+ * inside a card silently renders at 14px no matter which typescale class it carries — including
+ * `ux4g-display-s-strong`, which should be 40px.
+ *
+ * 14px is below the floor this service can accept: the reader is frequently older, on a phone,
+ * reading about their own money. So this re-asserts the scale, but only for elements that
+ * explicitly asked for one — an element with no typescale class still gets the card's default.
+ * No `!important`, and nothing here invents a value: it re-reads the tokens the utility already
+ * set. Worth reporting upstream, since a component defeating the system's own type utilities is
+ * a bug in UX4G rather than in this application. */
+.ux4g-card-body p[class^='ux4g-display-'],
+.ux4g-card-body p[class^='ux4g-heading-'],
+.ux4g-card-body p[class^='ux4g-title-'],
+.ux4g-card-body p[class^='ux4g-body-'],
+.ux4g-card-body p[class^='ux4g-label-'] {
+  font-size: var(--ux4g-fs-current);
+  font-weight: var(--ux4g-fw-current);
+  line-height: var(--ux4g-lh-current);
+}
+
+/* ---------------------------------------------------------------------------------------------
+ * 4. Motion.
  *
  * UX4G animates several components. Anyone who has asked their OS to stop that gets it stopped. */
 @media (prefers-reduced-motion: reduce) {
@@ -82,7 +107,7 @@
 }
 
 /* ---------------------------------------------------------------------------------------------
- * 4. Print.
+ * 5. Print.
  *
  * UX4G ships no print layer, and the printed report is a core deliverable: the beneficiary
  * carries it to the bank or the District Welfare Officer. Without re-stamping the light aliases,

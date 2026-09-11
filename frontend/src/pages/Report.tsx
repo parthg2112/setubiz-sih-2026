@@ -165,6 +165,9 @@ function Loaded({
             <Link className="ux4g-breadcrumb-link" to="/">
               {strings.home}
             </Link>
+            <span className="ux4g-breadcrumb-divider" aria-hidden="true">
+              /
+            </span>
           </li>
           <li className="ux4g-breadcrumb-item" aria-current="page">
             {strings.yourReport}
@@ -328,7 +331,9 @@ function Loaded({
 
         {stress?.data.recommended && (
           <Panel
-            title={`${stress.heading} — ${strings.dscrGloss}`}
+            // No gloss appended: the backend heading is already "What happens in a bad year", so
+            // `dscrGloss` would have said the same thing twice in one title.
+            title={stress.heading}
             cites={sourceTitles(stress.cites)}
             strings={strings}
           >

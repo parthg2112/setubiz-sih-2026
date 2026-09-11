@@ -173,7 +173,7 @@ export function DscrChart({ base, scenarios, threshold, stressFloor, language }:
         </svg>
       </div>
 
-      <figcaption className="ux4g-d-flex ux4g-flex-wrap ux4g-ai-center ux4g-gap-m ux4g-mt-s ux4g-body-s-default ux4g-text-neutral-secondary">
+      <figcaption className="ux4g-body-s-default ux4g-d-flex ux4g-flex-wrap ux4g-ai-center ux4g-gap-m ux4g-mt-s ux4g-text-neutral-secondary">
         {series.map((s, i) => {
           const worst = Math.min(...s.points)
           return (
@@ -187,7 +187,7 @@ export function DscrChart({ base, scenarios, threshold, stressFloor, language }:
               />
               {s.label}
               {hover !== null ? (
-                <span className="setubiz-tabular ux4g-label-m-strong">
+                <span className="ux4g-label-m-strong setubiz-tabular">
                   {ratio(s.points[years.indexOf(hover)] ?? 0)}
                 </span>
               ) : (
