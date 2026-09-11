@@ -152,9 +152,6 @@ function Loaded({
   const scheme = section('scheme')
   const alternatives = section('alternatives')
 
-  /* The scheme cannot fund this applicant: project cost outside the envelope, or no loan size
-     that services. Backend signals it with max_loan 0 plus a referral list. */
-  const outOfScope = Number(facts.right_sizing.max_loan) <= 0
 
   /* The scheme cannot fund this applicant: project cost outside the envelope, or no loan size
      that services. Backend signals it with max_loan 0 plus a referral list. */
