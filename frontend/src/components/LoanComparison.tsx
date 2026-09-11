@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react'
-import { BINDING_LABEL, inr, ratio, type Strings } from '../format'
+import { BINDING_LABEL, dscr, inr, isUnboundedDscr, ratio, type Strings } from '../format'
 import type { Language } from '../types'
 
 interface Props {
@@ -42,7 +42,7 @@ export function LoanComparison({
   const need = Number(debtNeed)
   const scale = Math.max(max, need, 1)
   const bindingLabel = BINDING_LABEL[binding]?.[language] ?? binding
-  const maxFails = Number(maxMinDscr) < Number(dscrThreshold)
+  const maxFails = !isUnboundedDscr(maxMinDscr) && Number(maxMinDscr) < Number(dscrThreshold)
 
   return (
     <div className="ux4g-card ux4g-card-outline ux4g-card-vertical">
@@ -68,7 +68,7 @@ export function LoanComparison({
             label={strings.recommended}
             amount={recommendedLoan}
             pct={(recommended / scale) * 100}
-            footnote={`${strings.worstYear} ${ratio(recommendedMinDscr)} · ${bindingLabel}`}
+            footnote={`${strings.worstYear} ${dscr(recommendedMinDscr, strings)} · ${bindingLabel}`}
             failing={false}
           />
           <Figure
@@ -77,7 +77,7 @@ export function LoanComparison({
             label={strings.maxLoan}
             amount={maxLoan}
             pct={(max / scale) * 100}
-            footnote={`${strings.worstYear} ${ratio(maxMinDscr)} · ${
+            footnote={`${strings.worstYear} ${dscr(maxMinDscr, strings)} · ${
               language === 'en' ? 'norm' : 'मानक'
             } ${ratio(dscrThreshold)}`}
             failing={maxFails}
