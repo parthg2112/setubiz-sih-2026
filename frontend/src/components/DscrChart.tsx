@@ -1,5 +1,5 @@
 import { useId, useState } from 'react'
-import { ratio } from '../format'
+import { isUnboundedDscr, ratio } from '../format'
 import { SERIES } from '../theme'
 import type { DscrYear, StressScenario } from '../types'
 
@@ -173,7 +173,7 @@ export function DscrChart({ base, scenarios, threshold, stressFloor, language }:
         </svg>
       </div>
 
-      <figcaption className="ux4g-d-flex ux4g-flex-wrap ux4g-ai-center ux4g-gap-m ux4g-mt-s ux4g-body-s-default ux4g-text-neutral-secondary">
+      <figcaption className="ux4g-body-s-default ux4g-d-flex ux4g-flex-wrap ux4g-ai-center ux4g-gap-m ux4g-mt-s ux4g-text-neutral-secondary">
         {series.map((s, i) => {
           const worst = Math.min(...s.points)
           return (
@@ -187,8 +187,11 @@ export function DscrChart({ base, scenarios, threshold, stressFloor, language }:
               />
               {s.label}
               {hover !== null ? (
-                <span className="setubiz-tabular ux4g-label-m-strong">
-                  {ratio(s.points[years.indexOf(hover)] ?? 0)}
+                <span className="ux4g-label-m-strong setubiz-tabular">
+                  {/* 999 is the backend's "no debt service this year" sentinel, not a ratio. */}
+                  {isUnboundedDscr(s.points[years.indexOf(hover)] ?? 0)
+                    ? '—'
+                    : ratio(s.points[years.indexOf(hover)] ?? 0)}
                 </span>
               ) : (
                 worst <= 0 && (

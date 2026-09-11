@@ -12,10 +12,15 @@
  * be proposed rather than hardcoded, so these are app-namespaced aliases onto UX4G primitive
  * ramps. They are --setubiz-*, never --ux4g-*, so they cannot collide with the system.
  *
- * Slots 1-3 are the DSCR series and read as a severity ramp: base case, revenue -15%, -30%. */
+ * Slots 1-3 are the DSCR series and read as a severity ramp: base case, revenue -15%, -30%.
+ *
+ * Steps were picked by measuring, not by eye. A plotted line is a non-text graphical object, so
+ * WCAG 1.4.11 asks for 3:1 against its background. gold-600 came out at 1.92:1 on the light card
+ * — invisible to a low-vision reader on exactly the series that shows the first stress case — so
+ * slot 2 sits two steps darker at gold-800 (4.01:1). Every other slot clears 3:1 at 600. */
 :root {
   --setubiz-chart-1: var(--ux4g-color-blue-600);
-  --setubiz-chart-2: var(--ux4g-color-gold-600);
+  --setubiz-chart-2: var(--ux4g-color-gold-800);
   --setubiz-chart-3: var(--ux4g-color-pink-600);
   --setubiz-chart-4: var(--ux4g-color-green-600);
   --setubiz-chart-5: var(--ux4g-color-red-600);
@@ -67,7 +72,49 @@
 }
 
 /* ---------------------------------------------------------------------------------------------
- * 3. Motion.
+ * 3. Restoring the typescale inside cards.  [CONTRACT EXCEPTION — see the completion notes]
+ *
+ * UX4G ships `.ux4g-card-body p { font-size: var(--ux4g-fs-14) }`. That is a descendant selector
+ * (0-1-1) and it outranks the typescale utilities, which are applied through attribute
+ * starts-with selectors like `[class^="ux4g-body-"]` (0-1-0). The effect is that every paragraph
+ * inside a card silently renders at 14px no matter which typescale class it carries — including
+ * `ux4g-display-s-strong`, which should be 40px.
+ *
+ * 14px is below the floor this service can accept: the reader is frequently older, on a phone,
+ * reading about their own money. So this re-asserts the scale, but only for elements that
+ * explicitly asked for one — an element with no typescale class still gets the card's default.
+ * No `!important`, and nothing here invents a value: it re-reads the tokens the utility already
+ * set. Worth reporting upstream, since a component defeating the system's own type utilities is
+ * a bug in UX4G rather than in this application. */
+.ux4g-card-body p[class^='ux4g-display-'],
+.ux4g-card-body p[class^='ux4g-heading-'],
+.ux4g-card-body p[class^='ux4g-title-'],
+.ux4g-card-body p[class^='ux4g-body-'],
+.ux4g-card-body p[class^='ux4g-label-'] {
+  font-size: var(--ux4g-fs-current);
+  font-weight: var(--ux4g-fw-current);
+  line-height: var(--ux4g-lh-current);
+}
+
+/* ---------------------------------------------------------------------------------------------
+ * 4. Touch targets in the accessibility bar.  [CONTRACT EXCEPTION — see the completion notes]
+ *
+ * `.ux4g-topbar__iconbtn` is a fixed `height: 2.25rem` (36px) and the select buttons match it.
+ * Design.md section 9 sets the baseline for this very design system at "44x44px minimum target",
+ * so the Accessibility Bar — the component whose entire purpose is accessibility — ships below
+ * the system's own WCAG 2.5.5 floor.
+ *
+ * Raising it here rather than living with it, because these are the text-size controls: the
+ * people most likely to reach for them are the people least able to hit a 36px target. Also
+ * worth reporting upstream. */
+.ux4g-topbar__iconbtn,
+.ux4g-topbar__selectbtn {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* ---------------------------------------------------------------------------------------------
+ * 5. Motion.
  *
  * UX4G animates several components. Anyone who has asked their OS to stop that gets it stopped. */
 @media (prefers-reduced-motion: reduce) {
@@ -82,16 +129,21 @@
 }
 
 /* ---------------------------------------------------------------------------------------------
- * 4. Print.
+ * 6. Print.
  *
  * UX4G ships no print layer, and the printed report is a core deliverable: the beneficiary
  * carries it to the bank or the District Welfare Officer. Without re-stamping the light aliases,
  * a dark-mode viewer prints pale grey text onto white paper and the handout is unreadable.
  *
  * These re-point UX4G's semantic tokens at the same primitive steps the light theme uses, so the
- * ramp stays the system's own — no invented colour values. */
+ * ramp stays the system's own — no invented colour values.
+ *
+ * Specificity matters here: UX4G declares its dark tokens at `:root[data-theme=dark]` (0-2-0),
+ * so a bare `[data-theme='dark']` (0-1-0) loses and the whole re-stamp silently does nothing —
+ * which is the worst possible failure for a print rule, because nobody sees it until the paper
+ * comes out of the printer. */
 @media print {
-  [data-theme='dark'] {
+  :root[data-theme='dark'] {
     color-scheme: light;
     --ux4g-bg-neutral: var(--ux4g-color-neutral-50);
     --ux4g-bg-neutral-elevated: var(--ux4g-color-neutral-0);
@@ -103,7 +155,7 @@
     --ux4g-border-color-neutral-default: var(--ux4g-color-neutral-300);
     --ux4g-border-color-neutral-subtle: var(--ux4g-color-neutral-200);
     --setubiz-chart-1: var(--ux4g-color-blue-600);
-    --setubiz-chart-2: var(--ux4g-color-gold-600);
+    --setubiz-chart-2: var(--ux4g-color-gold-800);
     --setubiz-chart-3: var(--ux4g-color-pink-600);
     --setubiz-chart-4: var(--ux4g-color-green-600);
     --setubiz-chart-5: var(--ux4g-color-red-600);

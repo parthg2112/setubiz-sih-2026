@@ -35,7 +35,7 @@ export function SiteHeader({
             </label>
             <select
               id="appearance"
-              className="ux4g-form-select ux4g-form-select-sm"
+              className="ux4g-form-select ux4g-form-select-lg"
               value={theme}
               aria-label={strings.theme}
               onChange={(e) => onTheme(e.target.value as ThemeChoice)}

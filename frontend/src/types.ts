@@ -190,7 +190,17 @@ export interface Facts {
     conditions: string[]
     documents: EligibilityDoc[]
     sca: { name: string; name_hi: string | null; address: string; channel: string } | null
-    comparison: { id: string; name: string; when_to_prefer: string; portal: string }[]
+    comparison: {
+      id: string
+      name: string
+      name_hi: string | null
+      ministry: string
+      loan_range: [string, string]
+      collateral_free: boolean
+      highlights: string[]
+      when_to_prefer: string
+      portal: string
+    }[]
   }
   numeric_index: Record<string, string>
   provenance: Record<string, string[]>

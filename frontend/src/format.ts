@@ -29,8 +29,22 @@ export function lakh(value: string | number): string {
   return inr(n)
 }
 
+/** The backend uses UNBOUNDED_DSCR = 999 as a sentinel for "no debt service in this year", which
+ *  happens during a capitalized moratorium. It is not a coverage ratio, and printing "999.00" next
+ *  to a real 1.50 norm invites a reader to conclude the loan is 600x safe than required. */
+export const UNBOUNDED_DSCR = 999
+
+export function isUnboundedDscr(value: string | number): boolean {
+  return Number(value) >= UNBOUNDED_DSCR
+}
+
 export function ratio(value: string | number): string {
   return Number(value).toFixed(2)
+}
+
+/** Formats a DSCR for display, rendering the sentinel in words instead of as a number. */
+export function dscr(value: string | number, strings: { noDebtService: string }): string {
+  return isUnboundedDscr(value) ? strings.noDebtService : ratio(value)
 }
 
 export function pct(value: string | number, digits = 0): string {
@@ -135,6 +149,12 @@ export const T = {
     pickVillage: 'Choose your village from the list to continue.',
     km: 'km',
     unitCost: 'This unit costs about',
+    // Out-of-scope: the scheme cannot serve this applicant, so the page must not show a loan.
+    outOfScopeTitle: 'This scheme cannot fund this business',
+    otherSchemes: 'Schemes that can',
+    whenToPrefer: 'Best when',
+    visitPortal: 'Go to the scheme',
+    noDebtService: 'no repayment due this year',
 
     // The five steps. Each heading is the question itself, asked in the second person.
     stepOf: 'Step {n} of {total}',
@@ -159,7 +179,6 @@ export const T = {
     // Report. The answer comes first and is one sentence; evidence is opened on demand.
     answerTitle: 'Your answer',
     answerLead: 'You should borrow',
-    answerBecause: 'because',
     whyThis: 'Why this amount?',
     showDetail: 'Show details',
     hideDetail: 'Hide details',
@@ -277,6 +296,11 @@ export const T = {
     pickVillage: 'आगे बढ़ने के लिए सूची में से अपना गाँव चुनें।',
     km: 'कि.मी.',
     unitCost: 'इस इकाई की लागत लगभग',
+    outOfScopeTitle: 'यह योजना इस व्यवसाय के लिए ऋण नहीं दे सकती',
+    otherSchemes: 'ये योजनाएँ दे सकती हैं',
+    whenToPrefer: 'कब उपयुक्त',
+    visitPortal: 'योजना देखें',
+    noDebtService: 'इस वर्ष कोई किस्त नहीं',
 
     stepOf: 'चरण {n} / {total}',
     next: 'आगे',
@@ -299,7 +323,6 @@ export const T = {
 
     answerTitle: 'आपका उत्तर',
     answerLead: 'आपको लेना चाहिए',
-    answerBecause: 'क्योंकि',
     whyThis: 'यही राशि क्यों?',
     showDetail: 'विवरण दिखाएँ',
     hideDetail: 'विवरण छिपाएँ',

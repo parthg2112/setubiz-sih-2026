@@ -4,6 +4,7 @@ import { api } from '../api'
 import { BandBar } from '../components/BandBar'
 import { DscrChart } from '../components/DscrChart'
 import { LoanComparison } from '../components/LoanComparison'
+import { OutOfScope } from '../components/OutOfScope'
 import { ProvenancePanel } from '../components/ProvenancePanel'
 import { ScheduleTable } from '../components/ScheduleTable'
 import { SeasonalityChart } from '../components/SeasonalityChart'
@@ -149,6 +150,10 @@ function Loaded({
   const threats = section('threats')
   const scheme = section('scheme')
 
+  /* The scheme cannot fund this applicant: project cost outside the envelope, or no loan size
+     that services. Backend signals it with max_loan 0 plus a referral list. */
+  const outOfScope = Number(facts.right_sizing.max_loan) <= 0
+
   const sourceTitles = (cites: string[]) =>
     cites.map((id) => facts.sources.find((s) => s.id === id)?.title).filter(Boolean) as string[]
 
@@ -165,6 +170,9 @@ function Loaded({
             <Link className="ux4g-breadcrumb-link" to="/">
               {strings.home}
             </Link>
+            <span className="ux4g-breadcrumb-divider" aria-hidden="true">
+              /
+            </span>
           </li>
           <li className="ux4g-breadcrumb-item" aria-current="page">
             {strings.yourReport}
@@ -182,7 +190,7 @@ function Loaded({
         <div className="ux4g-d-flex ux4g-gap-x-s setubiz-no-print">
           <button
             type="button"
-            className="ux4g-btn ux4g-btn-tonal-primary ux4g-btn-md ux4g-gap-x-xs"
+            className="ux4g-btn ux4g-btn-tonal-primary ux4g-btn-lg ux4g-gap-x-xs"
             onClick={() => window.print()}
           >
             <span className="ux4g-icon-outlined" aria-hidden="true">
@@ -192,7 +200,7 @@ function Loaded({
           </button>
           <button
             type="button"
-            className="ux4g-btn ux4g-btn-text-neutral ux4g-btn-md"
+            className="ux4g-btn ux4g-btn-text-neutral ux4g-btn-lg"
             onClick={onRestart}
           >
             {strings.newReport}
@@ -222,8 +230,14 @@ function Loaded({
         </div>
       )}
 
-      {/* ---- The answer. One number, one reason, before anything that justifies it. ---- */}
-      {loan?.data.max_loan && (
+      {/* ---- The answer. One number, one reason, before anything that justifies it.
+              When the scheme cannot fund this applicant at all the backend returns max_loan 0 and
+              a referral list, and a comparison of two zeroes is worse than useless — it reads as
+              an approval. That case gets its own screen instead. ---- */}
+      {outOfScope ? (
+        <OutOfScope facts={facts} language={language} strings={strings} />
+      ) : (
+        loan?.data.max_loan && (
         <section className="ux4g-mt-l setubiz-print-block" id="answer" data-section>
           <LoanComparison
             maxLoan={loan.data.max_loan}
@@ -239,10 +253,11 @@ function Loaded({
             strings={strings}
           />
         </section>
+        )
       )}
 
       {/* ---- Warnings. Never collapsed: these are the reasons someone defaults. ---- */}
-      {facts.warnings.length > 0 && (
+      {!outOfScope && facts.warnings.length > 0 && (
         <section className="ux4g-mt-l setubiz-print-block" aria-labelledby="warnings-heading">
           <h2 className="ux4g-heading-m-strong ux4g-mb-s" id="warnings-heading">
             {strings.warningsHeading}
@@ -320,15 +335,17 @@ function Loaded({
           </Panel>
         )}
 
-        {loan && (
+        {!outOfScope && loan && (
           <Panel title={loan.heading} cites={sourceTitles(loan.cites)} strings={strings}>
             <Prose>{loan.body}</Prose>
           </Panel>
         )}
 
-        {stress?.data.recommended && (
+        {!outOfScope && stress?.data.recommended && (
           <Panel
-            title={`${stress.heading} — ${strings.dscrGloss}`}
+            // No gloss appended: the backend heading is already "What happens in a bad year", so
+            // `dscrGloss` would have said the same thing twice in one title.
+            title={stress.heading}
             cites={sourceTitles(stress.cites)}
             strings={strings}
           >
@@ -343,7 +360,7 @@ function Loaded({
           </Panel>
         )}
 
-        {facts.amortization_recommended && (
+        {!outOfScope && facts.amortization_recommended && (
           <Panel
             title={repayment?.heading ?? strings.schedule}
             cites={sourceTitles(repayment?.cites ?? [])}
@@ -409,7 +426,7 @@ function Loaded({
           </Panel>
         )}
 
-        {swot?.data.quadrants && (
+        {!outOfScope && swot?.data.quadrants && (
           <Panel title={swot.heading} cites={sourceTitles(swot.cites)} strings={strings}>
             <SwotGrid quadrants={swot.data.quadrants} labels={strings.quadrant} />
           </Panel>
@@ -453,7 +470,7 @@ function Loaded({
       <div className="ux4g-mt-l setubiz-no-print">
         <button
           type="button"
-          className="ux4g-btn ux4g-btn-outline-primary ux4g-btn-md ux4g-gap-x-xs"
+          className="ux4g-btn ux4g-btn-outline-primary ux4g-btn-lg ux4g-gap-x-xs"
           onClick={() => setProvenanceOpen(true)}
         >
           <span className="ux4g-icon-outlined" aria-hidden="true">

@@ -128,12 +128,13 @@ export function Ask({ language, strings, onSubmit }: Props) {
           {step === 2 && (
             <div className="ux4g-slider-field ux4g-slider-md">
               <div className="ux4g-slider-label-row">
+                {/* The card heading already asks the question; repeating it on the control would
+                    be the same sentence twice. The label carries the unit instead, which is the
+                    thing the bare number next to it does not say. */}
                 <label className="ux4g-slider-label" htmlFor="radius">
-                  {strings.radius}
+                  {strings.step2Label} ({strings.km})
                 </label>
-                <span className="ux4g-slider-range-box setubiz-tabular">
-                  {radius} {strings.km}
-                </span>
+                <span className="ux4g-slider-range-box setubiz-tabular">{radius}</span>
               </div>
               <div className="ux4g-slider ux4g-slider-md">
                 <input
@@ -250,17 +251,18 @@ export function Ask({ language, strings, onSubmit }: Props) {
                 </select>
               </div>
 
-              <div className="ux4g-input ux4g-input-lg">
+              <div className="ux4g-input-container ux4g-input-lg">
                 <label className="ux4g-label-l-strong" htmlFor="income">
                   {strings.income}
                 </label>
-                <div className="ux4g-input-container">
+                <div className="ux4g-input">
                   <span className="ux4g-icon-outlined ux4g-input-leading-icon" aria-hidden="true">
                     currency_rupee
                   </span>
                   <input
                     id="income"
                     className="ux4g-input-input setubiz-tabular"
+                    type="text"
                     inputMode="numeric"
                     autoComplete="off"
                     value={income}
