@@ -66,6 +66,17 @@
   -webkit-overflow-scrolling: touch;
 }
 
+/* The document photograph, shown back to the applicant so they can see whether it is legible.
+ * It is an object URL into this tab's own memory and is never uploaded; it needs a size bound,
+ * which UX4G has no rule for because it ships no image-preview component. */
+.setubiz-preview {
+  max-width: 100%;
+  max-height: 40vh;
+  width: auto;
+  object-fit: contain;
+  border-radius: var(--ux4g-radius-m);
+}
+
 /* Section anchors clear the sticky header when the contents rail jumps to them. */
 [data-section] {
   scroll-margin-top: 6rem;

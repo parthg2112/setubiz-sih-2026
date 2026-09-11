@@ -84,6 +84,67 @@ export interface FinanceResult {
   schedules: { recommended_loan: { instalment: string } | null }
 }
 
+export interface QuotedLineInput {
+  description: string
+  quantity?: number
+  unit_rate?: number | null
+  amount: number
+}
+
+export interface DocumentFields {
+  // quotation
+  vendor_name?: string | null
+  vendor_gstin?: string | null
+  quotation_date?: string | null
+  lines?: QuotedLineInput[]
+  total_amount?: number | null
+  // certificates
+  applicant_name?: string | null
+  annual_family_income?: number | null
+  issue_date?: string | null
+  issuing_authority?: string | null
+  certificate_number?: string | null
+  state?: string | null
+  category?: string | null
+  sub_caste?: string | null
+  attestation_present?: boolean
+}
+
+export type DocumentKind = 'quotation' | 'income_certificate' | 'caste_certificate' | 'unknown'
+
+export interface DocumentReadResult {
+  kind: DocumentKind
+  scores: Record<string, number>
+  proposed: DocumentFields
+  confirmed: false
+}
+
+export interface DocumentCheck {
+  id: string
+  severity: 'ok' | 'warning' | 'problem'
+  text_en: string
+  text_hi: string
+  figures: Record<string, string>
+}
+
+export interface DocumentMatchedLine {
+  quoted: { description: string; quantity: string; unit_rate: string | null; amount: string }
+  template_item: string | null
+  template_amount: string | null
+  excess_pct: string | null
+  severity: 'ok' | 'warning' | 'problem'
+}
+
+export interface DocumentCheckResult {
+  kind: DocumentKind
+  severity: 'ok' | 'warning' | 'problem'
+  ready: boolean
+  checks: DocumentCheck[]
+  matched_lines: DocumentMatchedLine[]
+  figures: Record<string, string>
+  sources: string[]
+}
+
 export const api = {
   /** `signal` lets the typeahead abandon a superseded request, so a slow early response cannot
    *  overwrite a fast later one. */
@@ -93,4 +154,8 @@ export const api = {
   advisory: (input: AdvisoryInput) => post<AdvisoryResponse>('/advisory', input),
   financeStructure: (input: FinanceInput, signal?: AbortSignal) =>
     post<FinanceResult>('/finance/structure', input, signal),
+  /** Text, never an image. OCR already ran on the device; this only proposes fields. */
+  documentsRead: (text: string) => post<DocumentReadResult>('/documents/read', { text }),
+  documentsCheck: (body: Record<string, unknown>) =>
+    post<DocumentCheckResult>('/documents/check', body),
 }

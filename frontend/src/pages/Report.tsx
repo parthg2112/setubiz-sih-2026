@@ -307,6 +307,11 @@ function Loaded({
 
           <div>
             <h3 className="ux4g-title-s-strong ux4g-mb-s">{strings.documents}</h3>
+            <p className="ux4g-mb-s setubiz-no-print">
+              <Link className="ux4g-text-link-sm" to="/documents">
+                {strings.docTitle}
+              </Link>
+            </p>
             <ul className="ux4g-list ux4g-list-default ux4g-list-m">
               {facts.eligibility.documents.map((doc) => (
                 <li className="ux4g-list-item" key={doc.en}>

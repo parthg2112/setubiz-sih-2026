@@ -12,6 +12,7 @@ import { SiteHeader } from './components/layout/SiteHeader'
 import { TopBar } from './components/layout/TopBar'
 import { T } from './format'
 import { Ask } from './pages/Ask'
+import { Documents } from './pages/Documents'
 import { NotFound } from './pages/NotFound'
 import { Report } from './pages/Report'
 import { applyScale, storedScale, type TextScale } from './textScale'
@@ -99,6 +100,10 @@ function Shell() {
                 onRestart={() => navigate('/')}
               />
             }
+          />
+          <Route
+            path="/documents"
+            element={<Documents language={language} strings={strings} />}
           />
           <Route path="/index.html" element={<Navigate to="/" replace />} />
           <Route path="*" element={<NotFound strings={strings} />} />
