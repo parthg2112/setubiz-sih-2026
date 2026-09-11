@@ -1,14 +1,15 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-// Self-hosted, per-subset: the app has to render on a rural connection with no CDN reachable.
-import '@fontsource/open-sans/latin-400.css'
-import '@fontsource/open-sans/latin-600.css'
-import '@fontsource/open-sans/latin-700.css'
-// Devanagari carries a unicode-range, so an English session never fetches these ~50 KB faces.
+// UX4G owns every component, token and utility in this app. Loaded once, here, per the package
+// contract: the package exports no React components, only CSS classes and a runtime side effect.
+import 'ux4g-web-components/styles.css'
+import 'ux4g-web-components/design-system'
+// UX4G embeds Noto Sans and the Material Icons faces but ships no Devanagari, so Hindi still
+// needs its own. The unicode-range keeps an English session from fetching these ~50 KB faces.
 import '@fontsource/noto-sans-devanagari/devanagari-400.css'
 import '@fontsource/noto-sans-devanagari/devanagari-600.css'
 import App from './App'
-import './index.css'
+import './app.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

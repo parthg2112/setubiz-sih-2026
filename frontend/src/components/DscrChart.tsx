@@ -49,11 +49,11 @@ export function DscrChart({ base, scenarios, threshold, stressFloor, language }:
   const ticks = Array.from({ length: yMax + 1 }, (_, i) => i)
 
   return (
-    <figure className="print-block m-0">
-      <div className="overflow-x-auto max-w-[760px]">
+    <figure className="setubiz-print-block">
+      <div className="setubiz-scroll-x">
         <svg
           viewBox={`0 0 ${W} ${H}`}
-          className="h-auto w-full min-w-[420px]"
+          className="ux4g-w-100"
           role="img"
           aria-label={
             language === 'en'
@@ -76,15 +76,15 @@ export function DscrChart({ base, scenarios, threshold, stressFloor, language }:
                 x2={W - PAD.right}
                 y1={y(t)}
                 y2={y(t)}
-                stroke="var(--border)"
+                stroke="var(--ux4g-border-color-neutral-default)"
                 strokeWidth={1}
               />
               <text
                 x={PAD.left - 8}
                 y={y(t) + 4}
                 textAnchor="end"
-                className="tabular"
-                fill="var(--subtle-foreground)"
+                className="setubiz-tabular"
+                fill="var(--ux4g-text-neutral-tertiary)"
                 fontSize={11}
               >
                 {t}
@@ -123,7 +123,7 @@ export function DscrChart({ base, scenarios, threshold, stressFloor, language }:
                     cy={y(v)}
                     r={hover === years[idx] ? 5.5 : 4}
                     fill={SERIES[i]}
-                    stroke="var(--card)"
+                    stroke="var(--ux4g-bg-neutral-elevated)"
                     strokeWidth={2}
                   />
                 ))}
@@ -137,8 +137,8 @@ export function DscrChart({ base, scenarios, threshold, stressFloor, language }:
                 x={x(year)}
                 y={H - 8}
                 textAnchor="middle"
-                className="tabular"
-                fill="var(--subtle-foreground)"
+                className="setubiz-tabular"
+                fill="var(--ux4g-text-neutral-tertiary)"
                 fontSize={11}
               >
                 {language === 'en' ? `Y${year}` : `व${year}`}
@@ -149,45 +149,50 @@ export function DscrChart({ base, scenarios, threshold, stressFloor, language }:
                   x2={x(year)}
                   y1={PAD.top}
                   y2={H - PAD.bottom}
-                  stroke="var(--chart-axis)"
+                  stroke="var(--setubiz-chart-axis)"
                   strokeWidth={1}
                 />
               )}
-              {/* Hit target is far wider than the mark. */}
+              {/* Hit target is far wider than the mark. Pointer-only and aria-hidden: it used to
+                  carry tabIndex={0} alongside role="presentation", which put a stop in the tab
+                  order that screen readers were simultaneously told to ignore. The chart's own
+                  role="img" and aria-label carry the reading, and every plotted figure also
+                  appears in the schedule table below. */}
               <rect
                 x={x(year) - 18}
                 y={0}
                 width={36}
                 height={H}
                 fill="transparent"
+                aria-hidden="true"
                 onMouseEnter={() => setHover(year)}
-                onFocus={() => setHover(year)}
-                tabIndex={0}
-                role="presentation"
+                onMouseLeave={() => setHover(null)}
               />
             </g>
           ))}
         </svg>
       </div>
 
-      <figcaption className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+      <figcaption className="ux4g-d-flex ux4g-flex-wrap ux4g-ai-center ux4g-gap-m ux4g-mt-s ux4g-body-s-default ux4g-text-neutral-secondary">
         {series.map((s, i) => {
           const worst = Math.min(...s.points)
           return (
-            <span key={s.label} className="inline-flex items-center gap-1.5">
+            <span key={s.label} className="ux4g-d-inline-flex ux4g-ai-center ux4g-gap-x-xs">
+              {/* Legend swatch: chart furniture, sized here because it must match the 2px stroke
+                  weight of the line it stands for, which is not a value the token scale carries. */}
               <span
                 aria-hidden
-                className="inline-block h-0.5 w-4 rounded-full"
-                style={{ background: SERIES[i] }}
+                className="ux4g-d-inline-block"
+                style={{ background: SERIES[i], width: 16, height: 2, borderRadius: 999 }}
               />
               {s.label}
               {hover !== null ? (
-                <span className="tabular font-medium text-foreground">
+                <span className="setubiz-tabular ux4g-label-m-strong">
                   {ratio(s.points[years.indexOf(hover)] ?? 0)}
                 </span>
               ) : (
                 worst <= 0 && (
-                  <span className="font-medium" style={{ color: 'var(--destructive)' }}>
+                  <span className="ux4g-label-m-strong" style={{ color: 'var(--ux4g-text-status-error)' }}>
                     {language === 'en' ? 'no surplus to service debt' : 'चुकाने योग्य अधिशेष नहीं'}
                   </span>
                 )
@@ -208,11 +213,11 @@ function ReferenceRule({ y, label, dim }: { y: number; label: string; dim?: bool
         x2={W - PAD.right}
         y1={y}
         y2={y}
-        stroke="var(--chart-axis)"
+        stroke="var(--setubiz-chart-axis)"
         strokeWidth={1}
         strokeDasharray={dim ? '2 4' : '5 4'}
       />
-      <text x={W - PAD.right} y={y - 5} textAnchor="end" fill="var(--subtle-foreground)" fontSize={10}>
+      <text x={W - PAD.right} y={y - 5} textAnchor="end" fill="var(--ux4g-text-neutral-tertiary)" fontSize={10}>
         {label}
       </text>
     </g>

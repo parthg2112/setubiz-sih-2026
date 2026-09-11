@@ -9,7 +9,7 @@ sections:
   - id: headline
     heading_en: What we found
     heading_hi: निष्कर्ष
-    cites: [finance_engine, shrug_sample]
+    cites: [finance_engine, census_pc11]
     body_en: |
       {{ v.name }} ({{ v.block }} block, {{ v.district }} district) has about {{ n.households_now }}
       households within {{ n.radius_km }} km, spread across {{ n.villages_in_radius }} villages.
@@ -33,7 +33,7 @@ sections:
   - id: market_reach
     heading_en: Market reach
     heading_hi: बाज़ार पहुँच
-    cites: [shrug_sample, intercensal_scaling, hces_sample]
+    cites: [census_pc11, intercensal_scaling, hces_2023_24]
     body_en: |
       Census 2011 recorded {{ n.households_2011 }} households and {{ n.population_2011 }} people
       within {{ n.radius_km }} km. Scaled by the district growth factor of {{ n.growth_factor }},
@@ -57,7 +57,7 @@ sections:
   - id: competition
     heading_en: Competition
     heading_hi: प्रतिस्पर्धा
-    cites: [ec13_sample, osm_sample]
+    cites: [economic_census_2013, openstreetmap]
     body_en: |
       We estimate {{ n.competitors_low }}–{{ n.competitors_high }} existing enterprises in this
       category within {{ n.radius_km }} km, against {{ n.competitors_observed_osm }} actually

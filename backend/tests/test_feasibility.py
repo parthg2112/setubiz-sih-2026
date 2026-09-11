@@ -68,7 +68,7 @@ def test_competitor_estimate_is_a_band_floored_by_observed_pois(ormanjhi, reach,
     assert est.band.unit == "enterprises"
     assert est.z_score is not None
     assert est.band.confidence is Confidence.MEDIUM
-    assert "ec13_sample" in est.band.sources
+    assert "economic_census_2013" in est.band.sources
 
 
 def test_competitor_estimator_falls_back_when_a_block_has_no_ec13_row(ormanjhi, reach, source):
@@ -218,4 +218,4 @@ def test_sample_data_source_reports_itself_as_synthetic(source):
     assert source.demand_profile("Nowhere", "dairy") is None
     assert source.income_segments("Nowhere") == ()
     assert source.arrivals("tailoring") is None
-    assert "shrug_sample" in source.source_ids()
+    assert "census_pc11" in source.source_ids()

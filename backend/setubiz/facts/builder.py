@@ -447,7 +447,7 @@ def build_facts(request: AdvisoryRequest, source: DataSource | None = None) -> F
         ):
             provenance[key] = reach.sources
         elif key.startswith(("price_", "seasonality", "peak_")):
-            provenance[key] = ("agmarknet_sample",)
+            provenance[key] = ("agmarknet",)
         elif key.startswith(
             ("monthly_", "fixed_capital", "working_capital", "required_capital", "annual_noi")
         ):

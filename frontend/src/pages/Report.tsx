@@ -1,31 +1,140 @@
-import { useState, type ReactNode } from 'react'
+import { useEffect, useId, useState, type ReactNode } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
+import { api } from '../api'
 import { BandBar } from '../components/BandBar'
 import { DscrChart } from '../components/DscrChart'
 import { LoanComparison } from '../components/LoanComparison'
 import { ProvenancePanel } from '../components/ProvenancePanel'
-import { ReportNav, type NavItem } from '../components/ReportNav'
 import { ScheduleTable } from '../components/ScheduleTable'
 import { SeasonalityChart } from '../components/SeasonalityChart'
 import { SwotGrid } from '../components/SwotGrid'
 import { inr, lakh, type Strings } from '../format'
-import type { AdvisoryResponse, DscrYear, Language, ReportSection } from '../types'
+import type { AdvisoryResponse, DscrYear, Language } from '../types'
+import { fromSearchParams } from '../urlState'
 
 interface Props {
+  language: Language
+  strings: Strings
+  onBusyChange: (busy: boolean) => void
+  onRestart: () => void
+}
+
+type State =
+  | { kind: 'loading' }
+  | { kind: 'ready'; data: AdvisoryResponse }
+  | { kind: 'error'; message: string }
+  | { kind: 'invalid' }
+
+export function Report({ language, strings, onBusyChange, onRestart }: Props) {
+  const [params] = useSearchParams()
+  const [state, setState] = useState<State>({ kind: 'loading' })
+  const [attempt, setAttempt] = useState(0)
+
+  const input = fromSearchParams(params, language)
+  // Re-run whenever the inputs or the language change. Serialising the input is what lets this
+  // effect depend on the *values* rather than on a new object identity every render.
+  const key = input ? JSON.stringify(input) : null
+
+  useEffect(() => {
+    if (!key) {
+      setState({ kind: 'invalid' })
+      return
+    }
+    let live = true
+    setState({ kind: 'loading' })
+    onBusyChange(true)
+    api
+      .advisory(JSON.parse(key))
+      .then((data) => live && setState({ kind: 'ready', data }))
+      .catch((e: unknown) =>
+        live && setState({ kind: 'error', message: e instanceof Error ? e.message : String(e) }),
+      )
+      .finally(() => live && onBusyChange(false))
+    return () => {
+      live = false
+    }
+  }, [key, attempt, onBusyChange])
+
+  if (state.kind === 'invalid') {
+    return (
+      <Centred>
+        <div className="ux4g-empty-state">
+          <span className="ux4g-icon-outlined ux4g-empty-state-icon ux4g-text-primary" aria-hidden="true">
+            link_off
+          </span>
+          <div className="ux4g-empty-state-content">
+            <h1 className="ux4g-title-l-strong">{strings.reportGoneTitle}</h1>
+            <p className="ux4g-body-l-default setubiz-measure">{strings.reportGoneBody}</p>
+          </div>
+          <Link className="ux4g-btn ux4g-btn-tonal-primary ux4g-btn-lg" to="/">
+            {strings.newReport}
+          </Link>
+        </div>
+      </Centred>
+    )
+  }
+
+  if (state.kind === 'loading') {
+    return (
+      <Centred>
+        <div className="ux4g-d-flex ux4g-flex-column ux4g-ai-center ux4g-gap-y-m" role="status">
+          <span className="ux4g-spinner ux4g-spinner-xl" aria-hidden="true" />
+          <p className="ux4g-body-l-default">{strings.loadingReport}</p>
+        </div>
+      </Centred>
+    )
+  }
+
+  if (state.kind === 'error') {
+    return (
+      <Centred>
+        <div className="ux4g-empty-state">
+          <span className="ux4g-icon-outlined ux4g-empty-state-icon ux4g-text-primary" aria-hidden="true">
+            error_outline
+          </span>
+          <div className="ux4g-empty-state-content">
+            <h1 className="ux4g-title-l-strong">{strings.loadFailed}</h1>
+            <p className="ux4g-body-l-default setubiz-measure">{state.message}</p>
+          </div>
+          <div className="ux4g-d-flex ux4g-gap-x-s">
+            <button
+              type="button"
+              className="ux4g-btn ux4g-btn-primary ux4g-btn-lg"
+              onClick={() => setAttempt(attempt + 1)}
+            >
+              {strings.tryAgain}
+            </button>
+            <button
+              type="button"
+              className="ux4g-btn ux4g-btn-outline-neutral ux4g-btn-lg"
+              onClick={onRestart}
+            >
+              {strings.newReport}
+            </button>
+          </div>
+        </div>
+      </Centred>
+    )
+  }
+
+  return <Loaded data={state.data} language={language} strings={strings} onRestart={onRestart} />
+}
+
+function Centred({ children }: { children: ReactNode }) {
+  return <div className="ux4g-container ux4g-py-2xl">{children}</div>
+}
+
+function Loaded({
+  data,
+  language,
+  strings,
+  onRestart,
+}: {
   data: AdvisoryResponse
   language: Language
   strings: Strings
   onRestart: () => void
-}
-
-/** One section of the report: the nav and the page are built from the same list, so a section
- *  the pipeline did not emit can never leave a dead link in the contents. */
-interface Entry {
-  id: string
-  label: string
-  node: ReactNode
-}
-
-export function Report({ data, language, strings, onRestart }: Props) {
+}) {
   const [provenanceOpen, setProvenanceOpen] = useState(false)
   const { facts, report, validation } = data
   const section = (id: string) => report.sections.find((s) => s.id === id)
@@ -43,79 +152,187 @@ export function Report({ data, language, strings, onRestart }: Props) {
   const sourceTitles = (cites: string[]) =>
     cites.map((id) => facts.sources.find((s) => s.id === id)?.title).filter(Boolean) as string[]
 
-  const entries: (Entry | false | null | undefined)[] = [
-    {
-      id: 'answer',
-      label: strings.keyFigures,
-      node: (
-        <div className="space-y-4">
-          {loan?.data.max_loan && (
-            <LoanComparison
-              maxLoan={loan.data.max_loan}
-              recommendedLoan={loan.data.recommended_loan ?? '0'}
-              headroom={loan.data.headroom ?? '0'}
-              requiredCapital={loan.data.required_capital ?? '0'}
-              debtNeed={loan.data.debt_need ?? '0'}
-              binding={loan.data.binding ?? ''}
-              maxMinDscr={facts.right_sizing.max_loan_min_dscr}
-              recommendedMinDscr={facts.right_sizing.recommended_min_dscr}
-              dscrThreshold={facts.right_sizing.dscr_threshold}
-              language={language}
-              strings={strings}
-            />
-          )}
-          {facts.warnings.length > 0 && (
-            <section
-              className="print-block rounded-lg border p-5 sm:p-6"
-              style={{
-                borderColor: 'color-mix(in srgb, var(--destructive) 35%, transparent)',
-                background: 'color-mix(in srgb, var(--destructive) 8%, var(--card))',
-              }}
-            >
-              <h2 className="text-sm font-semibold tracking-tight text-foreground">
-                <span aria-hidden style={{ color: 'var(--destructive)' }}>
-                  ▲
-                </span>{' '}
-                {strings.warningsHeading}
-              </h2>
-              <ul className="mt-3 space-y-2.5">
-                {facts.warnings.map((warning) => (
-                  <li
-                    key={warning.id}
-                    className="text-[15px] leading-7 text-muted-foreground max-w-[68ch]"
-                  >
-                    {language === 'hi' ? warning.text_hi : warning.text_en}
-                  </li>
-                ))}
-              </ul>
-            </section>
+  const villageName =
+    language === 'hi' && facts.village.name_hi ? facts.village.name_hi : facts.village.name
+  const templateName =
+    language === 'hi' && facts.template.name_hi ? facts.template.name_hi : facts.template.name
+
+  return (
+    <div className="ux4g-container ux4g-py-l">
+      <nav className="ux4g-breadcrumb setubiz-no-print" aria-label={strings.contents}>
+        <ol className="ux4g-breadcrumb-list">
+          <li className="ux4g-breadcrumb-item">
+            <Link className="ux4g-breadcrumb-link" to="/">
+              {strings.home}
+            </Link>
+          </li>
+          <li className="ux4g-breadcrumb-item" aria-current="page">
+            {strings.yourReport}
+          </li>
+        </ol>
+      </nav>
+
+      <header className="ux4g-d-flex ux4g-jc-between ux4g-ai-start ux4g-flex-wrap ux4g-gap-m ux4g-mt-m">
+        <div>
+          <h1 className="ux4g-heading-xl-strong">{villageName}</h1>
+          <p className="ux4g-body-l-default ux4g-text-neutral-secondary">
+            {facts.village.block} · {facts.village.district} · {templateName}
+          </p>
+        </div>
+        <div className="ux4g-d-flex ux4g-gap-x-s setubiz-no-print">
+          <button
+            type="button"
+            className="ux4g-btn ux4g-btn-tonal-primary ux4g-btn-md ux4g-gap-x-xs"
+            onClick={() => window.print()}
+          >
+            <span className="ux4g-icon-outlined" aria-hidden="true">
+              print
+            </span>
+            {strings.print}
+          </button>
+          <button
+            type="button"
+            className="ux4g-btn ux4g-btn-text-neutral ux4g-btn-md"
+            onClick={onRestart}
+          >
+            {strings.newReport}
+          </button>
+        </div>
+      </header>
+
+      {facts.contains_synthetic_data ? (
+        <div className="ux4g-alert ux4g-alert-warning ux4g-mt-l setubiz-print-block" role="status">
+          <span className="ux4g-icon-outlined ux4g-alert-icon" aria-hidden="true">
+            warning
+          </span>
+          <div className="ux4g-alert-content">
+            <p className="ux4g-alert-title">{strings.synthetic}</p>
+            <p className="ux4g-alert-message setubiz-measure">{strings.syntheticNote}</p>
+          </div>
+        </div>
+      ) : (
+        <div className="ux4g-alert ux4g-alert-info ux4g-mt-l setubiz-print-block" role="status">
+          <span className="ux4g-icon-outlined ux4g-alert-icon" aria-hidden="true">
+            verified
+          </span>
+          <div className="ux4g-alert-content">
+            <p className="ux4g-alert-title">{strings.officialData}</p>
+            <p className="ux4g-alert-message setubiz-measure">{strings.officialDataNote}</p>
+          </div>
+        </div>
+      )}
+
+      {/* ---- The answer. One number, one reason, before anything that justifies it. ---- */}
+      {loan?.data.max_loan && (
+        <section className="ux4g-mt-l setubiz-print-block" id="answer" data-section>
+          <LoanComparison
+            maxLoan={loan.data.max_loan}
+            recommendedLoan={loan.data.recommended_loan ?? '0'}
+            headroom={loan.data.headroom ?? '0'}
+            requiredCapital={loan.data.required_capital ?? '0'}
+            debtNeed={loan.data.debt_need ?? '0'}
+            binding={loan.data.binding ?? ''}
+            maxMinDscr={facts.right_sizing.max_loan_min_dscr}
+            recommendedMinDscr={facts.right_sizing.recommended_min_dscr}
+            dscrThreshold={facts.right_sizing.dscr_threshold}
+            language={language}
+            strings={strings}
+          />
+        </section>
+      )}
+
+      {/* ---- Warnings. Never collapsed: these are the reasons someone defaults. ---- */}
+      {facts.warnings.length > 0 && (
+        <section className="ux4g-mt-l setubiz-print-block" aria-labelledby="warnings-heading">
+          <h2 className="ux4g-heading-m-strong ux4g-mb-s" id="warnings-heading">
+            {strings.warningsHeading}
+          </h2>
+          <div className="ux4g-d-flex ux4g-flex-column ux4g-gap-y-s">
+            {facts.warnings.map((w) => (
+              <div className="ux4g-alert ux4g-alert-warning" key={w.id}>
+                <span className="ux4g-icon-outlined ux4g-alert-icon" aria-hidden="true">
+                  priority_high
+                </span>
+                <div className="ux4g-alert-content">
+                  <p className="ux4g-alert-message setubiz-measure">
+                    {language === 'hi' ? w.text_hi : w.text_en}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ---- Eligibility. The second thing a reader needs: can I actually apply, and where. ---- */}
+      <section className="ux4g-card ux4g-card-outline ux4g-mt-l setubiz-print-block" id="scheme" data-section>
+        <div className="ux4g-card-header">
+          <h2 className="ux4g-heading-m-strong ux4g-card-title">
+            {scheme?.heading ?? strings.apply}
+          </h2>
+        </div>
+        <div className="ux4g-card-body ux4g-d-flex ux4g-flex-column ux4g-gap-y-m">
+          {scheme?.body && <p className="ux4g-body-l-default setubiz-measure">{scheme.body}</p>}
+
+          <div>
+            <h3 className="ux4g-title-s-strong ux4g-mb-s">{strings.documents}</h3>
+            <ul className="ux4g-list ux4g-list-default ux4g-list-m">
+              {facts.eligibility.documents.map((doc) => (
+                <li className="ux4g-list-item" key={doc.en}>
+                  <div className="ux4g-list-item-row">
+                    <span className="ux4g-list-item-start ux4g-d-flex ux4g-ai-center ux4g-gap-x-s">
+                      <span className="ux4g-icon-outlined ux4g-text-neutral-tertiary" aria-hidden="true">
+                        check_box_outline_blank
+                      </span>
+                      <span className="ux4g-body-l-default">
+                        {language === 'hi' && doc.hi ? doc.hi : doc.en}
+                      </span>
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {facts.eligibility.sca && (
+            <div>
+              <h3 className="ux4g-title-s-strong ux4g-mb-xs">{strings.apply}</h3>
+              <p className="ux4g-body-l-default setubiz-measure">
+                {language === 'hi' && facts.eligibility.sca.name_hi
+                  ? facts.eligibility.sca.name_hi
+                  : facts.eligibility.sca.name}
+                <br />
+                {facts.eligibility.sca.address}
+                <br />
+                {facts.eligibility.sca.channel}
+              </p>
+            </div>
           )}
         </div>
-      ),
-    },
-    headline && {
-      id: 'headline',
-      label: headline.heading,
-      node: <Card heading={headline.heading} cites={sourceTitles(headline.cites)} strings={strings}>
-        <Body>{headline.body}</Body>
-      </Card>,
-    },
-    loan && {
-      id: 'loan_structure',
-      label: loan.heading,
-      node: (
-        <Card heading={loan.heading} cites={sourceTitles(loan.cites)} strings={strings}>
-          <Body>{loan.body}</Body>
-        </Card>
-      ),
-    },
-    stress?.data.recommended && {
-      id: 'stress',
-      label: stress.heading,
-      node: (
-        <Card heading={stress.heading} cites={sourceTitles(stress.cites)} strings={strings}>
-          <Body>{stress.body}</Body>
-          <div className="mt-5">
+      </section>
+
+      {/* ---- Everything that explains the answer, opened on demand. ---- */}
+      <h2 className="ux4g-heading-m-strong ux4g-mt-xl ux4g-mb-s">{strings.whyThis}</h2>
+      <div className="ux4g-accordion ux4g-accordion-bordered">
+        {headline && (
+          <Panel title={headline.heading} cites={sourceTitles(headline.cites)} strings={strings}>
+            <Prose>{headline.body}</Prose>
+          </Panel>
+        )}
+
+        {loan && (
+          <Panel title={loan.heading} cites={sourceTitles(loan.cites)} strings={strings}>
+            <Prose>{loan.body}</Prose>
+          </Panel>
+        )}
+
+        {stress?.data.recommended && (
+          <Panel
+            title={`${stress.heading} — ${strings.dscrGloss}`}
+            cites={sourceTitles(stress.cites)}
+            strings={strings}
+          >
+            <Prose>{stress.body}</Prose>
             <DscrChart
               base={(stress.data.recommended as DscrYear[]) ?? []}
               scenarios={stress.data.scenarios ?? []}
@@ -123,21 +340,16 @@ export function Report({ data, language, strings, onRestart }: Props) {
               stressFloor={stress.data.stress_floor ?? facts.right_sizing.stress_floor}
               language={language}
             />
-          </div>
-        </Card>
-      ),
-    },
-    facts.amortization_recommended && {
-      id: 'repayment',
-      label: repayment?.heading ?? strings.schedule,
-      node: (
-        <Card
-          heading={repayment?.heading ?? strings.schedule}
-          cites={sourceTitles(repayment?.cites ?? [])}
-          strings={strings}
-        >
-          <Body>{repayment?.body}</Body>
-          <div className="mt-5">
+          </Panel>
+        )}
+
+        {facts.amortization_recommended && (
+          <Panel
+            title={repayment?.heading ?? strings.schedule}
+            cites={sourceTitles(repayment?.cites ?? [])}
+            strings={strings}
+          >
+            <Prose>{repayment?.body}</Prose>
             <ScheduleTable
               rows={facts.amortization_recommended.schedule}
               mode={repayment?.data.mode ?? 'serviced'}
@@ -146,217 +358,121 @@ export function Report({ data, language, strings, onRestart }: Props) {
               language={language}
               strings={strings}
             />
-          </div>
-        </Card>
-      ),
-    },
-    marketReach && {
-      id: 'market_reach',
-      label: marketReach.heading,
-      node: (
-        <Card
-          heading={marketReach.heading}
-          cites={sourceTitles(marketReach.cites)}
-          strings={strings}
-        >
-          <Body>{marketReach.body}</Body>
-          {marketReach.data.villages && (
-            <ul className="mt-4 flex flex-wrap gap-1.5">
-              {marketReach.data.villages.map((v) => (
-                <li
-                  key={v.name}
-                  className="tabular rounded-full border border-border px-2.5 py-1 text-xs text-muted-foreground"
-                >
-                  {language === 'hi' && v.name_hi ? v.name_hi : v.name} · {v.distance_km} km
+          </Panel>
+        )}
+
+        {marketReach && (
+          <Panel
+            title={marketReach.heading}
+            cites={sourceTitles(marketReach.cites)}
+            strings={strings}
+          >
+            <Prose>{marketReach.body}</Prose>
+            {marketReach.data.villages && (
+              <ul className="ux4g-d-flex ux4g-flex-wrap ux4g-gap-xs ux4g-mt-m">
+                {marketReach.data.villages.map((v) => (
+                  <li key={v.name}>
+                    <span className="ux4g-tag-tonal-neutral ux4g-tag-s setubiz-tabular">
+                      {language === 'hi' && v.name_hi ? v.name_hi : v.name} · {v.distance_km}{' '}
+                      {strings.km}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Panel>
+        )}
+
+        {competition?.data.band && (
+          <Panel
+            title={competition.heading}
+            cites={sourceTitles(competition.cites)}
+            strings={strings}
+          >
+            <Prose>{competition.body}</Prose>
+            <div className="ux4g-grid ux4g-grid-cols-1 ux4g-md-grid-cols-2 ux4g-gap-m ux4g-mt-m">
+              <BandBar
+                band={competition.data.band}
+                format={(v) => String(Math.round(Number(v)))}
+                label={strings.existingEnterprises}
+                language={language}
+              />
+              {threats?.data.price_band && (
+                <BandBar
+                  band={threats.data.price_band}
+                  format={(v) => inr(v)}
+                  label={strings.priceSpread}
+                  language={language}
+                />
+              )}
+            </div>
+          </Panel>
+        )}
+
+        {swot?.data.quadrants && (
+          <Panel title={swot.heading} cites={sourceTitles(swot.cites)} strings={strings}>
+            <SwotGrid quadrants={swot.data.quadrants} labels={strings.quadrant} />
+          </Panel>
+        )}
+
+        {threats && (threats.data.items ?? []).length > 0 && (
+          <Panel title={threats.heading} cites={sourceTitles(threats.cites)} strings={strings}>
+            <ul className="ux4g-d-flex ux4g-flex-column ux4g-gap-y-s">
+              {(threats.data.items ?? []).map((item) => (
+                <li className="ux4g-d-flex ux4g-ai-start ux4g-gap-x-s" key={item.id}>
+                  <span
+                    className={`ux4g-tag-tonal-${
+                      item.severity === 'high' ? 'error' : 'warning'
+                    } ux4g-tag-s`}
+                  >
+                    {item.severity}
+                  </span>
+                  <span className="ux4g-body-l-default setubiz-measure">{item.text}</span>
                 </li>
               ))}
             </ul>
-          )}
-        </Card>
-      ),
-    },
-    competition?.data.band && {
-      id: 'competition',
-      label: competition.heading,
-      node: (
-        <Card
-          heading={competition.heading}
-          cites={sourceTitles(competition.cites)}
-          strings={strings}
-        >
-          <Body>{competition.body}</Body>
-          <div className="mt-5 grid gap-3 sm:grid-cols-2">
-            <BandBar
-              band={competition.data.band}
-              format={(v) => String(Math.round(Number(v)))}
-              label={strings.existingEnterprises}
-              language={language}
-            />
-            {threats?.data.price_band && (
-              <BandBar
-                band={threats.data.price_band}
-                format={(v) => inr(v)}
-                label={strings.priceSpread}
-                language={language}
-              />
+            {/* Real AGMARKNET data carries no series — data.gov.in publishes only the current day —
+                so this chart appears on sample data and is correctly absent on live data. */}
+            {threats.data.seasonality?.months && (
+              <div className="ux4g-mt-l">
+                <SeasonalityChart
+                  months={threats.data.seasonality.months}
+                  arrivals={threats.data.seasonality.arrivals ?? []}
+                  commodity={threats.data.seasonality.commodity ?? ''}
+                  market={threats.data.seasonality.market ?? ''}
+                  peakMonth={threats.data.seasonality.peak_month}
+                  troughMonth={threats.data.seasonality.trough_month}
+                  language={language}
+                />
+              </div>
             )}
-          </div>
-        </Card>
-      ),
-    },
-    swot?.data.quadrants && {
-      id: 'swot',
-      label: swot.heading,
-      node: (
-        <Card heading={swot.heading} cites={sourceTitles(swot.cites)} strings={strings}>
-          <SwotGrid quadrants={swot.data.quadrants} labels={strings.quadrant} />
-        </Card>
-      ),
-    },
-    threats && {
-      id: 'threats',
-      label: threats.heading,
-      node: (
-        <Card heading={threats.heading} cites={sourceTitles(threats.cites)} strings={strings}>
-          <ul className="space-y-3">
-            {(threats.data.items ?? []).map((item) => (
-              <li key={item.id} className="flex gap-2.5 text-[15px] leading-7">
-                <span
-                  aria-hidden
-                  className="mt-1.5 shrink-0 text-xs"
-                  style={{
-                    color:
-                      item.severity === 'high' ? 'var(--destructive)' : 'var(--warning)',
-                  }}
-                >
-                  ▲
-                </span>
-                <span className="min-w-0 flex-1 text-muted-foreground max-w-[68ch]">
-                  {item.text}{' '}
-                  <span className="text-xs uppercase tracking-wide text-subtle-foreground">
-                    {item.severity}
-                  </span>
-                </span>
-              </li>
-            ))}
-          </ul>
-          {threats.data.seasonality?.months && (
-            <div className="mt-6">
-              <SeasonalityChart
-                months={threats.data.seasonality.months}
-                arrivals={threats.data.seasonality.arrivals ?? []}
-                commodity={threats.data.seasonality.commodity ?? ''}
-                market={threats.data.seasonality.market ?? ''}
-                peakMonth={threats.data.seasonality.peak_month}
-                troughMonth={threats.data.seasonality.trough_month}
-                language={language}
-              />
-            </div>
-          )}
-        </Card>
-      ),
-    },
-    {
-      id: 'scheme',
-      label: scheme?.heading ?? strings.apply,
-      node: (
-        <Card
-          heading={scheme?.heading ?? strings.apply}
-          cites={sourceTitles(scheme?.cites ?? [])}
-          strings={strings}
-        >
-          <Body>{scheme?.body}</Body>
-          <h3 className="mt-6 text-sm font-semibold text-foreground">{strings.documents}</h3>
-          <ul className="mt-2.5 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
-            {facts.eligibility.documents.map((doc) => (
-              <li key={doc.en} className="flex gap-2 text-sm leading-6 text-muted-foreground">
-                <span aria-hidden className="text-subtle-foreground">
-                  ☐
-                </span>
-                {language === 'hi' && doc.hi ? doc.hi : doc.en}
-              </li>
-            ))}
-          </ul>
-        </Card>
-      ),
-    },
-  ]
-
-  const sections = entries.filter((e): e is Entry => Boolean(e))
-  const navItems: NavItem[] = sections.map(({ id, label }) => ({ id, label }))
-
-  return (
-    <div className="mx-auto w-full max-w-[1400px] px-4 py-6 lg:px-8 lg:py-10">
-      <header className="mb-6 flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground lg:text-3xl">
-            {language === 'hi' && facts.village.name_hi ? facts.village.name_hi : facts.village.name}
-            <span className="ml-2 text-base font-normal text-muted-foreground">
-              {facts.village.block} · {facts.village.district}
-            </span>
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {language === 'hi' && facts.template.name_hi
-              ? facts.template.name_hi
-              : facts.template.name}{' '}
-            · {facts.scheme.scheme_name}
-          </p>
-        </div>
-        <div className="no-print flex gap-2 lg:hidden">
-          <SmallButton onClick={() => window.print()}>{strings.print}</SmallButton>
-          <SmallButton onClick={onRestart}>{strings.back}</SmallButton>
-        </div>
-      </header>
-
-      {facts.contains_synthetic_data && (
-        <p
-          className="print-block mb-6 rounded-lg px-4 py-3 text-sm leading-6"
-          style={{
-            background: 'color-mix(in srgb, var(--warning) 18%, var(--background))',
-            color: 'var(--foreground)',
-          }}
-        >
-          <strong className="font-semibold">⚠ {strings.synthetic}.</strong> {strings.syntheticNote}
-        </p>
-      )}
-
-      <div className="report-grid lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-10 xl:grid-cols-[17rem_minmax(0,1fr)]">
-        <ReportNav
-          items={navItems}
-          facts={facts}
-          language={language}
-          strings={strings}
-          provenanceCount={Object.keys(facts.numeric_index).length}
-          onProvenance={() => setProvenanceOpen(true)}
-          onRestart={onRestart}
-        />
-
-        <div className="min-w-0 space-y-4 lg:space-y-5">
-          {sections.map(({ id, node }) => (
-            <div key={id} id={id} data-section>
-              {node}
-            </div>
-          ))}
-
-          <button
-            type="button"
-            onClick={() => setProvenanceOpen(true)}
-            className="no-print w-full rounded-lg border border-dashed border-border px-4 py-3 text-sm font-medium text-primary lg:hidden"
-          >
-            {strings.provenance} ({Object.keys(facts.numeric_index).length})
-          </button>
-
-          <footer className="border-t border-border pt-4 text-xs leading-6 text-subtle-foreground">
-            <p className="max-w-[80ch]">{section('data_note')?.body}</p>
-            <p className="tabular mt-2">
-              {validation.checked} {strings.grounded} · {validation.passed ? '✓' : '✗'} ·{' '}
-              {strings.narrator}: {report.narrator} ·{' '}
-              {lakh(facts.numeric_index.addressable_market_point ?? '0')}{' '}
-              {strings.addressableMarket}
-            </p>
-          </footer>
-        </div>
+          </Panel>
+        )}
       </div>
+
+      <div className="ux4g-mt-l setubiz-no-print">
+        <button
+          type="button"
+          className="ux4g-btn ux4g-btn-outline-primary ux4g-btn-md ux4g-gap-x-xs"
+          onClick={() => setProvenanceOpen(true)}
+        >
+          <span className="ux4g-icon-outlined" aria-hidden="true">
+            fact_check
+          </span>
+          {strings.provenance} ({Object.keys(facts.numeric_index).length})
+        </button>
+      </div>
+
+      <footer className="ux4g-mt-xl">
+        <div className="ux4g-divider-horizontal" />
+        <p className="ux4g-body-s-default ux4g-text-neutral-tertiary setubiz-measure ux4g-mt-m">
+          {section('data_note')?.body}
+        </p>
+        <p className="ux4g-body-s-default ux4g-text-neutral-tertiary setubiz-tabular ux4g-mt-s">
+          {validation.checked} {strings.grounded} · {strings.narrator}: {report.narrator} ·{' '}
+          {lakh(facts.numeric_index.addressable_market_point ?? '0')} {strings.addressableMarket}
+        </p>
+      </footer>
 
       <ProvenancePanel
         facts={facts}
@@ -364,48 +480,63 @@ export function Report({ data, language, strings, onRestart }: Props) {
         onClose={() => setProvenanceOpen(false)}
         language={language}
         closeLabel={strings.close}
+        title={strings.provenanceGloss}
       />
     </div>
   )
 }
 
-function Body({ children }: { children?: ReportSection['body'] }) {
+function Prose({ children }: { children?: string }) {
   if (!children) return null
-  return <p className="max-w-[68ch] text-[15px] leading-7 text-muted-foreground">{children}</p>
+  return <p className="ux4g-body-l-default setubiz-measure">{children}</p>
 }
 
-function Card({
-  heading,
+/** One accordion section.
+ *
+ *  Open state is held in React rather than handed to the UX4G runtime: the component contract puts
+ *  application state on the application, and letting an external script mutate classes on
+ *  React-rendered nodes invites them to disagree on the next render. The classes are the system's;
+ *  only the toggling is ours. */
+function Panel({
+  title,
   cites,
   strings,
   children,
 }: {
-  heading: string
+  title: string
   cites: string[]
   strings: Strings
   children: ReactNode
 }) {
-  return (
-    <section className="print-block print-flat rounded-lg border border-border bg-card p-5 sm:p-6">
-      <h2 className="text-lg font-semibold tracking-tight text-foreground lg:text-xl">{heading}</h2>
-      <div className="mt-3">{children}</div>
-      {cites.length > 0 && (
-        <p className="mt-4 border-t border-border pt-3 text-[11px] leading-snug text-subtle-foreground">
-          {strings.source}: {cites.join(' · ')}
-        </p>
-      )}
-    </section>
-  )
-}
+  const [open, setOpen] = useState(false)
+  const id = useId()
+  const panelId = `${id}-panel`
 
-function SmallButton({ onClick, children }: { onClick: () => void; children: ReactNode }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="rounded-full border border-border px-3 py-2 text-sm text-muted-foreground hover:text-foreground"
-    >
-      {children}
-    </button>
+    <div className="ux4g-accordion__item setubiz-print-block">
+      <h3 className="ux4g-accordion__header">
+        <button
+          type="button"
+          className={`ux4g-accordion__button${open ? '' : ' collapsed'}`}
+          aria-expanded={open}
+          aria-controls={panelId}
+          onClick={() => setOpen(!open)}
+        >
+          <span className="ux4g-accordion__button-content">
+            <span className="ux4g-accordion__title">{title}</span>
+          </span>
+        </button>
+      </h3>
+      <div className={`ux4g-accordion__collapse${open ? ' show' : ''}`} id={panelId}>
+        <div className="ux4g-accordion__body ux4g-d-flex ux4g-flex-column ux4g-gap-y-m">
+          {children}
+          {cites.length > 0 && (
+            <p className="ux4g-body-s-default ux4g-text-neutral-tertiary">
+              {strings.source}: {cites.join(' · ')}
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
   )
 }

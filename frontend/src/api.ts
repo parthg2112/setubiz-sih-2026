@@ -2,10 +2,14 @@ import type { AdvisoryResponse, CostTemplate, Language, VillageMatch } from './t
 
 const BASE = '/api/v1'
 
-async function get<T>(path: string, params?: Record<string, string | number>): Promise<T> {
+async function get<T>(
+  path: string,
+  params?: Record<string, string | number>,
+  signal?: AbortSignal,
+): Promise<T> {
   const url = new URL(BASE + path, window.location.origin)
   Object.entries(params ?? {}).forEach(([k, v]) => url.searchParams.set(k, String(v)))
-  const response = await fetch(url)
+  const response = await fetch(url, { signal })
   if (!response.ok) throw new Error(await describe(response))
   return response.json()
 }
@@ -47,8 +51,10 @@ export interface AdvisoryInput {
 }
 
 export const api = {
-  searchVillages: (q: string, state?: string) =>
-    get<VillageMatch[]>('/villages/search', state ? { q, state } : { q }),
+  /** `signal` lets the typeahead abandon a superseded request, so a slow early response cannot
+   *  overwrite a fast later one. */
+  searchVillages: (q: string, state?: string, signal?: AbortSignal) =>
+    get<VillageMatch[]>('/villages/search', state ? { q, state } : { q }, signal),
   costTemplates: () => get<CostTemplate[]>('/cost-templates'),
   advisory: (input: AdvisoryInput) => post<AdvisoryResponse>('/advisory', input),
 }

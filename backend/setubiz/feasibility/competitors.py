@@ -122,7 +122,7 @@ class Ec13ZScoreEstimator:
                     "observed OSM points of interest"
                 ),
                 confidence=confidence,
-                sources=("ec13_sample", "osm_sample", "shrug_sample"),
+                sources=("economic_census_2013", "openstreetmap", "census_pc11"),
             ),
             osm_observed=observed,
             density_per_1k_households=density_per_1k,

@@ -15,7 +15,7 @@ rules:
     text_hi: >-
       क्षेत्र में इस श्रेणी पर अनुमानित मासिक खर्च मौजूदा {competitors_point} इकाइयों की क्षमता से
       लगभग {demand_supply_ratio} गुना है, इसलिए एक और इकाई के लिए जगह है।
-    cites: [hces_sample, ec13_sample]
+    cites: [hces_2023_24, economic_census_2013]
 
   - id: saturated_market
     quadrant: threat
@@ -27,7 +27,7 @@ rules:
     text_hi: >-
       क्षेत्र में पहले से लगभग {competitors_point} इकाइयाँ हैं और माँग क्षमता का
       {demand_supply_ratio} गुना है। नए ग्राहक नहीं, मौजूदा दुकानों से ग्राहक लेने होंगे।
-    cites: [hces_sample, ec13_sample]
+    cites: [hces_2023_24, economic_census_2013]
 
   - id: large_catchment
     quadrant: strength
@@ -38,7 +38,7 @@ rules:
     text_hi: >-
       {radius_km} किमी के भीतर {villages_in_radius} गाँवों के लगभग {households_now} परिवार आते हैं,
       जो पूर्णकालिक इकाई के लिए पर्याप्त बाज़ार है।
-    cites: [shrug_sample, intercensal_scaling]
+    cites: [census_pc11, intercensal_scaling]
 
   - id: thin_catchment
     quadrant: weakness
@@ -49,7 +49,7 @@ rules:
     text_hi: >-
       {radius_km} किमी में केवल लगभग {households_now} परिवार हैं। बिक्री क्षेत्र बढ़ाने या दूसरी आय
       की योजना शुरू से रखें।
-    cites: [shrug_sample, intercensal_scaling]
+    cites: [census_pc11, intercensal_scaling]
 
   - id: banking_access
     quadrant: strength
@@ -59,7 +59,7 @@ rules:
       disbursement and repayment cycle through the State Channelizing Agency.
     text_hi: >-
       क्षेत्र के {villages_with_bank} गाँवों में बैंक शाखा है, जिससे ऋण वितरण और किस्त जमा आसान होगी।
-    cites: [shrug_sample]
+    cites: [census_pc11]
 
   - id: no_banking_access
     quadrant: weakness
@@ -69,7 +69,7 @@ rules:
       budget for it and ask the SCA about a business correspondent.
     text_hi: >-
       क्षेत्र में कोई बैंक शाखा नहीं है। हर तिमाही किस्त पर एक दिन की यात्रा लगेगी, इसका खर्च जोड़ें।
-    cites: [shrug_sample]
+    cites: [census_pc11]
 
   - id: healthy_repayment_capacity
     quadrant: strength
@@ -114,7 +114,7 @@ rules:
     text_hi: >-
       संबंधित वस्तु की मंडी आवक साल भर बहुत बदलती है (सीवी {seasonality_cv})। तिमाही किस्त तय रहती है,
       इसलिए कमजोर तिमाही के लिए बचत रखें।
-    cites: [agmarknet_sample]
+    cites: [agmarknet]
 
   - id: scheme_concession
     quadrant: opportunity
@@ -139,7 +139,7 @@ rules:
     text_hi: >-
       {literacy_pct}% साक्षरता और {road_pct}% पक्की सड़क वाला यह क्षेत्र नियमित आपूर्ति और
       हिसाब-किताब वाली इकाई के लिए उपयुक्त है।
-    cites: [shrug_sample]
+    cites: [census_pc11]
 
   - id: distance_to_town
     quadrant: weakness
@@ -149,4 +149,4 @@ rules:
       will both carry a travel cost that thin margins cannot absorb repeatedly.
     text_hi: >-
       निकटतम शहर {dist_to_town_km} किमी दूर है। कच्चा माल और मशीन मरम्मत दोनों पर यात्रा खर्च लगेगा।
-    cites: [shrug_sample]
+    cites: [census_pc11]

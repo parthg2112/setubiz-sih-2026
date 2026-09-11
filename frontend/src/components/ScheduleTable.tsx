@@ -1,14 +1,14 @@
 import { useState } from 'react'
-import { inr } from '../format'
-import type { ScheduleRow } from '../types'
+import { inr, type Strings } from '../format'
+import type { Language, ScheduleRow } from '../types'
 
 interface Props {
   rows: ScheduleRow[]
   mode: string
   alternateMode: string | null
   alternateInstalment: string | null
-  language: 'en' | 'hi'
-  strings: { schedule: string; showSchedule: string; hideSchedule: string }
+  language: Language
+  strings: Strings
 }
 
 const HEAD = {
@@ -29,66 +29,60 @@ export function ScheduleTable({
   const shown = expanded ? rows : rows.slice(0, 6)
 
   return (
-    <div className="print-block">
-      <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
-        <h4 className="text-sm font-semibold text-foreground">{strings.schedule}</h4>
-        <p className="text-xs text-muted-foreground">
-          {language === 'en' ? 'Moratorium interest: ' : 'अधिस्थगन ब्याज: '}
-          <strong className="font-medium">
-            {mode === 'serviced'
-              ? language === 'en'
-                ? 'paid each quarter'
-                : 'हर तिमाही चुकाया'
-              : language === 'en'
-                ? 'added to principal'
-                : 'मूलधन में जोड़ा'}
-          </strong>
-          {alternateInstalment && (
-            <>
-              {' · '}
-              {language === 'en' ? 'the other treatment costs ' : 'दूसरे तरीके में किस्त '}
-              <span className="tabular">{inr(alternateInstalment)}</span>
-              {language === 'en' ? ` a quarter (${alternateMode})` : ' प्रति तिमाही'}
-            </>
-          )}
-        </p>
-      </div>
+    <div className="setubiz-print-block ux4g-d-flex ux4g-flex-column ux4g-gap-y-s">
+      <p className="ux4g-body-m-default ux4g-text-neutral-secondary setubiz-measure">
+        {language === 'en' ? 'Moratorium interest: ' : 'अधिस्थगन ब्याज: '}
+        <strong>
+          {mode === 'serviced'
+            ? language === 'en'
+              ? 'paid each quarter'
+              : 'हर तिमाही चुकाया'
+            : language === 'en'
+              ? 'added to principal'
+              : 'मूलधन में जोड़ा'}
+        </strong>
+      </p>
 
-      <div className="overflow-x-auto rounded-lg border border-border">
-        <table className="w-full min-w-[560px] border-collapse text-right text-sm">
+      {/* The alternate moratorium treatment is not a question the reader is asked during the form
+          — it is jargon they have no basis to answer. It is shown here instead, already computed,
+          as a comparison they can take to the bank. */}
+      {alternateInstalment && (
+        <p className="ux4g-body-m-default ux4g-text-neutral-secondary setubiz-measure">
+          {strings.moratoriumAlt}{' '}
+          <span className="setubiz-tabular">{inr(alternateInstalment)}</span>
+          {language === 'en' ? ` a quarter (${alternateMode})` : ' प्रति तिमाही'}
+        </p>
+      )}
+
+      <div className="ux4g-table-responsive">
+        <table className="ux4g-table ux4g-table-m ux4g-table-zebra-rows ux4g-table-rounded">
           <thead>
-            <tr className="border-b border-border text-xs text-subtle-foreground">
-              {HEAD[language].map((h, i) => (
-                <th key={h} className={`px-3 py-2 font-medium ${i === 0 ? 'text-left' : ''}`}>
-                  {h}
+            <tr>
+              {HEAD[language].map((h) => (
+                <th key={h} scope="col">
+                  <span className="ux4g-table-th-content">{h}</span>
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="tabular">
+          <tbody className="setubiz-tabular">
             {shown.map((row) => (
-              <tr
-                key={row.quarter}
-                className="border-b border-border last:border-0"
-                style={
-                  row.phase === 'moratorium'
-                    ? { background: 'color-mix(in srgb, var(--chart-2) 8%, transparent)' }
-                    : undefined
-                }
-              >
-                <td className="px-3 py-1.5 text-left text-muted-foreground">
+              <tr key={row.quarter}>
+                <th scope="row">
                   {row.quarter}
                   {row.phase === 'moratorium' && (
-                    <span className="ml-1 text-[10px] uppercase tracking-wide text-subtle-foreground">
-                      {language === 'en' ? 'mor.' : 'अधि.'}
+                    <span className="ux4g-tag-tonal-warning ux4g-tag-s ux4g-ml-xs">
+                      {language === 'en' ? 'moratorium' : 'अधिस्थगन'}
                     </span>
                   )}
+                </th>
+                <td>{inr(row.opening)}</td>
+                <td>{inr(row.interest)}</td>
+                <td>{inr(row.principal)}</td>
+                <td>
+                  <strong>{inr(row.instalment)}</strong>
                 </td>
-                <td className="px-3 py-1.5 text-muted-foreground">{inr(row.opening)}</td>
-                <td className="px-3 py-1.5 text-muted-foreground">{inr(row.interest)}</td>
-                <td className="px-3 py-1.5 text-muted-foreground">{inr(row.principal)}</td>
-                <td className="px-3 py-1.5 font-medium text-foreground">{inr(row.instalment)}</td>
-                <td className="px-3 py-1.5 text-muted-foreground">{inr(row.closing)}</td>
+                <td>{inr(row.closing)}</td>
               </tr>
             ))}
           </tbody>
@@ -98,8 +92,8 @@ export function ScheduleTable({
       {rows.length > 6 && (
         <button
           type="button"
-          onClick={() => setExpanded((v) => !v)}
-          className="no-print mt-2 text-sm font-medium text-primary underline underline-offset-2"
+          onClick={() => setExpanded(!expanded)}
+          className="ux4g-btn ux4g-btn-text-primary ux4g-btn-md setubiz-no-print"
         >
           {expanded ? strings.hideSchedule : `${strings.showSchedule} (${rows.length})`}
         </button>

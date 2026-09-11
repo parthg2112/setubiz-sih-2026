@@ -36,6 +36,9 @@ class Source(BaseModel):
     id: str
     title: str
     kind: SourceKind
+    #: The issuing authority. Named explicitly so a reader can see which official body published
+    #: the figure, rather than inferring it from a dataset name.
+    publisher: str | None = None
     url: str | None = None
     year: str | None = None
     #: True when the underlying rows are the committed synthetic placeholders.

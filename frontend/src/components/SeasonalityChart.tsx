@@ -35,11 +35,11 @@ export function SeasonalityChart({
   const barW = Math.max(slot - 2, 4) // 2px surface gap between adjacent bars
 
   return (
-    <figure className="print-block m-0">
-      <div className="overflow-x-auto max-w-[760px]">
+    <figure className="setubiz-print-block">
+      <div className="setubiz-scroll-x">
         <svg
           viewBox={`0 0 ${W} ${H}`}
-          className="h-auto w-full min-w-[420px]"
+          className="ux4g-w-100"
           role="img"
           aria-label={
             language === 'en'
@@ -55,15 +55,15 @@ export function SeasonalityChart({
                 x2={W - PAD.right}
                 y1={PAD.top + (1 - f) * plotH}
                 y2={PAD.top + (1 - f) * plotH}
-                stroke="var(--border)"
+                stroke="var(--ux4g-border-color-neutral-default)"
                 strokeWidth={1}
               />
               <text
                 x={PAD.left - 8}
                 y={PAD.top + (1 - f) * plotH + 4}
                 textAnchor="end"
-                className="tabular"
-                fill="var(--subtle-foreground)"
+                className="setubiz-tabular"
+                fill="var(--ux4g-text-neutral-tertiary)"
                 fontSize={10}
               >
                 {Math.round((yMax * f) / 100) * 100}
@@ -78,9 +78,8 @@ export function SeasonalityChart({
               <g
                 key={months[i]}
                 onMouseEnter={() => setHover(i)}
-                onFocus={() => setHover(i)}
-                tabIndex={0}
-                role="presentation"
+                onMouseLeave={() => setHover(null)}
+                aria-hidden="true"
               >
                 <rect
                   x={PAD.left + i * slot}
@@ -95,7 +94,7 @@ export function SeasonalityChart({
                   width={barW}
                   height={h}
                   rx={4}
-                  fill="var(--chart-1)"
+                  fill="var(--setubiz-chart-1)"
                   opacity={hover === null || hover === i ? 1 : 0.55}
                 />
                 {(isExtreme || hover === i) && (
@@ -103,8 +102,8 @@ export function SeasonalityChart({
                     x={PAD.left + i * slot + slot / 2}
                     y={PAD.top + plotH - h - 4}
                     textAnchor="middle"
-                    className="tabular"
-                    fill="var(--foreground)"
+                    className="setubiz-tabular"
+                    fill="var(--ux4g-text-neutral-primary)"
                     fontSize={10}
                     fontWeight={600}
                   >
@@ -115,7 +114,7 @@ export function SeasonalityChart({
                   x={PAD.left + i * slot + slot / 2}
                   y={H - 8}
                   textAnchor="middle"
-                  fill={isExtreme ? 'var(--muted-foreground)' : 'var(--subtle-foreground)'}
+                  fill={isExtreme ? 'var(--ux4g-text-neutral-secondary)' : 'var(--ux4g-text-neutral-tertiary)'}
                   fontSize={10}
                   fontWeight={isExtreme ? 600 : 400}
                 >
@@ -130,12 +129,12 @@ export function SeasonalityChart({
             x2={W - PAD.right}
             y1={PAD.top + plotH}
             y2={PAD.top + plotH}
-            stroke="var(--chart-axis)"
+            stroke="var(--setubiz-chart-axis)"
             strokeWidth={1}
           />
         </svg>
       </div>
-      <figcaption className="mt-1 text-xs text-muted-foreground">
+      <figcaption className="ux4g-body-s-default ux4g-text-neutral-secondary ux4g-mt-xs">
         {language === 'en'
           ? `${commodity} arrivals at ${market}, tonnes per month`
           : `${market} में ${commodity} की आवक, टन प्रति माह`}

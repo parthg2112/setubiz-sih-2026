@@ -6,47 +6,86 @@ from setubiz.schemas import Source, SourceKind
 
 _SOURCES: tuple[Source, ...] = (
     Source(
-        id="shrug_sample",
-        title="Census 2011 village PCA (SHRUG v2.2 schema)",
+        id="census_pc11",
+        title="Census of India 2011: Primary Census Abstract, village level",
         kind=SourceKind.CENSUS,
-        url="https://www.devdatalab.org/shrug",
+        publisher=(
+            "Office of the Registrar General & Census Commissioner, Ministry of Home Affairs"
+        ),
+        url="https://censusindia.gov.in/census.website/data/census-tables",
         year="2011",
-        synthetic=True,
-        note="Synthetic sample rows shaped like SHRUG v2.2. Replace before any real claim.",
-    ),
-    Source(
-        id="osm_sample",
-        title="OpenStreetMap points of interest",
-        kind=SourceKind.OSM,
-        url="https://www.openstreetmap.org/copyright",
-        synthetic=True,
-        note="Rural OSM coverage is sparse; a POI count is a floor on competitors, not a census.",
-    ),
-    Source(
-        id="ec13_sample",
-        title="Economic Census 2013 block enterprise density",
-        kind=SourceKind.ECONOMIC_CENSUS,
-        url="https://www.devdatalab.org/shrug_download/ec13",
-        year="2013",
-        synthetic=True,
-    ),
-    Source(
-        id="hces_sample",
-        title="Household Consumption Expenditure Survey 2023-24",
-        kind=SourceKind.CONSUMPTION_SURVEY,
-        url="https://microdata.gov.in/",
-        year="2023-24",
-        synthetic=True,
         note=(
-            "All-India rural MPCE anchor ₹4,122 is published; per-category shares are illustrative."
+            "Population, households, literates, Scheduled Caste, Scheduled Tribe and worker "
+            "counts for every village. Linked to village names and polygon centroids through "
+            "SHRUG v2.2 (Development Data Lab). Village populations reconcile to the published "
+            "state rural totals within 0.003%."
         ),
     ),
     Source(
-        id="agmarknet_sample",
-        title="AGMARKNET mandi arrivals and modal prices",
+        id="mission_antyodaya",
+        title="Mission Antyodaya village survey",
+        kind=SourceKind.CENSUS,
+        publisher="Ministry of Rural Development",
+        url="https://missionantyodaya.nic.in",
+        year="2019",
+        note=(
+            "Village infrastructure: bank branch, pucca road, electricity, mandi, weekly haat, "
+            "milk routes and self-help groups. Surveyed in 2019, so amenity flags are fresher "
+            "than the 2011 census counts and are not scaled."
+        ),
+    ),
+    Source(
+        id="openstreetmap",
+        title="OpenStreetMap points of interest",
+        kind=SourceKind.OSM,
+        publisher="OpenStreetMap contributors, ODbL licensed",
+        url="https://www.openstreetmap.org/copyright",
+        note="Rural OSM coverage is sparse; a POI count is a floor on competitors, not a census.",
+    ),
+    Source(
+        id="economic_census_2013",
+        title="Sixth Economic Census 2013: establishment counts by industry",
+        kind=SourceKind.ECONOMIC_CENSUS,
+        publisher=(
+            "Central Statistics Office, Ministry of Statistics & Programme Implementation"
+        ),
+        url="https://www.mospi.gov.in",
+        year="2013",
+        note=(
+            "Enterprise counts per 1,000 rural households, aggregated to the block. The Economic "
+            "Census publishes establishment counts only in total, so a per-category figure is "
+            "apportioned by that industry's share of employment."
+        ),
+    ),
+    Source(
+        id="hces_2023_24",
+        title="Household Consumption Expenditure Survey 2023-24",
+        kind=SourceKind.CONSUMPTION_SURVEY,
+        publisher=(
+            "National Statistics Office, Ministry of Statistics & Programme Implementation"
+        ),
+        url="https://www.mospi.gov.in/publication/household-consumption-expenditure-survey-2023-24",
+        year="2023-24",
+        note=(
+            "Published Fact Sheet: state rural MPCE (Statement 7), item-group shares of spend "
+            "(Statement 4) and the rural MPCE distribution (Figure 1R), which sets the band width. "
+            "What share of that spend one village enterprise can capture is our assumption, and "
+            "each category states its reasoning."
+        ),
+    ),
+    Source(
+        id="agmarknet",
+        title="AGMARKNET daily mandi prices",
         kind=SourceKind.MARKET_PRICES,
+        publisher=(
+            "Directorate of Marketing & Inspection, Ministry of Agriculture & Farmers Welfare"
+        ),
         url="https://data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070",
-        synthetic=True,
+        note=(
+            "The open-data resource publishes the current day's prices only. The twelve-month "
+            "arrivals series behind the seasonality index needs a portal export; until then the "
+            "seasonality assessment is omitted rather than estimated."
+        ),
     ),
     Source(
         id="intercensal_scaling",
@@ -60,6 +99,7 @@ _SOURCES: tuple[Source, ...] = (
         id="nabard_templates",
         title="NABARD Model Bankable Projects: unit cost templates",
         kind=SourceKind.COST_TEMPLATE,
+        publisher="National Bank for Agriculture and Rural Development",
         url="https://www.nabard.org/",
         note="Line items follow published model project norms; local prices vary.",
     ),
@@ -67,6 +107,7 @@ _SOURCES: tuple[Source, ...] = (
         id="mosje_corporations",
         title="MoSJE apex corporations: NSFDC / NSKFDC / NBCFDC",
         kind=SourceKind.SCHEME,
+        publisher="Ministry of Social Justice & Empowerment",
         url="https://www.dosje.gov.in/",
     ),
     Source(

@@ -71,7 +71,7 @@ class HcesMeanBandEstimator:
                     f"banded at ±{q(cv * 100, Decimal('1'))}% coefficient of variation"
                 ),
                 confidence=Confidence.MEDIUM,
-                sources=("hces_sample",),
+                sources=("hces_2023_24",),
             ),
             addressable_market_monthly=Band(
                 low=tam_low,
@@ -83,7 +83,7 @@ class HcesMeanBandEstimator:
                     f"{reach.radius_km} km × {addressable} addressable share"
                 ),
                 confidence=Confidence.MEDIUM,
-                sources=("hces_sample", "shrug_sample", "intercensal_scaling"),
+                sources=("hces_2023_24", "census_pc11", "intercensal_scaling"),
             ),
             addressable_share=addressable,
             baseline_state_average=per_hh,

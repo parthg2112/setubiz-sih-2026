@@ -1,0 +1,132 @@
+/* SetuBiz application layer.
+ *
+ * UX4G owns every colour, size, space, radius, border and component style in this app. This file
+ * holds only the four things UX4G does not provide, each justified in place. Nothing here may
+ * restyle a UX4G component or redeclare a --ux4g-* token outside the print block. */
+
+/* ---------------------------------------------------------------------------------------------
+ * 1. Chart series palette.
+ *
+ * UX4G ships no chart component and no chart tokens in any of its 29 token families, so the two
+ * SVG charts have no system colours to bind to. Design.md section 13 says a missing token should
+ * be proposed rather than hardcoded, so these are app-namespaced aliases onto UX4G primitive
+ * ramps. They are --setubiz-*, never --ux4g-*, so they cannot collide with the system.
+ *
+ * Slots 1-3 are the DSCR series and read as a severity ramp: base case, revenue -15%, -30%. */
+:root {
+  --setubiz-chart-1: var(--ux4g-color-blue-600);
+  --setubiz-chart-2: var(--ux4g-color-gold-600);
+  --setubiz-chart-3: var(--ux4g-color-pink-600);
+  --setubiz-chart-4: var(--ux4g-color-green-600);
+  --setubiz-chart-5: var(--ux4g-color-red-600);
+  --setubiz-chart-axis: var(--ux4g-color-neutral-400);
+}
+
+/* The 600 steps are tuned for light surfaces; on the dark ground they lose contrast, so each
+ * series moves up its own ramp. Bound to UX4G's own theme switch, not a second mechanism. */
+[data-theme='dark'] {
+  --setubiz-chart-1: var(--ux4g-color-blue-400);
+  --setubiz-chart-2: var(--ux4g-color-gold-400);
+  --setubiz-chart-3: var(--ux4g-color-pink-400);
+  --setubiz-chart-4: var(--ux4g-color-green-400);
+  --setubiz-chart-5: var(--ux4g-color-red-400);
+  --setubiz-chart-axis: var(--ux4g-color-neutral-600);
+}
+
+/* ---------------------------------------------------------------------------------------------
+ * 2. Reading comfort.
+ *
+ * The reader is often a first-time internet user reading a financial document on a phone. UX4G
+ * sets type size and colour but not line length, and an unconstrained paragraph on a 1440px
+ * screen runs past 120 characters, which is where line-tracking breaks down for exactly the
+ * readers this service exists for. 60ch is the low end of the comfortable range, chosen
+ * deliberately over the usual 65-75ch. */
+.setubiz-measure {
+  max-width: 60ch;
+}
+
+/* Figures in a column must align digit-to-digit to be comparable at a glance. */
+.setubiz-tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Wide content must scroll inside its own box rather than pushing the page sideways. UX4G has no
+ * general overflow utility — the only `overflow-x: auto` in the bundle belongs to component
+ * classes (`ux4g-table-responsive`, `ux4g-tab-list`), and borrowing one of those for a chart
+ * wrapper would apply a table's box model to something that is not a table. Two SVG charts have a
+ * fixed minimum width and need this; nothing else does. */
+.setubiz-scroll-x {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Section anchors clear the sticky header when the contents rail jumps to them. */
+[data-section] {
+  scroll-margin-top: 6rem;
+}
+
+/* ---------------------------------------------------------------------------------------------
+ * 3. Motion.
+ *
+ * UX4G animates several components. Anyone who has asked their OS to stop that gets it stopped. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------------------------
+ * 4. Print.
+ *
+ * UX4G ships no print layer, and the printed report is a core deliverable: the beneficiary
+ * carries it to the bank or the District Welfare Officer. Without re-stamping the light aliases,
+ * a dark-mode viewer prints pale grey text onto white paper and the handout is unreadable.
+ *
+ * These re-point UX4G's semantic tokens at the same primitive steps the light theme uses, so the
+ * ramp stays the system's own — no invented colour values. */
+@media print {
+  [data-theme='dark'] {
+    color-scheme: light;
+    --ux4g-bg-neutral: var(--ux4g-color-neutral-50);
+    --ux4g-bg-neutral-elevated: var(--ux4g-color-neutral-0);
+    --ux4g-bg-neutral-soft: var(--ux4g-color-neutral-100);
+    --ux4g-bg-neutral-subtle: var(--ux4g-color-neutral-200);
+    --ux4g-text-neutral-primary: var(--ux4g-color-neutral-900);
+    --ux4g-text-neutral-secondary: var(--ux4g-color-neutral-700);
+    --ux4g-text-neutral-tertiary: var(--ux4g-color-neutral-500);
+    --ux4g-border-color-neutral-default: var(--ux4g-color-neutral-300);
+    --ux4g-border-color-neutral-subtle: var(--ux4g-color-neutral-200);
+    --setubiz-chart-1: var(--ux4g-color-blue-600);
+    --setubiz-chart-2: var(--ux4g-color-gold-600);
+    --setubiz-chart-3: var(--ux4g-color-pink-600);
+    --setubiz-chart-4: var(--ux4g-color-green-600);
+    --setubiz-chart-5: var(--ux4g-color-red-600);
+    --setubiz-chart-axis: var(--ux4g-color-neutral-400);
+  }
+
+  .setubiz-no-print {
+    display: none !important;
+  }
+
+  /* The contents rail is hidden on paper, so content must not stay in its narrow column. */
+  .setubiz-report-grid {
+    display: block !important;
+  }
+
+  .setubiz-print-block {
+    break-inside: avoid;
+  }
+
+  /* Progressive disclosure is a screen affordance. On paper the reader cannot expand anything, and
+   * this document is what they hand to the bank — so every collapsed section prints open. */
+  .ux4g-accordion__collapse {
+    height: auto !important;
+    overflow: visible !important;
+  }
+}

@@ -94,5 +94,11 @@ def compute(
         mandis_in_radius=mandis,
         villages_with_bank=banks,
         road_connected_share=road_share,
-        sources=("shrug_sample", "intercensal_scaling", "osm_sample", "hces_sample"),
+        sources=(
+            "census_pc11",
+            "mission_antyodaya",  # bank / pucca road flags below come from the 2019 survey
+            "intercensal_scaling",
+            "openstreetmap",
+            "hces_2023_24",
+        ),
     )

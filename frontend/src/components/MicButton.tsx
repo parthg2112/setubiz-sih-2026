@@ -61,24 +61,26 @@ export function MicButton({ onResult, language, strings }: Props) {
 
   if (!supported) {
     return (
-      <p className="mt-1 text-xs text-subtle-foreground" role="status">
+      <p className="ux4g-body-s-default ux4g-text-neutral-tertiary" role="status">
         {strings.micUnsupported}
       </p>
     )
   }
 
+  /* Text label always visible beside the icon: a microphone glyph alone is not a word, and this
+     control is the one a reader who cannot type comfortably depends on most. */
   return (
     <button
       type="button"
       onClick={toggle}
       aria-pressed={listening}
-      className="no-print inline-flex shrink-0 items-center gap-2 rounded-lg border px-3 py-3 text-sm font-medium transition-colors"
-      style={{
-        borderColor: listening ? 'var(--destructive)' : 'var(--border)',
-        color: listening ? 'var(--destructive)' : 'var(--muted-foreground)',
-      }}
+      className={`ux4g-btn ${
+        listening ? 'ux4g-btn-danger' : 'ux4g-btn-tonal-primary'
+      } ux4g-btn-lg ux4g-gap-x-xs setubiz-no-print`}
     >
-      <span aria-hidden>{listening ? '●' : '🎙'}</span>
+      <span className="ux4g-icon-outlined" aria-hidden="true">
+        {listening ? 'stop_circle' : 'mic'}
+      </span>
       {listening ? strings.listening : strings.speak}
     </button>
   )

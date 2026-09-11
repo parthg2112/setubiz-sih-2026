@@ -1,4 +1,5 @@
-import { BINDING_LABEL, inr, ratio } from '../format'
+import type { CSSProperties } from 'react'
+import { BINDING_LABEL, inr, ratio, type Strings } from '../format'
 import type { Language } from '../types'
 
 interface Props {
@@ -12,11 +13,17 @@ interface Props {
   recommendedMinDscr: string
   dscrThreshold: string
   language: Language
-  strings: { maxLoan: string; recommended: string; difference: string; worstYear: string }
+  strings: Strings
 }
 
-/** The headline comparison. Two bars, semantic status colors (not categorical series colors),
- *  each with an icon and a written label — status color never carries meaning alone. */
+/** The answer, and the product's whole argument in one card.
+ *
+ *  The recommended figure leads at display size and is stated as a sentence, because that is the
+ *  one thing a reader must leave with. The scheme's permitted maximum sits underneath as the
+ *  contrast — deliberately second, since presenting it first is exactly the framing that causes
+ *  the over-borrowing this service exists to prevent.
+ *
+ *  Status colour never carries meaning alone: each figure has an icon and a written label. */
 export function LoanComparison({
   maxLoan,
   recommendedLoan,
@@ -35,42 +42,59 @@ export function LoanComparison({
   const need = Number(debtNeed)
   const scale = Math.max(max, need, 1)
   const bindingLabel = BINDING_LABEL[binding]?.[language] ?? binding
+  const maxFails = Number(maxMinDscr) < Number(dscrThreshold)
 
   return (
-    <section className="print-block rounded-xl border border-border bg-card p-5 sm:p-6">
-      <div className="grid gap-5 sm:grid-cols-2">
-        <Figure
-          tone="critical"
-          icon="!"
-          label={strings.maxLoan}
-          amount={maxLoan}
-          widthPct={(max / scale) * 100}
-          footnote={`${strings.worstYear} ${ratio(maxMinDscr)} · ${language === 'en' ? 'norm' : 'मानक'} ${ratio(dscrThreshold)}`}
-          failing={Number(maxMinDscr) < Number(dscrThreshold)}
-        />
-        <Figure
-          tone="good"
-          icon="✓"
-          label={strings.recommended}
-          amount={recommendedLoan}
-          widthPct={(recommended / scale) * 100}
-          footnote={`${strings.worstYear} ${ratio(recommendedMinDscr)} · ${bindingLabel}`}
-          failing={false}
-        />
-      </div>
+    <div className="ux4g-card ux4g-card-outline ux4g-card-vertical">
+      <div className="ux4g-card-body ux4g-d-flex ux4g-flex-column ux4g-gap-y-l">
+        <div>
+          <p className="ux4g-label-l-default ux4g-text-neutral-secondary">{strings.answerLead}</p>
+          <p className="ux4g-display-s-strong ux4g-text-primary setubiz-tabular">
+            {inr(recommendedLoan)}
+          </p>
+          <p className="ux4g-body-l-default setubiz-measure">
+            {strings.answerBecause} {bindingLabel}.
+          </p>
+        </div>
 
-      <dl className="mt-5 grid gap-x-6 gap-y-2 border-t border-border pt-4 text-sm sm:grid-cols-3">
-        <Stat label={strings.difference} value={inr(headroom)} emphasis />
-        <Stat
-          label={language === 'en' ? 'The unit actually costs' : 'इकाई की वास्तविक लागत'}
-          value={inr(requiredCapital)}
-        />
-        <Stat
-          label={language === 'en' ? 'Debt actually needed' : 'वास्तव में आवश्यक ऋण'}
-          value={inr(debtNeed)}
-        />
-      </dl>
-    </section>
+        <div className="ux4g-grid ux4g-grid-cols-1 ux4g-md-grid-cols-2 ux4g-gap-l">
+          <Figure
+            tone="success"
+            icon="check_circle"
+            label={strings.recommended}
+            amount={recommendedLoan}
+            pct={(recommended / scale) * 100}
+            footnote={`${strings.worstYear} ${ratio(recommendedMinDscr)} · ${bindingLabel}`}
+            failing={false}
+          />
+          <Figure
+            tone="error"
+            icon="warning"
+            label={strings.maxLoan}
+            amount={maxLoan}
+            pct={(max / scale) * 100}
+            footnote={`${strings.worstYear} ${ratio(maxMinDscr)} · ${
+              language === 'en' ? 'norm' : 'मानक'
+            } ${ratio(dscrThreshold)}`}
+            failing={maxFails}
+          />
+        </div>
+
+        <div className="ux4g-divider-horizontal" />
+
+        <dl className="ux4g-grid ux4g-grid-cols-1 ux4g-md-grid-cols-3 ux4g-gap-m">
+          <Stat label={strings.difference} value={inr(headroom)} emphasis />
+          <Stat
+            label={language === 'en' ? 'The unit actually costs' : 'इकाई की वास्तविक लागत'}
+            value={inr(requiredCapital)}
+          />
+          <Stat
+            label={language === 'en' ? 'Debt actually needed' : 'वास्तव में आवश्यक ऋण'}
+            value={inr(debtNeed)}
+          />
+        </dl>
+      </div>
+    </div>
   )
 }
 
@@ -79,47 +103,41 @@ function Figure({
   icon,
   label,
   amount,
-  widthPct,
+  pct,
   footnote,
   failing,
 }: {
-  tone: 'critical' | 'good'
+  tone: 'success' | 'error'
   icon: string
   label: string
   amount: string
-  widthPct: number
+  pct: number
   footnote: string
   failing: boolean
 }) {
-  const color = tone === 'critical' ? 'var(--destructive)' : 'var(--success)'
+  // The component reads its own --ux4g-progress-value token; this is how it is parameterised,
+  // not a hardcoded style.
+  const fill = { '--ux4g-progress-value': Math.max(pct, 1.5) } as CSSProperties
+
   return (
-    <div>
-      <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-        <span
-          aria-hidden
-          className="grid size-5 shrink-0 place-items-center rounded-full text-[11px] font-bold text-primary-foreground"
-          style={{ background: color }}
-        >
+    <div className="ux4g-d-flex ux4g-flex-column ux4g-gap-y-xs">
+      <p className="ux4g-d-flex ux4g-ai-center ux4g-gap-x-xs ux4g-label-l-strong">
+        <span className={`ux4g-icon-outlined ux4g-text-${tone}`} aria-hidden="true">
           {icon}
         </span>
         {label}
-      </div>
-      <p className="mt-1 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-        {inr(amount)}
       </p>
-      {/* 4px rounded data-end, anchored to a baseline that both bars share. */}
-      <div className="mt-2 h-3 w-full overflow-hidden rounded-sm bg-muted">
-        <div
-          className="h-full rounded-r-[4px]"
-          style={{ width: `${Math.max(widthPct, 1.5)}%`, background: color }}
-        />
+      <p className="ux4g-heading-xl-strong setubiz-tabular">{inr(amount)}</p>
+      <div className="ux4g-progress-bar">
+        <div className="ux4g-progress-bar-track">
+          <div className="ux4g-progress-bar-fill" style={fill} />
+        </div>
       </div>
-      <p className={`mt-2 text-xs ${failing ? 'font-medium' : ''} text-muted-foreground tabular`}>
-        {failing && (
-          <span aria-hidden className="mr-1" style={{ color }}>
-            ▲
-          </span>
-        )}
+      <p
+        className={`ux4g-body-s-default setubiz-tabular ${
+          failing ? 'ux4g-text-error' : 'ux4g-text-neutral-secondary'
+        }`}
+      >
         {footnote}
       </p>
     </div>
@@ -129,8 +147,12 @@ function Figure({
 function Stat({ label, value, emphasis }: { label: string; value: string; emphasis?: boolean }) {
   return (
     <div>
-      <dt className="text-xs text-subtle-foreground">{label}</dt>
-      <dd className={`tabular ${emphasis ? 'text-lg font-semibold' : 'text-base'} text-foreground`}>
+      <dt className="ux4g-body-s-default ux4g-text-neutral-tertiary">{label}</dt>
+      <dd
+        className={`setubiz-tabular ${
+          emphasis ? 'ux4g-title-m-strong' : 'ux4g-body-l-default'
+        }`}
+      >
         {value}
       </dd>
     </div>

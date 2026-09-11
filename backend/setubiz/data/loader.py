@@ -106,11 +106,11 @@ def _read_json(path: Path) -> dict[str, Any]:
 #: Which registered provenance source each data file backs. Used to report per-source, rather
 #: than repo-wide, whether the underlying rows are real.
 _FILE_SOURCE_IDS = {
-    "villages": "shrug_sample",
-    "pois": "osm_sample",
-    "ec13_density": "ec13_sample",
-    "hces_demand": "hces_sample",
-    "arrivals": "agmarknet_sample",
+    "villages": "census_pc11",
+    "pois": "openstreetmap",
+    "ec13_density": "economic_census_2013",
+    "hces_demand": "hces_2023_24",
+    "arrivals": "agmarknet",
 }
 
 
@@ -307,7 +307,7 @@ class SampleDataSource:
         }
 
     def source_ids(self) -> tuple[str, ...]:
-        return ("shrug_sample", "osm_sample", "ec13_sample", "hces_sample", "agmarknet_sample")
+        return ("census_pc11", "openstreetmap", "economic_census_2013", "hces_2023_24", "agmarknet")
 
 
 @lru_cache

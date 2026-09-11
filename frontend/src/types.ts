@@ -18,6 +18,7 @@ export interface Source {
   id: string
   title: string
   kind: string
+  publisher: string | null
   url: string | null
   year: string | null
   synthetic: boolean

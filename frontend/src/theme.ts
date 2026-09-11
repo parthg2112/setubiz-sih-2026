@@ -1,15 +1,20 @@
 /** Theme control and the shared chart palette.
  *
- *  Dark mode is a single `.dark` class on <html>, written here for both an explicit choice and a
- *  system preference. index.html stamps the same class before first paint. */
+ *  UX4G switches themes with data-theme="light" | "dark" on <html> — components have no fallback
+ *  theme, so the attribute is always written, never omitted. index.html stamps the same attribute
+ *  before first paint so the page does not flash light before React mounts. */
 
 export type ThemeChoice = 'system' | 'light' | 'dark'
 
 const STORAGE_KEY = 'setubiz-theme'
 
 /** The three DSCR series, in severity order: base case, revenue -15%, revenue -30%.
- *  Validated all-pairs against both card surfaces; see index.css. */
-export const SERIES = ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)'] as const
+ *  Defined in app.css as aliases onto UX4G primitive ramps; see the note there. */
+export const SERIES = [
+  'var(--setubiz-chart-1)',
+  'var(--setubiz-chart-2)',
+  'var(--setubiz-chart-3)',
+] as const
 
 export function storedTheme(): ThemeChoice {
   try {
@@ -27,10 +32,10 @@ function prefersDark(): boolean {
 
 export function applyTheme(choice: ThemeChoice): void {
   const dark = choice === 'dark' || (choice === 'system' && prefersDark())
-  document.documentElement.classList.toggle('dark', dark)
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light')
   document
     .querySelector('meta[name="theme-color"]')
-    ?.setAttribute('content', dark ? '#000000' : '#ffffff')
+    ?.setAttribute('content', dark ? '#171717' : '#fafafa')
   try {
     localStorage.setItem(STORAGE_KEY, choice)
   } catch {

@@ -81,7 +81,7 @@ def _price_band(index: SeasonalityIndex) -> Band:
         unit=f"₹/quintal ({index.commodity})",
         method=f"12-month modal price spread at {index.market}",
         confidence=Confidence.MEDIUM,
-        sources=("agmarknet_sample",),
+        sources=("agmarknet",),
     )
 
 
@@ -105,7 +105,7 @@ def assess(reach: MarketReach, category: str, source: DataSource) -> ThreatAsses
                     f"{index.peak_month} के बीच {index.peak_to_trough_ratio} गुना बदलती है। "
                     "कमजोर महीनों के लिए कार्यशील पूंजी रखें।"
                 ),
-                cites=("agmarknet_sample",),
+                cites=("agmarknet",),
             )
         )
     if raw and raw.get("monsoon_dependent"):
@@ -121,7 +121,7 @@ def assess(reach: MarketReach, category: str, source: DataSource) -> ThreatAsses
                     "इस व्यवसाय की लागत चारा एवं दाना के कारण मानसून पर निर्भर है। "
                     "कमजोर मानसून में लागत बढ़ती है पर आय नहीं।"
                 ),
-                cites=("agmarknet_sample",),
+                cites=("agmarknet",),
             )
         )
     if reach.mandis_in_radius < 2:
@@ -138,7 +138,7 @@ def assess(reach: MarketReach, category: str, source: DataSource) -> ThreatAsses
                     f"{reach.radius_km} किमी में केवल {reach.mandis_in_radius} बाज़ार है। "
                     "मोल-भाव की शक्ति कम रहेगी। विस्तार से पहले दूसरा खरीदार तय करें।"
                 ),
-                cites=("osm_sample",),
+                cites=("openstreetmap",),
             )
         )
     if reach.road_connected_share < Decimal("0.6"):
@@ -154,7 +154,7 @@ def assess(reach: MarketReach, category: str, source: DataSource) -> ThreatAsses
                     f"क्षेत्र के केवल {q(reach.road_connected_share * 100, Decimal('1'))}% गाँवों में "
                     "पक्की सड़क है। बरसात में पहुँच घट जाएगी।"
                 ),
-                cites=("shrug_sample",),
+                cites=("census_pc11",),
             )
         )
 
@@ -163,5 +163,5 @@ def assess(reach: MarketReach, category: str, source: DataSource) -> ThreatAsses
         seasonality=index,
         price_band=_price_band(index) if index else None,
         mandis_in_radius=reach.mandis_in_radius,
-        sources=("agmarknet_sample", "osm_sample", "shrug_sample"),
+        sources=("agmarknet", "openstreetmap", "census_pc11"),
     )
