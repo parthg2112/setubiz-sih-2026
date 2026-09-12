@@ -1,0 +1,33 @@
+id: vegetable_vendor
+name: Vegetable and fruit vending cart
+name_hi: सब्ज़ी एवं फल ठेला
+category: vegetable_vendor
+unit: 1 cart
+activity_kind: general
+source: "SetuBiz unit economics compiled from PMEGP/NABARD petty-trade cost norms (rural Jharkhand rates)"
+fixed_capital:
+  - {item: Hand cart with rain cover, item_hi: ठेला (छत सहित), amount: 18000, scaling: linear}
+  - {item: Weighing scale and weights, item_hi: कांटा एवं बाट, amount: 2500, scaling: fixed}
+  - {item: Crates, baskets and display trays, item_hi: क्रेट एवं टोकरी, amount: 3500, scaling: linear}
+  - {item: Tarpaulin and ground sheet, item_hi: तिरपाल, amount: 2000, scaling: fixed}
+  - {item: Mobile phone with UPI soundbox, item_hi: मोबाइल एवं साउंडबॉक्स, amount: 1500, scaling: fixed}
+working_capital_months: 1
+base_units: 1
+unit_label: cart
+unit_label_hi: ठेला
+unit_range: [1, 2]
+monthly_revenue:
+  - {item: "Vegetables, 2,400 kg @ ₹30/kg retail", item_hi: सब्ज़ी बिक्री, amount: 72000, scaling: linear}
+  - {item: "Seasonal fruit, 300 kg @ ₹40/kg retail", item_hi: फल बिक्री, amount: 12000, scaling: linear}
+monthly_opex:
+  - {item: "Produce purchase at the mandi, ~2,700 kg @ ₹24/kg", item_hi: मंडी से खरीद, amount: 64800, scaling: linear}
+  - {item: "Transport from mandi to cart", item_hi: मंडी से ढुलाई, amount: 2400, scaling: linear}
+  - {item: "Spoilage allowance, 4% of produce cost", item_hi: खराबी भत्ता, amount: 2600, scaling: linear}
+  - {item: Imputed family labour, item_hi: श्रम, amount: 6000, scaling: step, step_capacity: 2}
+  - {item: "Cycle repair and miscellaneous", item_hi: मरम्मत एवं विविध, amount: 600, scaling: fixed}
+assumptions:
+  - Roughly 25% retail margin over the mandi purchase price, in line with petty-trade norms.
+  - Spoilage allowance of 4% acknowledges leafy produce; it is a cost, not an optimistic rounding.
+  - The family operating the cart is costed at an imputed wage, so the surplus is what remains after paying themselves.
+  - Working capital funds one month of mandi purchase, the PMEGP convention for petty trade; the cart's true cash cycle is a week, so this is the conservative side.
+  - Cart-based vendors rotate between the village and the weekly haat; the demand estimate is the purchased produce basket, not what households grow.

@@ -16,3 +16,12 @@ createRoot(document.getElementById('root')!).render(
     <App />
   </StrictMode>,
 )
+
+// Offline shell: the service worker caches the app shell and every advisory report the user
+// opens, so a report link reopens with no network. Production-only registration keeps HMR clean;
+// a failed registration is not a broken app, the site just loses its offline shell.
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {})
+  })
+}

@@ -12,6 +12,7 @@ schemes:
       - Shishu up to ₹50,000; Kishore ₹50,001–₹5 L; Tarun ₹5 L–₹10 L; Tarun Plus to ₹20 L.
       - Interest rate is set by the lending bank, not by the scheme.
     when_to_prefer: No caste-category eligibility; useful when the income ceiling is exceeded.
+    when_to_prefer_hi: कोई जाति-श्रेणी पात्रता नहीं; आय सीमा पार होने पर उपयोगी।
     portal: https://www.mudra.org.in/
 
   - id: pmegp
@@ -24,6 +25,7 @@ schemes:
       - Capital subsidy of 25–35% in rural areas for special categories (SC/ST/women/OBC).
       - Manufacturing projects up to ₹50 L; service units up to ₹20 L.
     when_to_prefer: Larger units, and where a capital subsidy beats a concessional rate.
+    when_to_prefer_hi: बड़े यूनिट, और जहाँ पूँजी सब्सिडी रियायती दर से बेहतर हो।
     portal: https://www.kviconline.gov.in/pmegpeportal/
 
   - id: cgtmse
@@ -35,6 +37,7 @@ schemes:
     highlights:
       - A guarantee cover, not a loan. It removes the collateral demand from a bank loan.
     when_to_prefer: When the bank asks for collateral the applicant does not have.
+    when_to_prefer_hi: जब बैंक वह संपार्श्विक माँगे जो आवेदक के पास नहीं है।
     portal: https://www.cgtmse.in/
 
   - id: dri
@@ -46,6 +49,7 @@ schemes:
     highlights:
       - 4% p.a. fixed rate for the weakest borrowers; strict income ceilings apply.
     when_to_prefer: Very small top-up needs below ₹20,000.
+    when_to_prefer_hi: ₹20,000 से कम की बहुत छोटी अतिरिक्त ज़रूरत।
     portal: https://www.rbi.org.in/
 
   - id: stand_up_india
@@ -57,6 +61,7 @@ schemes:
     highlights:
       - Greenfield enterprise loans of ₹10 L–₹1 Cr for SC/ST and women entrepreneurs.
     when_to_prefer: Projects that exceed the NSFDC term loan envelope.
+    when_to_prefer_hi: परियोजनाएँ जो एनएसएफडीसी टर्म ऋण सीमा से बड़ी हों।
     portal: https://www.standupmitra.in/
 
 handoffs:

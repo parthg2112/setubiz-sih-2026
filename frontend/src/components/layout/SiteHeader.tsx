@@ -22,7 +22,7 @@ export function SiteHeader({
         <div className="ux4g-navbar-wrap">
           <div className="ux4g-d-flex ux4g-ai-center ux4g-gap-x-s">
             <div className="ux4g-d-flex ux4g-flex-column">
-              <span className="ux4g-title-s-strong">{strings.appName}</span>
+              <span className="ux4g-title-m-strong">{strings.appName}</span>
               <span className="ux4g-body-xs-default ux4g-text-neutral-secondary">
                 {strings.ministry}
               </span>

@@ -22,3 +22,12 @@ frontend/tsconfig.tsbuildinfo
 # ETL inputs — multi-GB SHRUG/census extracts, never committed
 datasets/
 etl/.cache/
+
+# Local agent/session state and tooling artifacts
+.zcode/
+.vercel/
+*.log
+
+# OS noise
+Thumbs.db
+Desktop.ini

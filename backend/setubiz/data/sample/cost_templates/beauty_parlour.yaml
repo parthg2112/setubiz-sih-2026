@@ -1,0 +1,31 @@
+id: beauty_parlour
+name: Beauty parlour (home-based, 1 seat)
+name_hi: ब्यूटी पार्लर (घरेलू, 1 सीट)
+category: beauty_parlour
+unit: 1 seat
+activity_kind: general
+source: "SetuBiz unit economics compiled from PMEGP/NABARD service-sector cost norms and PM-DAKSH course fees (rural Jharkhand rates)"
+fixed_capital:
+  - {item: Beautician starter kit and instruments, item_hi: ब्यूटीशियन किट एवं औज़ार, amount: 25000, scaling: linear}
+  - {item: "Hair dryer, facial steamer and machine set", item_hi: ड्रायर, स्टीमर एवं मशीन, amount: 14000, scaling: linear}
+  - {item: Mirror, chairs and work tables, item_hi: शीशा, कुर्सी एवं मेज, amount: 10000, scaling: linear}
+  - {item: Signage and interior dressing, item_hi: साइनबोर्ड एवं सजावट, amount: 5000, scaling: fixed}
+  - {item: Skill training fee (PM-DAKSH aligned course), item_hi: कौशल प्रशिक्षण शुल्क, amount: 10000, scaling: fixed}
+working_capital_months: 1
+base_units: 1
+unit_label: seat
+unit_label_hi: सीट
+unit_range: [1, 2]
+monthly_revenue:
+  - {item: "Grooming services, 60 clients @ ₹350 average", item_hi: सेवा आय, amount: 21000, scaling: linear}
+monthly_opex:
+  - {item: Cosmetics and consumables restock, item_hi: कॉस्मेटिक स्टॉक, amount: 6000, scaling: linear}
+  - {item: Assistant beautician, item_hi: सहायिका, amount: 3000, scaling: step, step_capacity: 2}
+  - {item: "Electricity and water", item_hi: बिजली एवं पानी, amount: 700, scaling: fixed}
+  - {item: "Client visits and miscellaneous", item_hi: विविध, amount: 500, scaling: fixed}
+assumptions:
+  - Two clients a day at ₹350 average, a rate typical of rural parlours serving weddings and festivals in season and ordinary weeks off season.
+  - Consumables run at about 28% of service income; the monthly restock line reflects that.
+  - The parlour operates from the home, so no rent line; a separate commercial premise would change the economics.
+  - A second seat needs a trained assistant, which the labour line adds at two units.
+  - The skill-training fee is a real setup cost and matches the PM-DAKSH course the eligibility layer recommends.

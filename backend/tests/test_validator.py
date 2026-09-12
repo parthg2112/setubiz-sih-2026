@@ -61,7 +61,19 @@ def test_extraction_ignores_prose_without_figures():
     assert extract_numbers("no numbers at all here") == []
 
 
-@pytest.mark.parametrize("category", ["dairy", "kirana", "tailoring", "poultry", "flour_mill"])
+@pytest.mark.parametrize(
+    "category",
+    [
+        "dairy",
+        "kirana",
+        "tailoring",
+        "poultry",
+        "flour_mill",
+        "tea_stall",
+        "vegetable_vendor",
+        "beauty_parlour",
+    ],
+)
 @pytest.mark.parametrize("language", [Language.EN, Language.HI])
 def test_template_narration_is_always_fully_grounded(category, language):
     facts = build_facts(

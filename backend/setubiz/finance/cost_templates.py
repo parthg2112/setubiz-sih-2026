@@ -194,6 +194,16 @@ def list_templates() -> list[CostTemplate]:
     return list(_load_all().values())
 
 
+def display_name(category: str) -> tuple[str, str] | None:
+    # (English, Hindi) display names for a category id, or None when unknown. Estimation
+    # notes address the business by what it is called, never by its id: a Hindi sentence
+    # quoting a raw slug is a leak, not a translation.
+    tpl = _load_all().get(category)
+    if tpl is None:
+        return None
+    return (tpl.name, tpl.name_hi or tpl.name)
+
+
 def load_template(template_id: str) -> CostTemplate:
     templates = _load_all()
     if template_id not in templates:

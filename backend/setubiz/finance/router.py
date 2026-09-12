@@ -51,6 +51,8 @@ class SchemeRoute:
     sca_rate: Decimal | None = None
     referrals: tuple[str, ...] = ()
     notes: tuple[str, ...] = ()
+    #: Hindi display name, authored with the English one so a Hindi report never quotes it raw.
+    scheme_name_hi: str = "" 
     sources: tuple[str, ...] = field(default=())
 
     @property
@@ -101,6 +103,7 @@ def route(
         return SchemeRoute(
             logic=SchemeLogic.A,
             scheme_name="NSFDC Micro Finance Scheme",
+            scheme_name_hi="एनएसएफडीसी सूक्ष्म वित्त योजना",
             margin=m,
             project_cost=p,
             max_loan=loan,
@@ -120,6 +123,7 @@ def route(
         return SchemeRoute(
             logic=SchemeLogic.B,
             scheme_name="NSFDC Term Loan Scheme",
+            scheme_name_hi="एनएसएफडीसी टर्म ऋण योजना",
             margin=m,
             project_cost=p,
             max_loan=loan,
@@ -139,6 +143,7 @@ def route(
     return SchemeRoute(
         logic=SchemeLogic.OUT_OF_SCOPE,
         scheme_name="Beyond NSFDC scheme envelope",
+        scheme_name_hi="एनएसएफडीसी योजना सीमा से बाहर",
         margin=m,
         project_cost=p,
         max_loan=money(0),

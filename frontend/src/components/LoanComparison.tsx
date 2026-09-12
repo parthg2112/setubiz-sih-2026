@@ -49,7 +49,7 @@ export function LoanComparison({
       <div className="ux4g-card-body ux4g-d-flex ux4g-flex-column ux4g-gap-y-l">
         <div>
           <p className="ux4g-label-l-default ux4g-text-neutral-secondary">{strings.answerLead}</p>
-          <p className="ux4g-display-s-strong ux4g-text-primary setubiz-tabular">
+          <p className="ux4g-display-m-strong ux4g-text-primary setubiz-tabular">
             {inr(recommendedLoan)}
           </p>
           {/* Rendered as a labelled phrase rather than a sentence. BINDING_LABEL entries are

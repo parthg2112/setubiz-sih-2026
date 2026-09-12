@@ -145,11 +145,19 @@ export interface DocumentCheckResult {
   sources: string[]
 }
 
+export interface StateInfo {
+  code: string
+  name: string
+  villages: number
+}
+
 export const api = {
   /** `signal` lets the typeahead abandon a superseded request, so a slow early response cannot
    *  overwrite a fast later one. */
   searchVillages: (q: string, state?: string, signal?: AbortSignal) =>
     get<VillageMatch[]>('/villages/search', state ? { q, state } : { q }, signal),
+  /** What the wizard's state switcher offers; manifest-driven, so new states appear free. */
+  states: () => get<StateInfo[]>('/states'),
   costTemplates: () => get<CostTemplate[]>('/cost-templates'),
   advisory: (input: AdvisoryInput) => post<AdvisoryResponse>('/advisory', input),
   financeStructure: (input: FinanceInput, signal?: AbortSignal) =>

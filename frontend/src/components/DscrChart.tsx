@@ -46,7 +46,11 @@ export function DscrChart({ base, scenarios, threshold, stressFloor, language }:
   const y = (value: number) =>
     PAD.top + (1 - Math.min(Math.max(value, 0), yMax) / yMax) * (H - PAD.top - PAD.bottom)
 
-  const ticks = Array.from({ length: yMax + 1 }, (_, i) => i)
+  /* One gridline per chosen step, not per unit: a 28x coverage axis with 29 rules reads as a
+   * barcode. 4-6 ticks carry the scale; the reference rules below mark the thresholds that matter. */
+  const rawStep = yMax / 5
+  const step = [1, 2, 5, 10, 20, 50, 100].find((s) => s >= rawStep) ?? 100
+  const ticks = Array.from({ length: Math.floor(yMax / step) + 1 }, (_, i) => i * step)
 
   return (
     <figure className="setubiz-print-block">
@@ -92,7 +96,9 @@ export function DscrChart({ base, scenarios, threshold, stressFloor, language }:
             </g>
           ))}
 
-          {/* The appraisal norm and the stress floor are reference rules, not series. */}
+          {/* The appraisal norm and the stress floor are reference rules, not series. Labels sit
+           *  on opposite ends of the chart: when the axis is tall the two rules collapse toward
+           *  the same baseline and their labels would print on top of each other. */}
           <ReferenceRule
             y={y(Number(threshold))}
             label={`${language === 'en' ? 'norm' : 'मानक'} ${ratio(threshold)}`}
@@ -101,6 +107,7 @@ export function DscrChart({ base, scenarios, threshold, stressFloor, language }:
             y={y(Number(stressFloor))}
             label={`${language === 'en' ? 'floor' : 'न्यूनतम'} ${ratio(stressFloor)}`}
             dim
+            side="left"
           />
 
           <g clipPath={`url(#${clipId})`}>
@@ -208,7 +215,17 @@ export function DscrChart({ base, scenarios, threshold, stressFloor, language }:
   )
 }
 
-function ReferenceRule({ y, label, dim }: { y: number; label: string; dim?: boolean }) {
+function ReferenceRule({
+  y,
+  label,
+  dim,
+  side = 'right',
+}: {
+  y: number
+  label: string
+  dim?: boolean
+  side?: 'left' | 'right'
+}) {
   return (
     <g>
       <line
@@ -220,7 +237,13 @@ function ReferenceRule({ y, label, dim }: { y: number; label: string; dim?: bool
         strokeWidth={1}
         strokeDasharray={dim ? '2 4' : '5 4'}
       />
-      <text x={W - PAD.right} y={y - 5} textAnchor="end" fill="var(--ux4g-text-neutral-tertiary)" fontSize={10}>
+      <text
+        x={side === 'right' ? W - PAD.right : PAD.left + 4}
+        y={side === 'right' ? y - 5 : y + 12}
+        textAnchor={side === 'right' ? 'end' : 'start'}
+        fill="var(--ux4g-text-neutral-tertiary)"
+        fontSize={10}
+      >
         {label}
       </text>
     </g>

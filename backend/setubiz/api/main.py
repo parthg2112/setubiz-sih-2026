@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 
 from setubiz import __version__
 from setubiz.api.routes import router
@@ -17,6 +18,10 @@ app = FastAPI(
 )
 
 # The PWA is served separately in development; production serves it from the same origin.
+# The advisory response is ~130 KB raw (schedules, provenance, per-figure index); on a rural
+# link that is the difference between seconds and tens of seconds. Vercel and nginx each add
+# their own compression; this covers the bare uvicorn path.
+app.add_middleware(GZipMiddleware, minimum_size=1024)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],

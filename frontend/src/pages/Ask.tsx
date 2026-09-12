@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { api, type AdvisoryInput, type GroupMemberInput } from '../api'
+import { api, type AdvisoryInput, type GroupMemberInput, type StateInfo } from '../api'
 import { VillagePicker } from '../components/VillagePicker'
 import { inr, type Strings } from '../format'
 import type { CostTemplate, Language, VillageMatch } from '../types'
@@ -54,6 +54,8 @@ export function Ask({ language, strings, onSubmit }: Props) {
   const [mode, setMode] = useState<'single' | 'group'>('single')
   const [members, setMembers] = useState<MemberDraft[]>([emptyMember(), emptyMember()])
   const [village, setVillage] = useState<VillageMatch | null>(null)
+  const [states, setStates] = useState<StateInfo[]>([])
+  const [state, setState] = useState('Jharkhand')
   const [radius, setRadius] = useState(10)
   const [category, setCategory] = useState('')
   const [savings, setSavings] = useState('')
@@ -69,6 +71,11 @@ export function Ask({ language, strings, onSubmit }: Props) {
       .costTemplates()
       .then(setTemplates)
       .catch(() => setTemplates([]))
+    // Manifest-driven: today one state, tomorrow more, without touching this component again.
+    api
+      .states()
+      .then(setStates)
+      .catch(() => setStates([]))
   }, [])
 
   const isGroup = mode === 'group'
@@ -224,7 +231,7 @@ export function Ask({ language, strings, onSubmit }: Props) {
       >
         <div className="ux4g-card-header">
           {/* The question is the heading. Nothing between the reader and the thing being asked. */}
-          <h1 className="ux4g-heading-l-strong ux4g-card-title">{current.title}</h1>
+          <h1 className="ux4g-display-xs-strong ux4g-card-title">{current.title}</h1>
           <p className="ux4g-body-l-default ux4g-card-sub-title setubiz-measure">{current.help}</p>
         </div>
 
@@ -296,16 +303,50 @@ export function Ask({ language, strings, onSubmit }: Props) {
           )}
 
           {current.key === 'village' && (
-            <VillagePicker
-              value={village}
-              onChange={(v) => {
-                setVillage(v)
-                setShowError(false)
-              }}
-              state="Jharkhand"
-              language={language}
-              strings={strings}
-            />
+            <div className="ux4g-d-flex ux4g-flex-column ux4g-gap-y-m">
+              {/* The state sits above the search because the search is scoped by it. One state in
+                  the manifest still shows the control, disabled: "only Jharkhand" must read as a
+                  data fact that will change, not as a hidden assumption in the code. */}
+              <div className="ux4g-input-container">
+                <label className="ux4g-label-l-strong ux4g-mb-xs" htmlFor="state">
+                  {strings.stateLabel}
+                </label>
+                <select
+                  id="state"
+                  className="ux4g-form-select ux4g-form-select-lg"
+                  value={state}
+                  disabled={states.length <= 1}
+                  onChange={(e) => {
+                    setState(e.target.value)
+                    setVillage(null)
+                  }}
+                >
+                  {(states.length
+                    ? states
+                    : [{ code: 'JH', name: 'Jharkhand', villages: 0 }]
+                  ).map((s) => (
+                    <option key={s.code} value={s.name}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+                {states.length <= 1 && (
+                  <p className="ux4g-body-s-default ux4g-input-helper ux4g-text-neutral-tertiary">
+                    {strings.stateSingle.replace('{state}', state)}
+                  </p>
+                )}
+              </div>
+              <VillagePicker
+                value={village}
+                onChange={(v) => {
+                  setVillage(v)
+                  setShowError(false)
+                }}
+                state={state}
+                language={language}
+                strings={strings}
+              />
+            </div>
           )}
 
           {current.key === 'distance' && (
@@ -344,13 +385,10 @@ export function Ask({ language, strings, onSubmit }: Props) {
           )}
 
           {current.key === 'business' && (
-            <div
-              className="ux4g-d-flex ux4g-flex-column ux4g-gap-y-s"
-              role="radiogroup"
-              aria-label={strings.business}
-            >
+            <div className="ux4g-grid ux4g-grid-cols-1 ux4g-md-grid-cols-2 ux4g-gap-m" role="radiogroup" aria-label={strings.business}>
               {/* Radios rather than chips: each option carries what the unit actually costs, and
-                  that number is the single most useful thing at this moment. */}
+                  that number is the single most useful thing at this moment. Two columns on desktop
+                  keeps eight options to one glance; they stack on a phone. */}
               {templates.map((t) => (
                 <label className="ux4g-radio ux4g-radio-md" key={t.id}>
                   <input
@@ -658,27 +696,26 @@ function Stepper({
     <nav aria-label={position}>
       {/* Announced to assistive technology and shown on small screens, where the full stepper is
           too wide to read. */}
-      <p className="ux4g-label-l-strong ux4g-mb-s">{position}</p>
-      <ol className="ux4g-stepper ux4g-stepper-horizontal ux4g-d-none ux4g-md-d-flex">
+      <p className="ux4g-title-s-strong ux4g-mb-s">{position}</p>
+      <ol className="setubiz-stepper ux4g-d-none ux4g-md-d-flex">
         {steps.map((s, i) => {
           const state =
             i < current
-              ? 'ux4g-stepper-completed'
+              ? 'setubiz-step-done'
               : i === current
-                ? 'ux4g-stepper-inprogress'
-                : 'ux4g-stepper-step-pending'
+                ? 'setubiz-step-now'
+                : 'setubiz-step-pending'
           return (
-            <li className={`ux4g-stepper-step ${state}`} key={`${s.key}-${s.member ?? i}`}>
-              <span
-                className={`ux4g-stepper-head ${
-                  i === current ? 'ux4g-stepper-head-icon-active' : ''
-                }`}
-                aria-hidden="true"
-              >
-                {i < current ? <span className="ux4g-icon-outlined">check</span> : <span>{i + 1}</span>}
+            <li className={`setubiz-stepper-step ${state}`} key={`${s.key}-${s.member ?? i}`}>
+              <span className="setubiz-stepper-bubble" aria-hidden="true">
+                {i < current ? (
+                  <span className="ux4g-icon-outlined">check</span>
+                ) : (
+                  <span>{i + 1}</span>
+                )}
               </span>
               <span
-                className="ux4g-stepper-label"
+                className="setubiz-stepper-label"
                 aria-current={i === current ? 'step' : undefined}
               >
                 {s.label}

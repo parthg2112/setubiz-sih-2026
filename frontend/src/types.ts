@@ -62,6 +62,9 @@ export interface ScheduleRow {
 }
 
 export interface SectionData {
+  // headline
+  catchment_households?: string
+  villages_count?: number
   // loan_structure
   max_loan?: string
   recommended_loan?: string
@@ -70,21 +73,67 @@ export interface SectionData {
   debt_need?: string
   binding?: string
   dscr_threshold?: string
+  margin?: string
+  project_cost?: string
+  scheme_name?: string
+  annual_rate_pct?: string
+  sca_rate_pct?: string
+  tenure_years?: string
+  total_quarters?: number
+  moratorium_quarters?: number
+  max_loan_min_dscr?: string
+  recommended_min_dscr?: string
+  monthly_revenue?: string
+  monthly_opex?: string
+  monthly_net?: string
   // stress
   stress_floor?: string
+  annual_noi?: string
+  annual_noi_stress_15?: string
+  annual_noi_stress_30?: string
+  recommended_stress_dscr_15?: string
+  max_loan_stress_dscr_15?: string
   recommended?: DscrYear[] | ScheduleRow[]
   scenarios?: StressScenario[]
   // repayment
   mode?: string
+  quarterly_instalment?: string
+  total_interest?: string
+  quarterly_instalment_max?: string
+  total_interest_max?: string
+  repayment_quarters?: number
   alternate_mode?: string | null
   alternate_instalment?: string | null
   // market_reach
-  villages?: { name: string; name_hi: string | null; distance_km: number; households_2011: number }[]
+  households_2011?: string
+  population_2011?: string
+  households_now?: string
+  population_now?: string
+  growth_factor?: string
+  villages_with_bank?: number
+  road_connected_pct?: string
+  mandis_in_radius?: number
+  demand_per_household_low?: string
+  demand_per_household_high?: string
+  addressable_market_low?: string
+  addressable_market_high?: string
+  addressable_market_point?: string
+  villages?: VillageDot[]
   income_segments?: { label: string; share: string; households: number }[]
   // competition
   band?: Band
   observed_osm?: number
+  z_score?: number
   estimator?: string
+  // scheme
+  logic?: string
+  verdict?: 'eligible' | 'eligible_with_conditions' | 'ineligible'
+  corporation_name?: string | null
+  corporation_name_hi?: string | null
+  annual_family_income?: string | null
+  income_ceiling?: string | null
+  income_status?: 'provided' | 'missing'
+  sca?: { name: string; name_hi: string | null; address: string; channel: string } | null
   // threats
   items?: { id: string; severity: string; text: string }[]
   price_band?: Band | null
@@ -143,6 +192,17 @@ export interface SectionData {
     annual_retained: string
     years_to_expand: number
   } | null
+}
+
+/** One village bubble on the catchment map. */
+export interface VillageDot {
+  name: string
+  name_hi: string | null
+  distance_km: number
+  households_2011: number
+  lat: number
+  lon: number
+  has_bank?: boolean
 }
 
 export interface SchemeCombination {
@@ -248,8 +308,13 @@ export interface Facts {
   eligibility: {
     verdict: 'eligible' | 'eligible_with_conditions' | 'ineligible'
     corporation: { id: string; name: string; name_hi: string | null; portal: string } | null
+    social_category: string
+    annual_family_income: string | null
+    income_ceiling: string | null
     reasons: string[]
+    reasons_hi?: string[]
     conditions: string[]
+    conditions_hi?: string[]
     documents: EligibilityDoc[]
     sca: { name: string; name_hi: string | null; address: string; channel: string } | null
     comparison: {
@@ -261,6 +326,7 @@ export interface Facts {
       collateral_free: boolean
       highlights: string[]
       when_to_prefer: string
+      when_to_prefer_hi?: string
       portal: string
     }[]
   }

@@ -139,6 +139,17 @@ def villages_search(
     return list(match_villages(q, get_data_source(), state=state, district=district, limit=limit))
 
 
+@router.get("/states", summary="States with village data available")
+def states() -> list[dict[str, Any]]:
+    """What the wizard's state switcher can offer.
+
+    Driven by the manifest, so a new state appears here the moment its shard is committed:
+    the endpoint is the scalability contract for 'only Jharkhand today' being a data fact,
+    not a code fact.
+    """
+    return [dict(s) for s in get_data_source().list_states()]
+
+
 @router.get("/cost-templates", summary="NABARD-style unit cost templates")
 def cost_templates() -> list[dict[str, Any]]:
     return [

@@ -122,6 +122,24 @@ CATEGORIES: dict[str, tuple[list[str], float, str]] = {
         "A chakki sells milling as a service on the cereal basket, not the cereal itself, so only "
         "the milling margin on that spend is addressable.",
     ),
+    "tea_stall": (
+        ["beverages, refreshments, processed food"], 0.35,
+        "The published group mixes home consumption bought through kiranas with out-of-home tea, "
+        "snacks and prepared food; a village tea stall earns only the out-of-home and "
+        "fresh-preparation fraction, so the addressable share stays well below the group total.",
+    ),
+    "vegetable_vendor": (
+        ["vegetables", "fruits"], 0.55,
+        "Rural households self-grow part of their vegetables, and fruit partly moves through "
+        "weekly haats; a resident vendor sells the purchased, non-haat fraction of this basket. "
+        "This is the business the kirana rationale explicitly excludes from its own basket.",
+    ),
+    "beauty_parlour": (
+        ["consumer services excluding conveyance"], 0.20,
+        "The group bundles several personal services (laundry, barber, tailoring, repairs, "
+        "grooming); a beauty parlour earns only the grooming fraction, which is why the "
+        "addressable share stays low. Tailoring draws on the same group with its own share.",
+    ),
 }
 
 

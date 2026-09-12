@@ -1,4 +1,4 @@
-/* SetuBiz application layer.
+/* Aatmanirbhar Local Vyapar application layer.
  *
  * UX4G owns every colour, size, space, radius, border and component style in this app. This file
  * holds only the four things UX4G does not provide, each justified in place. Nothing here may
@@ -83,6 +83,170 @@
 }
 
 /* ---------------------------------------------------------------------------------------------
+ * 2b. Page hero band.
+ *
+ * The report opens with the single most important context (which village, which business) and
+ * the answer follows immediately, so the opening earns the heaviest surface on the page: a
+ * committed tinted slab, not a bare heading on a flat card. Both steps alias UX4G's own blue
+ * ramp, and the dark theme flips to the ramp's deep end, so no colour is invented here. A
+ * squared slab keeps the government-portal register; the subtitle inherits the band colour
+ * instead of a neutral utility so contrast holds on both themes. */
+:root {
+  --setubiz-hero-bg: var(--ux4g-color-blue-50);
+  --setubiz-hero-fg: var(--ux4g-color-blue-900);
+}
+
+[data-theme='dark'] {
+  --setubiz-hero-bg: var(--ux4g-color-blue-950);
+  --setubiz-hero-fg: var(--ux4g-color-blue-50);
+}
+
+.setubiz-hero {
+  background: var(--setubiz-hero-bg);
+  color: var(--setubiz-hero-fg);
+  padding: 2.25rem 2rem 2rem;
+}
+
+.setubiz-hero-sub {
+  color: inherit;
+  opacity: 0.78;
+}
+
+/* ---------------------------------------------------------------------------------------------
+ * 2c. App shell: the footer pins to the viewport floor.
+ *
+ * On short pages (the first wizard step) the document ended above the fold and the dark footer
+ * band floated in the middle of a white page. A flex column with a growing main area pins the
+ * footer down on every screen without touching the footer component itself. 100dvh covers
+ * mobile browser chrome that 100vh over-reports. */
+.setubiz-shell {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.setubiz-shell > main {
+  flex: 1 0 auto;
+}
+
+/* ---------------------------------------------------------------------------------------------
+ * 2d. Wizard stepper: bubbles, filled history, a line that moves with you.
+ *
+ * UX4G's stepper renders bare numerals on grey rules, which reads as a ruler, not a journey.
+ * This replaces the markup with an app-composed stepper (no UX4G component restyled): circular
+ * bubbles that fill as they are earned, a ring on the current step, and a connector that fills
+ * with an eased sweep so progress feels like motion. Colour is UX4G's own blue ramp; the two
+ * line/ring tokens alias it per theme, exactly like the chart palette above. The global
+ * prefers-reduced-motion switch already flattens every transition here. */
+:root {
+  --setubiz-step-line: var(--ux4g-color-neutral-200);
+  --setubiz-step-ring: var(--ux4g-color-blue-100);
+}
+
+[data-theme='dark'] {
+  --setubiz-step-line: var(--ux4g-color-neutral-700);
+  --setubiz-step-ring: var(--ux4g-color-blue-800);
+}
+
+.setubiz-stepper {
+  display: flex;
+  align-items: flex-start;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.setubiz-stepper-step {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* Track and fill sit between one bubble's edge and the next bubble's edge. */
+.setubiz-stepper-step:not(:last-child)::before,
+.setubiz-stepper-step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 0.9375rem;
+  left: 2.6rem;
+  right: -0.6rem;
+  height: 3px;
+  border-radius: 2px;
+}
+
+.setubiz-stepper-step:not(:last-child)::before {
+  background: var(--setubiz-step-line);
+}
+
+.setubiz-stepper-step:not(:last-child)::after {
+  background: var(--ux4g-color-blue-600);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.setubiz-step-done:not(:last-child)::after {
+  transform: scaleX(1);
+}
+
+.setubiz-stepper-bubble {
+  position: relative;
+  z-index: 1;
+  width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 2px solid var(--ux4g-border-color-neutral-default);
+  background: var(--ux4g-bg-neutral-elevated);
+  color: var(--ux4g-text-neutral-tertiary);
+  font-size: 0.875rem;
+  font-weight: 700;
+  transition: background-color 0.3s, border-color 0.3s, color 0.3s, box-shadow 0.3s;
+}
+
+.setubiz-stepper-bubble .ux4g-icon-outlined {
+  font-size: 1rem;
+}
+
+.setubiz-step-now .setubiz-stepper-bubble {
+  background: var(--ux4g-color-blue-600);
+  border-color: var(--ux4g-color-blue-600);
+  color: var(--ux4g-color-neutral-0);
+  box-shadow: 0 0 0 4px var(--setubiz-step-ring);
+  animation: setubiz-step-pop 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.setubiz-step-done .setubiz-stepper-bubble {
+  background: var(--ux4g-color-blue-600);
+  border-color: var(--ux4g-color-blue-600);
+  color: var(--ux4g-color-neutral-0);
+}
+
+@keyframes setubiz-step-pop {
+  from {
+    transform: scale(0.9);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.setubiz-stepper-label {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--ux4g-text-neutral-secondary);
+}
+
+.setubiz-step-now .setubiz-stepper-label,
+.setubiz-step-done .setubiz-stepper-label {
+  color: var(--ux4g-text-neutral-primary);
+}
+
+/* ---------------------------------------------------------------------------------------------
  * 3. Restoring the typescale inside cards.  [CONTRACT EXCEPTION — see the completion notes]
  *
  * UX4G ships `.ux4g-card-body p { font-size: var(--ux4g-fs-14) }`. That is a descendant selector
@@ -140,6 +304,356 @@
 }
 
 /* ---------------------------------------------------------------------------------------------
+ * 5b. Stat rows.
+ *
+ * Every report panel used to explain its figures inside a paragraph, which buried the amounts the
+ * reader actually decides on. StatRows states each figure as a labelled fact: label above, value
+ * below in the title scale, tabular numerals so columns of rupees compare digit-to-digit. UX4G
+ * ships no definition-list/stat pattern, so the grid is app-namespaced; a leading rule marks each
+ * cell the way a government form marks a field entry, without resorting to side stripes. */
+.setubiz-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.875rem 1.75rem;
+  margin: 0;
+}
+
+@media (min-width: 48rem) {
+  .setubiz-stat-grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.setubiz-stat {
+  border-top: 2px solid var(--ux4g-color-neutral-200);
+  padding-top: 0.5rem;
+}
+
+[data-theme='dark'] .setubiz-stat {
+  border-top-color: var(--ux4g-color-neutral-700);
+}
+
+.setubiz-stat-value {
+  margin: 0.125rem 0 0;
+}
+
+/* ---------------------------------------------------------------------------------------------
+ * 5c. Catchment map.
+ *
+ * The market-reach section used to be a wall of "name · km" chips: geography as a list. The map
+ * draws the same villages as bubbles at their real bearing and distance on labelled rings, sized
+ * by households, with bank villages filled. All colours alias the chart palette, so the map shares
+ * the DSCR chart's theme behaviour; the tooltip is a positioned div because SVG text cannot wrap. */
+.setubiz-catchment {
+  position: relative;
+  min-width: min(100%, 30rem);
+}
+
+/* The figure element carries a browser default margin the grid gutter already provides. */
+.setubiz-catchment-figure {
+  margin: 0;
+}
+
+.setubiz-catchment-svg {
+  width: 100%;
+  max-width: 34rem;
+  height: auto;
+  display: block;
+}
+
+.setubiz-catchment-ring-label {
+  font-size: 0.6875rem;
+  fill: var(--ux4g-text-neutral-tertiary);
+}
+
+.setubiz-catchment-centre-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  fill: var(--ux4g-text-neutral-primary);
+}
+
+.setubiz-catchment-tip {
+  position: absolute;
+  transform: translate(0.75rem, -50%);
+  background: var(--ux4g-bg-neutral-elevated);
+  border: 1px solid var(--ux4g-border-color-neutral-default);
+  border-radius: var(--ux4g-radius-m);
+  padding: 0.375rem 0.625rem;
+  font-size: 0.8125rem;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.14);
+  white-space: nowrap;
+  z-index: 2;
+}
+
+:root {
+  --setubiz-catchment-stroke: var(--ux4g-color-neutral-0);
+}
+
+[data-theme='dark'] {
+  --setubiz-catchment-stroke: var(--ux4g-color-neutral-900);
+}
+
+.setubiz-dot {
+  display: inline-block;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+}
+
+.setubiz-dot-bank {
+  background: var(--setubiz-chart-1);
+}
+
+.setubiz-dot-plain {
+  background: var(--setubiz-chart-axis);
+  opacity: 0.6;
+}
+
+/* The market-reach shade ramp for the catchment map: light = thin demand, dark = thick. Both ends
+ * alias the UX4G blue ramp per theme, and bubbles interpolate through color-mix, so dark mode
+ * needs no second palette. The legend bar repeats the exact same two ends, which is what makes
+ * the numbers under it meaningful rather than decorative. */
+:root {
+  --setubiz-map-light: var(--ux4g-color-blue-50);
+  --setubiz-map-dark: var(--ux4g-color-blue-700);
+}
+
+[data-theme='dark'] {
+  --setubiz-map-light: var(--ux4g-color-blue-950);
+  --setubiz-map-dark: var(--ux4g-color-blue-400);
+}
+
+.setubiz-dot-pin {
+  background: var(--setubiz-catchment-stroke);
+  border: 1px solid var(--setubiz-chart-1);
+}
+
+.setubiz-map-scale-bar {
+  height: 0.625rem;
+  border-radius: var(--ux4g-radius-m);
+  border: 1px solid var(--ux4g-border-color-neutral-subtle);
+  background: linear-gradient(90deg, var(--setubiz-map-light), var(--setubiz-map-dark));
+  max-width: 22rem;
+}
+
+.setubiz-map-scale-labels {
+  display: flex;
+  justify-content: space-between;
+  max-width: 22rem;
+  font-size: 0.75rem;
+  color: var(--ux4g-text-neutral-secondary);
+  margin-top: 0.125rem;
+}
+
+/* ---------------------------------------------------------------------------------------------
+ * 5d. Distance bands and the income strip.
+ *
+ * Same principle as the map: the catchment as shape, not as prose. The band bars reuse the chart
+ * palette's first slot so distance reads as the same series everywhere; the income strip assigns
+ * one palette slot per fractile and repeats it in the legend dots, so greyscale still separates
+ * the bands by position and label. */
+.setubiz-band-label {
+  min-width: 6.25rem;
+  font-size: 0.8125rem;
+  color: var(--ux4g-text-neutral-secondary);
+}
+
+.setubiz-band-track {
+  flex: 1;
+  min-width: 8rem;
+  height: 0.875rem;
+  background: var(--ux4g-bg-neutral-subtle);
+  border-radius: var(--ux4g-radius-m);
+  overflow: hidden;
+  display: inline-block;
+}
+
+.setubiz-band-fill {
+  display: block;
+  height: 100%;
+  background: var(--setubiz-chart-1);
+  border-radius: inherit;
+}
+
+.setubiz-income-bar {
+  display: flex;
+  height: 1rem;
+  border-radius: var(--ux4g-radius-m);
+  overflow: hidden;
+}
+
+.setubiz-income-seg {
+  display: block;
+  height: 100%;
+}
+
+/* ---------------------------------------------------------------------------------------------
+ * 5e. SWOT quadrants.
+ *
+ * The old grid was four outline cards of body-size paragraphs. The rewrite keeps the 2x2 but gives
+ * each quadrant a full tinted surface with a header row (icon, name, count) and findings as compact
+ * rows, so the section scans before it is read. Tints alias UX4G's own ramps at 50/900 light and
+ * 900/50 dark, the same flip the hero band uses; a hard border keeps quadrants separated on paper
+ * where tint alone can print too faint. */
+:root {
+  --setubiz-swot-strength-bg: var(--ux4g-color-green-50);
+  --setubiz-swot-strength-fg: var(--ux4g-color-green-900);
+  --setubiz-swot-weakness-bg: var(--ux4g-color-gold-50);
+  --setubiz-swot-weakness-fg: var(--ux4g-color-gold-900);
+  --setubiz-swot-opportunity-bg: var(--ux4g-color-blue-50);
+  --setubiz-swot-opportunity-fg: var(--ux4g-color-blue-900);
+  --setubiz-swot-threat-bg: var(--ux4g-color-red-50);
+  --setubiz-swot-threat-fg: var(--ux4g-color-red-900);
+}
+
+[data-theme='dark'] {
+  --setubiz-swot-strength-bg: var(--ux4g-color-green-900);
+  --setubiz-swot-strength-fg: var(--ux4g-color-green-50);
+  --setubiz-swot-weakness-bg: var(--ux4g-color-gold-900);
+  --setubiz-swot-weakness-fg: var(--ux4g-color-gold-50);
+  --setubiz-swot-opportunity-bg: var(--ux4g-color-blue-900);
+  --setubiz-swot-opportunity-fg: var(--ux4g-color-blue-50);
+  --setubiz-swot-threat-bg: var(--ux4g-color-red-900);
+  --setubiz-swot-threat-fg: var(--ux4g-color-red-50);
+}
+
+.setubiz-swot {
+  background: var(--setubiz-swot-bg);
+  color: var(--setubiz-swot-fg);
+  border: 1px solid var(--ux4g-border-color-neutral-subtle);
+  border-radius: var(--ux4g-radius-m);
+  padding: 1rem 1.125rem;
+}
+
+.setubiz-swot-strength {
+  --setubiz-swot-bg: var(--setubiz-swot-strength-bg);
+  --setubiz-swot-fg: var(--setubiz-swot-strength-fg);
+}
+
+.setubiz-swot-weakness {
+  --setubiz-swot-bg: var(--setubiz-swot-weakness-bg);
+  --setubiz-swot-fg: var(--setubiz-swot-weakness-fg);
+}
+
+.setubiz-swot-opportunity {
+  --setubiz-swot-bg: var(--setubiz-swot-opportunity-bg);
+  --setubiz-swot-fg: var(--setubiz-swot-opportunity-fg);
+}
+
+.setubiz-swot-threat {
+  --setubiz-swot-bg: var(--setubiz-swot-threat-bg);
+  --setubiz-swot-fg: var(--setubiz-swot-threat-fg);
+}
+
+.setubiz-swot-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.375rem;
+  font-size: var(--ux4g-fs-16);
+  font-weight: 700;
+}
+
+.setubiz-swot-count {
+  margin-left: auto;
+  font-size: 0.8125rem;
+  opacity: 0.75;
+}
+
+.setubiz-swot-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.setubiz-swot-item {
+  padding: 0.5rem 0;
+  border-top: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+}
+
+.setubiz-swot-item:first-child {
+  border-top: none;
+  padding-top: 0.25rem;
+}
+
+.setubiz-swot-item:last-child {
+  padding-bottom: 0;
+}
+
+/* The count strip: same tints at tag weight, so the section's shape reads before it opens. */
+.setubiz-swot-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+  border-radius: var(--ux4g-radius-m);
+  padding: 0.25rem 0.625rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.setubiz-swot-chip-strength {
+  background: var(--setubiz-swot-strength-bg);
+  color: var(--setubiz-swot-strength-fg);
+}
+
+.setubiz-swot-chip-weakness {
+  background: var(--setubiz-swot-weakness-bg);
+  color: var(--setubiz-swot-weakness-fg);
+}
+
+.setubiz-swot-chip-opportunity {
+  background: var(--setubiz-swot-opportunity-bg);
+  color: var(--setubiz-swot-opportunity-fg);
+}
+
+.setubiz-swot-chip-threat {
+  background: var(--setubiz-swot-threat-bg);
+  color: var(--setubiz-swot-threat-fg);
+}
+
+/* ---------------------------------------------------------------------------------------------
+ * 5f. Print-only content.
+ *
+ * The printed sheet needs an identity block (who, which business, which savings) that has no
+ * business occupying screen space. Always rendered, never displayed, shown on paper. */
+.setubiz-print-only {
+  display: none;
+}
+
+/* ---------------------------------------------------------------------------------------------
+ * 5g. Scheme stacking rows.
+ *
+ * The pairing list used to be a card inside a card per combination, each with a body-size
+ * paragraph: four pairings read as four essays. A labelled row per pairing, reason at caption
+ * size, hairline separators between rows. */
+.setubiz-stack-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.setubiz-stack-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.25rem 1.5rem;
+  padding: 0.625rem 0;
+  border-top: 1px solid var(--ux4g-border-color-neutral-subtle);
+}
+
+.setubiz-stack-row:first-child {
+  border-top: none;
+  padding-top: 0.25rem;
+}
+
+@media (min-width: 48rem) {
+  .setubiz-stack-row {
+    grid-template-columns: 15rem 1fr;
+    gap: 0 1.5rem;
+  }
+}
+
+/* ---------------------------------------------------------------------------------------------
  * 6. Print.
  *
  * UX4G ships no print layer, and the printed report is a core deliverable: the beneficiary
@@ -171,6 +685,8 @@
     --setubiz-chart-4: var(--ux4g-color-green-600);
     --setubiz-chart-5: var(--ux4g-color-red-600);
     --setubiz-chart-axis: var(--ux4g-color-neutral-400);
+    --setubiz-hero-bg: var(--ux4g-color-blue-50);
+    --setubiz-hero-fg: var(--ux4g-color-blue-900);
   }
 
   .setubiz-no-print {
@@ -191,5 +707,312 @@
   .ux4g-accordion__collapse {
     height: auto !important;
     overflow: visible !important;
+  }
+
+  /* The identity block inverts: hidden on screen, first thing on paper. */
+  .setubiz-print-only {
+    display: block !important;
+  }
+
+  /* Paper carries the PS-ordered document (PrintReport), not the decision-first screen flow.
+   * The two trees render the same facts in two different shapes; each shows only in its medium. */
+  .setubiz-screen-flow {
+    display: none !important;
+  }
+
+  /* Module and parameter headings follow the problem statement's own hierarchy, so a judge can
+   * tick each requirement in order. */
+  .setubiz-print-module {
+    font-size: 1.25rem;
+    font-weight: 700;
+    border-top: 3px solid var(--ux4g-color-neutral-900);
+    padding-top: 0.5rem;
+    margin: 1.5rem 0 0.75rem;
+    break-after: avoid;
+  }
+
+  .setubiz-print-param {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 1.25rem 0 0.5rem;
+    break-after: avoid;
+  }
+
+  .setubiz-print-rules {
+    font-size: 0.8125rem;
+  }
+
+  .setubiz-print-rules th[scope='row'] {
+    width: 24%;
+    font-weight: 600;
+  }
+
+  .setubiz-print-sources {
+    columns: 2;
+    column-gap: 2rem;
+    padding-left: 1.25rem;
+    margin: 0.25rem 0 0;
+  }
+
+  .setubiz-print-doc {
+    break-inside: auto;
+  }
+
+  .setubiz-print-head {
+    border-bottom: 2px solid var(--ux4g-color-neutral-900);
+    padding-bottom: 0.75rem;
+    margin-bottom: 1.25rem;
+    break-inside: avoid;
+  }
+
+  .setubiz-print-head-title {
+    margin-top: 0.75rem;
+    margin-bottom: 0.25rem;
+  }
+
+  /* The applicant-input table prints as a compact two-column form, not a full-width table. */
+  .setubiz-print-inputs {
+    font-size: 0.8125rem;
+  }
+
+  .setubiz-print-inputs th {
+    width: 38%;
+    font-weight: 600;
+    background: var(--ux4g-color-neutral-100);
+  }
+
+  .setubiz-print-inputs th,
+  .setubiz-print-inputs td {
+    padding: 0.3125rem 0.5rem;
+  }
+
+  /* Charts keep their shape on A4; at print scale the fixed 560px viewBox would otherwise run to
+   * the page edge. */
+  .setubiz-catchment-svg,
+  .setubiz-scroll-x svg {
+    max-width: 100%;
+  }
+
+  /* The map tooltip is an input affordance and has no meaning on paper. */
+  .setubiz-catchment-tip {
+    display: none !important;
+  }
+}
+
+/* Zero margin exists in every reset but in no UX4G utility, and the print header needs it to
+ * sit flush inside its band. App-namespaced rather than restyling anything of the system's. */
+.setubiz-m-0 {
+  margin: 0;
+}
+
+/* ---------------------------------------------------------------------------------------------
+ * 2f. Icons must read the surface they sit on.  [CONTRACT EXCEPTION]
+ *
+ * UX4G forces `.ux4g-icon-outlined` to the neutral-inverse colour in several contexts. On filled
+ * buttons and filled tags that inverse is correct; inside pale tonal tags and alerts it prints a
+ * white glyph on a tinted surface, which fails WCAG 1.4.11 (the icon IS the signal next to
+ * "Comfortable") and is the same class of defect as the 36px touch target: the system's own
+ * accessibility surface defeating itself. Inherit instead, so the icon takes the tag or alert
+ * text colour the system already computed for that surface. */
+.ux4g-alert .ux4g-icon-outlined,
+.ux4g-tag-tonal-success .ux4g-icon-outlined,
+.ux4g-tag-tonal-warning .ux4g-icon-outlined,
+.ux4g-tag-tonal-error .ux4g-icon-outlined,
+.ux4g-tag-tonal-info .ux4g-icon-outlined,
+.ux4g-tag-tonal-neutral .ux4g-icon-outlined {
+  color: inherit;
+}
+
+/* ---------------------------------------------------------------------------------------------
+ * 2g. Report loading screen.
+ *
+ * The facts build takes under a second live but narration and a cold serverless start can stretch
+ * it, and the old bare spinner read as a broken page. A ring, the title, and a caption that cycles
+ * through what the pipeline is actually doing: honest (each phase is a real stage), minimal, and
+ * alive without a fake progress bar. The global prefers-reduced-motion switch flattens both
+ * animations. */
+.setubiz-loading {
+  min-height: 55vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.875rem;
+  text-align: center;
+}
+
+.setubiz-loading-ring {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 999px;
+  border: 3px solid var(--ux4g-color-blue-100);
+  border-top-color: var(--ux4g-color-blue-600);
+  animation: setubiz-loading-spin 0.9s linear infinite;
+}
+
+[data-theme='dark'] .setubiz-loading-ring {
+  border-color: var(--ux4g-color-blue-900);
+  border-top-color: var(--ux4g-color-blue-400);
+}
+
+@keyframes setubiz-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.setubiz-loading-phase {
+  max-width: 60ch;
+  color: var(--ux4g-text-neutral-secondary);
+  animation: setubiz-phase-in 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+@keyframes setubiz-phase-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------------------------
+ * 2h. Alert icon aligns with the first text line.
+ *
+ * `.ux4g-alert` centres its children, which reads fine on a one-line toast and wrong on the
+ * report's provenance banner, where a 20px icon floats mid-air beside three lines of text. The
+ * icon joins the title's line instead; the small top nudge is optical, centring the glyph on the
+ * title's line box. */
+.ux4g-alert > .ux4g-alert-icon {
+  align-self: flex-start;
+  margin-top: 0.15rem;
+}
+
+/* Same defect as 2f, one surface over: the bare inverse rule also hits button icons, which is
+ * correct on solid `btn-primary`/`btn-danger` fills and unreadable on tonal, outline and text
+ * buttons (the printer glyph printed white on the tonal-primary lavender). Inherit on every
+ * light-surface button variant; the solid fills keep their inverse. */
+.ux4g-btn-tonal-primary .ux4g-icon-outlined,
+.ux4g-btn-outline-primary .ux4g-icon-outlined,
+.ux4g-btn-outline-neutral .ux4g-icon-outlined,
+.ux4g-btn-outline-danger .ux4g-icon-outlined,
+.ux4g-btn-text-primary .ux4g-icon-outlined,
+.ux4g-btn-text-neutral .ux4g-icon-outlined,
+.ux4g-btn-text-danger .ux4g-icon-outlined {
+  color: inherit;
+}
+
+/* ---------------------------------------------------------------------------------------------
+ * 6b. Print document typography.
+ *
+ * The paper document inherited the screen's rem type: 16px+ body on A4, multiplied again by the
+ * text-scale control, inside a max-width screen container that left a third of the sheet empty.
+ * Print gets its own absolute scale in pt (immune to root-font-size tricks), the full paper
+ * width, and explicit page geometry, so the sheet the bank receives reads like a form, not a
+ * zoomed screenshot. !important is justified here: UX4G's type utilities and the card-body
+ * re-assertion both out-specify plain overrides, and print is a distinct medium with one tree. */
+@media print {
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+
+  .ux4g-container {
+    max-width: none;
+    padding-inline: 0;
+  }
+
+  .setubiz-print-doc {
+    font-size: 10.5pt;
+    line-height: 1.5;
+  }
+
+  .setubiz-print-doc .setubiz-measure {
+    max-width: none;
+  }
+
+  .setubiz-print-doc [class*='ux4g-display-'] {
+    font-size: 15pt !important;
+  }
+
+  .setubiz-print-doc [class*='ux4g-heading-'] {
+    font-size: 12.5pt !important;
+  }
+
+  .setubiz-print-doc [class*='ux4g-title-'] {
+    font-size: 11pt !important;
+  }
+
+  .setubiz-print-doc [class*='ux4g-body-'] {
+    font-size: 10.5pt !important;
+  }
+
+  .setubiz-print-doc [class*='ux4g-label-'] {
+    font-size: 9.5pt !important;
+  }
+
+  /* The module/param headings and the two form tables were sized in screen rem; pt replaces
+   * them so the sheet is stable no matter which text scale the reader browsed with. */
+  .setubiz-print-module {
+    font-size: 14pt;
+  }
+
+  .setubiz-print-param {
+    font-size: 11.5pt;
+  }
+
+  .setubiz-print-rules,
+  .setubiz-print-inputs {
+    font-size: 9pt;
+  }
+
+  .setubiz-print-inputs th,
+  .setubiz-print-inputs td {
+    padding: 0.2rem 0.4rem;
+  }
+}
+
+/* ---------------------------------------------------------------------------------------------
+ * 6c. Print pagination: flow the document, protect atoms.
+ *
+ * Each PS parameter wrapped its whole body (text + map + bands + stat rows) in one
+ * break-inside: avoid block. Market Reach is taller than the space under the identity header,
+ * so the entire block jumped to page 2 and page 1 printed 70% empty. Inside the print document
+ * the parameter flows; only atomic units (a chart figure, a table, the identity header) are
+ * kept whole. */
+@media print {
+  .setubiz-print-doc .setubiz-print-block {
+    break-inside: auto;
+  }
+
+  .setubiz-print-doc .setubiz-print-block :is(figure, table) {
+    break-inside: avoid;
+  }
+
+  .setubiz-print-doc h2.setubiz-print-module {
+    break-before: page;
+  }
+
+  .setubiz-print-doc h2.setubiz-print-module:first-of-type {
+    break-before: auto;
+  }
+}
+
+/* Charts print at a readable but not dominant size: a full-width square map pushed every
+ * parameter onto its own page. Capped height keeps each figure atomic and lets a parameter's
+ * text, figure and bands share one sheet. */
+@media print {
+  .setubiz-print-doc figure {
+    break-inside: avoid;
+    text-align: center;
+  }
+
+  .setubiz-print-doc figure svg {
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 100mm;
   }
 }

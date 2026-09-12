@@ -49,7 +49,7 @@ export function OutOfScope({
                     </div>
                     <p className="ux4g-body-m-default setubiz-measure">
                       <span className="ux4g-label-m-strong">{strings.whenToPrefer}: </span>
-                      {s.when_to_prefer}
+                      {language === 'hi' && s.when_to_prefer_hi ? s.when_to_prefer_hi : s.when_to_prefer}
                     </p>
                     {s.portal && (
                       <a

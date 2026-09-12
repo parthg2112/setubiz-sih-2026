@@ -2,6 +2,10 @@
 # (PLAN.md §4). Jinja over the facts object only. If a number is not in facts, it cannot appear
 # here, and the numeric-grounding validator proves that on every run.
 #
+# Prose is deliberately short: at most two sentences per section. The figures live in the
+# section's structured `data` payload, which the UI renders as labelled stat rows above the
+# prose. The sentence explains; the payload states.
+#
 # `en` and `hi` are kept adjacent deliberately: a translation that drifts from its source is a
 # correctness bug, not a copy problem.
 
@@ -11,23 +15,21 @@ sections:
     heading_hi: निष्कर्ष
     cites: [finance_engine, census_pc11]
     body_en: |
-      {{ v.name }} ({{ v.block }} block, {{ v.district }} district) has about {{ n.households_now }}
-      households within {{ n.radius_km }} km, spread across {{ n.villages_in_radius }} villages.
-      For a {{ tpl.name }}, the scheme formula would allow you to borrow {{ fmt(n.max_loan) }}.
+      About {{ n.households_now }} households across {{ n.villages_in_radius }} villages sit
+      within {{ n.radius_km }} km of {{ v.name }}.
       {% if rec > 0 -%}
-      Our appraisal says borrow {{ fmt(n.recommended_loan) }} instead, which is
-      {{ fmt(n.headroom) }} less.
+      The scheme formula permits {{ fmt(n.max_loan) }}; our appraisal says borrow
+      {{ fmt(n.recommended_loan) }}.
       {%- else -%}
-      Our appraisal says this unit cannot service any loan as costed.
+      Our appraisal could not clear any loan size for this unit as costed.
       {%- endif %}
     body_hi: |
-      {{ v.name_hi or v.name }} ({{ v.block }} प्रखंड, {{ v.district }} जिला) के {{ n.radius_km }} किमी
-      दायरे में {{ n.villages_in_radius }} गाँवों के लगभग {{ n.households_now }} परिवार हैं।
-      {{ tpl.name_hi or tpl.name }} के लिए योजना के सूत्र से {{ fmt(n.max_loan) }} तक ऋण मिल सकता है।
+      {{ v.name_hi or v.name }} के {{ n.radius_km }} किमी दायरे में {{ n.villages_in_radius }}
+      गाँवों के लगभग {{ n.households_now }} परिवार हैं।
       {% if rec > 0 -%}
-      हमारी गणना के अनुसार {{ fmt(n.recommended_loan) }} लेना उचित है, जो {{ fmt(n.headroom) }} कम है।
+      योजना का सूत्र {{ fmt(n.max_loan) }} तक ऋण देता है; हमारी सलाह {{ fmt(n.recommended_loan) }} है।
       {%- else -%}
-      हमारी गणना के अनुसार यह इकाई वर्तमान लागत पर कोई ऋण नहीं चुका सकती।
+      हमारी गणना के अनुसार वर्तमान लागत पर इस इकाई की कोई ऋण राशि नहीं चल सकती।
       {%- endif %}
 
   - id: market_reach
@@ -35,44 +37,28 @@ sections:
     heading_hi: बाज़ार पहुँच
     cites: [census_pc11, intercensal_scaling, hces_2023_24]
     body_en: |
-      Census 2011 recorded {{ n.households_2011 }} households and {{ n.population_2011 }} people
-      within {{ n.radius_km }} km. Scaled by the district growth factor of {{ n.growth_factor }},
-      that is about {{ n.households_now }} households and {{ n.population_now }} people today.
-      A bank branch is present in {{ n.villages_with_bank }} of those villages, and
-      {{ n.road_connected_pct }}% of them have a pucca road.
-      Estimated household spend on this category is
-      {{ fmt(n.demand_per_household_low) }}–{{ fmt(n.demand_per_household_high) }} per month,
-      which puts the addressable market at
-      {{ lakh(n.addressable_market_low) }}–{{ lakh(n.addressable_market_high) }} per month.
+      About {{ n.households_now }} households live here today, up from {{ n.households_2011 }}
+      in Census 2011. The map and bands below show where they sit; spending on this category
+      runs {{ fmt(n.demand_per_household_low) }}-{{ fmt(n.demand_per_household_high) }} a month
+      per household.
     body_hi: |
-      जनगणना 2011 के अनुसार {{ n.radius_km }} किमी में {{ n.households_2011 }} परिवार और
-      {{ n.population_2011 }} लोग थे। जिले के वृद्धि गुणक {{ n.growth_factor }} से आज लगभग
-      {{ n.households_now }} परिवार और {{ n.population_now }} लोग हैं।
-      इनमें से {{ n.villages_with_bank }} गाँवों में बैंक शाखा है और {{ n.road_connected_pct }}% में पक्की सड़क।
-      इस श्रेणी पर प्रति परिवार मासिक खर्च
-      {{ fmt(n.demand_per_household_low) }}–{{ fmt(n.demand_per_household_high) }} अनुमानित है,
-      जिससे कुल बाज़ार {{ lakh(n.addressable_market_low) }}–{{ lakh(n.addressable_market_high) }}
-      प्रति माह बनता है।
+      आज इस दायरे में लगभग {{ n.households_now }} परिवार हैं, जनगणना 2011 में {{ n.households_2011 }}
+      थे। नीचे का नक्शा दिखाता है कि वे कहाँ हैं; इस श्रेणी पर प्रति परिवार मासिक खर्च
+      {{ fmt(n.demand_per_household_low) }}-{{ fmt(n.demand_per_household_high) }} आँका गया है।
 
   - id: competition
     heading_en: Competition
     heading_hi: प्रतिस्पर्धा
     cites: [economic_census_2013, openstreetmap]
     body_en: |
-      We estimate {{ n.competitors_low }}–{{ n.competitors_high }} existing enterprises in this
-      category within {{ n.radius_km }} km, against {{ n.competitors_observed_osm }} actually
-      mapped in OpenStreetMap. That is a density of
-      {{ n.competitor_density_per_1k_households }} per 1,000 households, or roughly
-      {{ n.households_per_competitor }} households per enterprise.
-      This is a band, not a count: rural mapping is incomplete, and we say so rather than
-      presenting a single confident number.
+      We estimate {{ n.competitors_low }}-{{ n.competitors_high }} enterprises in this category
+      within {{ n.radius_km }} km; OpenStreetMap shows only {{ n.competitors_observed_osm }}, so
+      treat this as a band, not a count.
       {% for note in competitor_notes %}{{ note }} {% endfor %}
     body_hi: |
-      {{ n.radius_km }} किमी में इस श्रेणी की अनुमानित {{ n.competitors_low }}–{{ n.competitors_high }}
-      इकाइयाँ हैं, जबकि OpenStreetMap में केवल {{ n.competitors_observed_osm }} दर्ज हैं।
-      यह प्रति 1,000 परिवार {{ n.competitor_density_per_1k_households }} का घनत्व है, अर्थात्
-      लगभग {{ n.households_per_competitor }} परिवार प्रति इकाई।
-      यह एक श्रेणी है, गिनती नहीं। ग्रामीण मानचित्रण अधूरा है, और हम इसे छिपाते नहीं।
+      {{ n.radius_km }} किमी में इस श्रेणी की अनुमानित {{ n.competitors_low }}-{{ n.competitors_high }}
+      इकाइयाँ हैं; OpenStreetMap में केवल {{ n.competitors_observed_osm }} दर्ज हैं, इसलिए इसे
+      श्रेणी मानें, गिनती नहीं।
       {% for note in competitor_notes %}{{ note }} {% endfor %}
 
   - id: loan_structure
@@ -80,28 +66,16 @@ sections:
     heading_hi: कितना ऋण मिल सकता है, और कितना लेना चाहिए
     cites: [finance_engine, nabard_templates]
     body_en: |
-      Your margin money of {{ fmt(n.margin) }} sets a project cost of {{ fmt(n.project_cost) }}
-      under the 10% promoter contribution rule, and a maximum loan of {{ fmt(n.max_loan) }}
-      under {{ scheme.scheme_name }} at {{ n.annual_rate_pct }}% per annum.
-      The {{ tpl.unit }} unit actually costs {{ fmt(n.required_capital) }} to set up, of which
-      {{ fmt(n.debt_need) }} would have to be borrowed.
-      At the maximum loan, the worst year's debt service coverage ratio is
-      {{ n.max_loan_min_dscr }}, below the {{ n.dscr_threshold }} appraisal norm.
       {% if rec > 0 -%}
-      We recommend {{ fmt(n.recommended_loan) }}, where the worst year covers
-      {{ n.recommended_min_dscr }} times its debt service. {{ binding_reason_en }}
+      We recommend {{ fmt(n.recommended_loan) }}. {{ binding_reason_en }}
+      {%- else -%}
+      No loan size clears the appraisal test as costed.
       {%- endif %}
     body_hi: |
-      आपकी स्वयं की राशि {{ fmt(n.margin) }} से 10% अंशदान नियम के अनुसार परियोजना लागत
-      {{ fmt(n.project_cost) }} बनती है और {{ scheme.scheme_name }} के अंतर्गत
-      {{ n.annual_rate_pct }}% वार्षिक दर पर अधिकतम ऋण {{ fmt(n.max_loan) }} है।
-      {{ tpl.unit }} इकाई की वास्तविक लागत {{ fmt(n.required_capital) }} है, जिसमें से
-      {{ fmt(n.debt_need) }} ऋण लेना होगा।
-      अधिकतम ऋण पर सबसे कमजोर वर्ष का डीएससीआर {{ n.max_loan_min_dscr }} है, जो
-      {{ n.dscr_threshold }} के मानक से नीचे है।
       {% if rec > 0 -%}
-      हम {{ fmt(n.recommended_loan) }} की सलाह देते हैं, जहाँ सबसे कमजोर वर्ष में डीएससीआर
-      {{ n.recommended_min_dscr }} रहता है। {{ binding_reason_hi }}
+      हम {{ fmt(n.recommended_loan) }} की सलाह देते हैं। {{ binding_reason_hi }}
+      {%- else -%}
+      वर्तमान लागत पर कोई ऋण राशि मानक पर खरी नहीं उतरती।
       {%- endif %}
 
   - id: repayment
@@ -110,32 +84,21 @@ sections:
     cites: [finance_engine, nsfdc_term_loan, nsfdc_micro_finance]
     body_en: |
       {% if rec > 0 -%}
-      {{ scheme.scheme_name }} repays in quarterly instalments over {{ n.tenure_years }} years.
-      That is {{ n.total_quarters }} quarters in total, of which the first
-      {{ n.moratorium_quarters }} are a moratorium, leaving {{ n.repayment_quarters }} instalments.
-      At the recommended loan the quarterly instalment is
-      {{ fmt(n.quarterly_instalment_recommended) }} and total interest over the term is
-      {{ fmt(n.total_interest_recommended) }}.
-      At the maximum loan it would be {{ fmt(n.quarterly_instalment_max) }} a quarter and
-      {{ fmt(n.total_interest_max) }} of interest.
-      NSFDC lends to the State Channelizing Agency at {{ n.sca_rate_pct }}%, and the agency
-      on-lends to you at {{ n.annual_rate_pct }}%.
+      {{ scheme.scheme_name }} repays over {{ n.tenure_years }} years: {{ n.total_quarters }}
+      quarters, of which the first {{ n.moratorium_quarters }} are a moratorium. At the
+      recommended loan that is {{ fmt(n.quarterly_instalment_recommended) }} a quarter and
+      {{ fmt(n.total_interest_recommended) }} total interest.
       {%- else -%}
-      No repayment schedule is shown because no loan size clears the appraisal test.
+      No schedule is shown because no loan size clears the appraisal test.
       {%- endif %}
     body_hi: |
       {% if rec > 0 -%}
-      {{ scheme.scheme_name }} में चुकौती {{ n.tenure_years }} वर्ष में तिमाही किस्तों से होती है।
-      कुल {{ n.total_quarters }} तिमाही, जिनमें पहली {{ n.moratorium_quarters }} अधिस्थगन की हैं,
-      शेष {{ n.repayment_quarters }} किस्तें।
-      अनुशंसित ऋण पर तिमाही किस्त {{ fmt(n.quarterly_instalment_recommended) }} और कुल ब्याज
+      {{ scheme.scheme_name_hi }} में चुकौती {{ n.tenure_years }} वर्ष की है: कुल {{ n.total_quarters }}
+      तिमाही, जिनमें पहली {{ n.moratorium_quarters }} अधिस्थगन की हैं। अनुशंसित ऋण पर किस्त
+      {{ fmt(n.quarterly_instalment_recommended) }} प्रति तिमाही और कुल ब्याज
       {{ fmt(n.total_interest_recommended) }} है।
-      अधिकतम ऋण पर यह {{ fmt(n.quarterly_instalment_max) }} प्रति तिमाही और
-      {{ fmt(n.total_interest_max) }} ब्याज होता।
-      एनएसएफडीसी राज्य चैनलाइजिंग एजेंसी को {{ n.sca_rate_pct }}% पर ऋण देता है, और एजेंसी आपको
-      {{ n.annual_rate_pct }}% पर।
       {%- else -%}
-      कोई चुकौती अनुसूची नहीं दिखाई गई क्योंकि कोई भी ऋण राशि मानक पर खरी नहीं उतरती।
+      कोई अनुसूची नहीं, क्योंकि कोई ऋण राशि मानक पर खरी नहीं उतरती।
       {%- endif %}
 
   - id: stress
@@ -143,42 +106,24 @@ sections:
     heading_hi: खराब वर्ष में क्या होगा
     cites: [finance_engine, nabard_templates]
     body_en: |
-      The unit's operating surplus is {{ fmt(n.monthly_net) }} a month, or
-      {{ fmt(n.annual_noi) }} a year, from revenue of {{ fmt(n.monthly_revenue) }} against
-      operating cost of {{ fmt(n.monthly_opex) }}.
-      If revenue falls 15%, annual surplus drops to {{ fmt(n.annual_noi_stress_15) }}.
-      {% if rec > 0 %}
-      Coverage at the recommended loan then becomes {{ n.recommended_min_dscr_stress_15 }},
-      against {{ n.max_loan_min_dscr_stress_15 }} at the maximum loan.
-      {% endif %}
-      We do not predict failure, because no labelled dataset of failed rural micro-enterprises
-      exists. We stress the cash flow instead and show you where it breaks.
+      The unit keeps {{ fmt(n.monthly_net) }} a month after operating costs.
+      We do not predict failure; we stress this cash flow with revenue 15% and 30% below plan
+      and show where coverage breaks.
     body_hi: |
-      इकाई का मासिक परिचालन अधिशेष {{ fmt(n.monthly_net) }} है और वार्षिक {{ fmt(n.annual_noi) }},
-      जो {{ fmt(n.monthly_revenue) }} आय में से {{ fmt(n.monthly_opex) }} परिचालन खर्च घटाकर बनता है।
-      यदि आय 15% घटे तो वार्षिक अधिशेष {{ fmt(n.annual_noi_stress_15) }} रह जाएगा।
-      {% if rec > 0 %}
-      तब अनुशंसित ऋण पर डीएससीआर {{ n.recommended_min_dscr_stress_15 }} होगा, जबकि अधिकतम ऋण पर
-      {{ n.max_loan_min_dscr_stress_15 }}।
-      {% endif %}
-      हम विफलता की भविष्यवाणी नहीं करते, क्योंकि ऐसा कोई लेबल किया हुआ डेटा मौजूद ही नहीं है।
-      हम नकदी प्रवाह पर दबाव डालकर दिखाते हैं कि कहाँ टूटता है।
+      परिचालन खर्च के बाद इकाई मासिक {{ fmt(n.monthly_net) }} बचाती है।
+      हम विफलता की भविष्यवाणी नहीं करते; हम इस नकदी प्रवाह पर 15% और 30% कम आय का दबाव डालकर
+      दिखाते हैं कि कहाँ टूटता है।
 
   - id: scheme
     heading_en: Scheme and eligibility
     heading_hi: योजना एवं पात्रता
     cites: [mosje_corporations]
     body_en: |
-      {% for reason in facts.eligibility.reasons %}{{ reason }} {% endfor %}
-      {%- for condition in facts.eligibility.conditions %} {{ condition }} {% endfor %}
-      {% if facts.eligibility.sca %}Apply through {{ facts.eligibility.sca.name }},
-      {{ facts.eligibility.sca.address }}. Ask for the
-      {{ facts.eligibility.sca.channel }}.{% endif %}
+      {{ scheme.scheme_name }} at {{ '%g'|format(n.annual_rate_pct) }}% a year. The eligibility
+      verdict and the conditions that shape it are listed below.
     body_hi: |
-      {% for reason in facts.eligibility.reasons %}{{ reason }} {% endfor %}
-      {%- for condition in facts.eligibility.conditions %} {{ condition }} {% endfor %}
-      {% if facts.eligibility.sca %}आवेदन {{ facts.eligibility.sca.name_hi or facts.eligibility.sca.name }}
-      के माध्यम से करें। पता: {{ facts.eligibility.sca.address }}।{% endif %}
+      {{ scheme.scheme_name_hi }}, वार्षिक {{ '%g'|format(n.annual_rate_pct) }}% दर पर। पात्रता का
+      निर्णय और उसे बनाने वाली शर्तें नीचे सूचीबद्ध हैं।
 
   - id: data_note
     heading_en: Where these numbers come from

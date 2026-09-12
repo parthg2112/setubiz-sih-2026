@@ -98,21 +98,24 @@ function Group({
         <p className="ux4g-body-m-default ux4g-text-neutral-secondary setubiz-measure">{body}</p>
       )}
 
-      <ul className="ux4g-d-flex ux4g-flex-column ux4g-gap-y-s">
+      {/* Compact rows, not nested cards: the pairing is the label, the one-line reason is the
+       *  content, and hairline separators keep four pairings from reading as four essays. */}
+      <ul className="setubiz-stack-list">
         {combinations.map((c) => (
-          <li className="ux4g-card ux4g-card-outline" key={c.schemes.join('+')}>
-            <div className="ux4g-card-body ux4g-d-flex ux4g-flex-column ux4g-gap-y-xs">
-              <p className="ux4g-label-l-strong">{c.names.join(' + ')}</p>
-              <p className="ux4g-body-l-default setubiz-measure">{c.reason}</p>
-
-              {c.sequencing && (
-                <p className="ux4g-body-s-default ux4g-text-neutral-secondary">
-                  {strings.stackSequencing}: {c.sequencing}
+          <li className="setubiz-stack-row" key={c.schemes.join('+')}>
+            <div>
+              <p className="ux4g-label-m-strong setubiz-m-0">{c.names.join(' + ')}</p>
+              {c.combined_cap && (
+                <p className="ux4g-body-s-default ux4g-text-neutral-secondary setubiz-tabular setubiz-m-0">
+                  {strings.stackCap}: {inr(c.combined_cap)}
                 </p>
               )}
-              {c.combined_cap && (
-                <p className="ux4g-body-s-default ux4g-text-neutral-secondary setubiz-tabular">
-                  {strings.stackCap}: {inr(c.combined_cap)}
+            </div>
+            <div>
+              <p className="ux4g-body-s-default setubiz-measure setubiz-m-0">{c.reason}</p>
+              {c.sequencing && (
+                <p className="ux4g-body-s-default ux4g-text-neutral-secondary setubiz-m-0">
+                  {strings.stackSequencing}: {c.sequencing}
                 </p>
               )}
               {c.source && (

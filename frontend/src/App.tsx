@@ -67,7 +67,7 @@ function Shell() {
   )
 
   return (
-    <>
+    <div className="setubiz-shell">
       <TopBar
         strings={strings}
         language={language}
@@ -111,6 +111,6 @@ function Shell() {
       </main>
 
       <SiteFooter strings={strings} buildDate={BUILD_DATE} />
-    </>
+    </div>
   )
 }

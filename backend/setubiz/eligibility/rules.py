@@ -66,6 +66,8 @@ class ComparisonScheme(BaseModel):
     collateral_free: bool
     highlights: tuple[str, ...]
     when_to_prefer: str
+    #: Hindi mirror of `when_to_prefer`; the comparison cards pick it in a Hindi report.
+    when_to_prefer_hi: str | None = None
     portal: str
 
 
@@ -90,7 +92,10 @@ class EligibilityResult(BaseModel):
     annual_family_income: Decimal | None
     income_ceiling: Decimal | None
     reasons: tuple[str, ...]
+    #: Hindi mirrors of `reasons`, authored with them so a Hindi report never quotes English.
+    reasons_hi: tuple[str, ...] = ()
     conditions: tuple[str, ...] = ()
+    conditions_hi: tuple[str, ...] = ()
     documents: tuple[DocumentItem, ...] = ()
     sca: Sca | None = None
     handoffs: tuple[dict[str, Any], ...] = ()
@@ -176,13 +181,19 @@ def assess(
     income = None if annual_family_income is None else money(annual_family_income)
     corp = corporation_for(category)
     reasons: list[str] = []
+    reasons_hi: list[str] = []
     conditions: list[str] = []
+    conditions_hi: list[str] = []
     handoffs = tuple(_comparison_doc().get("handoffs", ()))
 
     if corp is None:
         reasons.append(
             f"The {category.value.upper()} category is not served by an MoSJE apex corporation "
             "(NSFDC / NSKFDC / NBCFDC). Route to a general-purpose scheme instead."
+        )
+        reasons_hi.append(
+            "इस श्रेणी की सेवा कोई एमओएसजेई शीर्ष निगम (एनएसएफडीसी / एनएसकेएफडीसी / "
+            "एनबीसीएफडीसी) नहीं करता। इसके बजाय सामान्य-उद्देश्य योजनाओं की ओर देखें।"
         )
         return EligibilityResult(
             verdict=Verdict.INELIGIBLE,
@@ -191,6 +202,7 @@ def assess(
             annual_family_income=income,
             income_ceiling=None,
             reasons=tuple(reasons),
+            reasons_hi=tuple(reasons_hi),
             comparison=comparison_schemes(),
             is_woman=is_woman,
             sources=("mosje_corporations",),
@@ -198,15 +210,22 @@ def assess(
 
     ceiling = corp.income_ceiling
     verdict = Verdict.ELIGIBLE
+    corp_label_hi = corp.name_hi or corp.name
     reasons.append(f"{category.value.upper()} applicants are served by {corp.name}.")
+    reasons_hi.append(f"इस श्रेणी के आवेदकों की सेवा {corp_label_hi} करता है।")
 
     if ceiling is None:
         reasons.append(corp.income_ceiling_note or "No income ceiling applies.")
+        reasons_hi.append("कोई आय सीमा लागू नहीं है।")
     elif income is None:
         verdict = Verdict.ELIGIBLE_WITH_CONDITIONS
         conditions.append(
             f"Annual family income was not provided. Eligibility requires it to be at or below "
             f"{format_inr(ceiling)}; carry an income certificate to the SCA."
+        )
+        conditions_hi.append(
+            f"वार्षिक पारिवारिक आय नहीं दी गई। पात्रता के लिए आय {format_inr(ceiling)} तक "
+            "होनी चाहिए; एससीए के पास आय प्रमाणपत्र ले जाएँ।"
         )
     elif income > ceiling:
         verdict = Verdict.INELIGIBLE
@@ -214,10 +233,17 @@ def assess(
             f"Annual family income of {format_inr(income)} exceeds the {format_inr(ceiling)} "
             f"ceiling for {corp.name}."
         )
+        reasons_hi.append(
+            f"वार्षिक पारिवारिक आय {format_inr(income)}, {corp_label_hi} की "
+            f"{format_inr(ceiling)} सीमा से अधिक है।"
+        )
     else:
         reasons.append(
             f"Annual family income of {format_inr(income)} is within the "
             f"{format_inr(ceiling)} ceiling."
+        )
+        reasons_hi.append(
+            f"वार्षिक पारिवारिक आय {format_inr(income)}, {format_inr(ceiling)} सीमा के भीतर है।"
         )
 
     if requested_loan is not None and requested_loan > corp.max_loan:
@@ -226,16 +252,28 @@ def assess(
             f"Requested loan of {format_inr(requested_loan)} exceeds the "
             f"{format_inr(corp.max_loan)} ceiling for {corp.name}."
         )
+        reasons_hi.append(
+            f"माँगा गया ऋण {format_inr(requested_loan)}, {corp_label_hi} की "
+            f"{format_inr(corp.max_loan)} सीमा से अधिक है।"
+        )
 
     if is_woman:
         conditions.append(
             "Women beneficiaries qualify for the corporation's Mahila Samridhi / Mahila "
             "Adhikarita concessional window. Ask the SCA to apply it."
         )
+        conditions_hi.append(
+            "महिला लाभार्थियाँ निगम की महिला समृद्धि / महिला अधिकारिता रियायती खिड़की के लिए "
+            "पात्र हैं। एससीए से इसे लागू करने को कहें।"
+        )
     if not has_prior_experience:
         conditions.append(
             "No prior experience in the chosen activity, so complete a PM-DAKSH course before "
             "disbursement; SCAs treat this as a strengthening factor."
+        )
+        conditions_hi.append(
+            "चुनी गई गतिविधि में पूर्व अनुभव नहीं है, इसलिए वितरण से पहले पीएम-दक्ष पाठ्यक्रम "
+            "पूरा करें; एससीए इसे सुदृढ़ीकरण मानते हैं।"
         )
     if conditions and verdict is Verdict.ELIGIBLE:
         verdict = Verdict.ELIGIBLE_WITH_CONDITIONS
@@ -247,7 +285,9 @@ def assess(
         annual_family_income=income,
         income_ceiling=ceiling,
         reasons=tuple(reasons),
+        reasons_hi=tuple(reasons_hi),
         conditions=tuple(conditions),
+        conditions_hi=tuple(conditions_hi),
         documents=_documents(corp.id, activity_category),
         sca=sca_for_state(state, corp.id),
         handoffs=handoffs,

@@ -72,11 +72,32 @@ def _context(facts: Facts, language: Language) -> dict[str, Any]:
     }
 
 
+def _num(facts: Facts, key: str) -> Decimal | None:
+    """A numeric-index value for a chart payload, or None when the key does not apply.
+
+    The index is the single source of numbers; payloads never re-derive.
+    """
+    return facts.numeric_index.get(key)
+
+
 def _chart_data(facts: Facts) -> dict[str, dict[str, Any]]:
-    """Structured payloads the UI charts read. Same numbers, never re-derived on the client."""
+    """Structured payloads the UI charts and stat rows read. Same numbers, never re-derived."""
     rs = facts.right_sizing
     seasonality = facts.threats.seasonality
+    scheme = facts.scheme
+    eligibility = facts.eligibility
+    corporation = eligibility.corporation
+    sca = eligibility.sca
     return {
+        "headline": {
+            "catchment_households": _num(facts, "households_now"),
+            "villages_count": _num(facts, "villages_in_radius"),
+            "radius_km": _num(facts, "radius_km"),
+            "max_loan": rs.max_loan,
+            "recommended_loan": rs.recommended_loan,
+            "headroom": rs.headroom,
+            "binding": rs.binding.value,
+        },
         "loan_structure": {
             "max_loan": rs.max_loan,
             "recommended_loan": rs.recommended_loan,
@@ -85,10 +106,32 @@ def _chart_data(facts: Facts) -> dict[str, dict[str, Any]]:
             "debt_need": rs.debt_need,
             "binding": rs.binding.value,
             "dscr_threshold": rs.dscr_threshold,
+            "margin": scheme.margin,
+            "project_cost": scheme.project_cost,
+            "scheme_name": scheme.scheme_name,
+            "scheme_name_hi": scheme.scheme_name_hi or scheme.scheme_name,
+            "annual_rate_pct": _num(facts, "annual_rate_pct"),
+            "sca_rate_pct": _num(facts, "sca_rate_pct"),
+            "tenure_years": _num(facts, "tenure_years"),
+            "total_quarters": _num(facts, "total_quarters"),
+            "moratorium_quarters": _num(facts, "moratorium_quarters"),
+            "max_loan_min_dscr": rs.max_loan_min_dscr,
+            "recommended_min_dscr": rs.recommended_min_dscr,
+            "monthly_revenue": _num(facts, "monthly_revenue"),
+            "monthly_opex": _num(facts, "monthly_opex"),
+            "monthly_net": _num(facts, "monthly_net"),
         },
         "stress": {
             "dscr_threshold": rs.dscr_threshold,
             "stress_floor": rs.stress_floor,
+            "monthly_revenue": _num(facts, "monthly_revenue"),
+            "monthly_opex": _num(facts, "monthly_opex"),
+            "monthly_net": _num(facts, "monthly_net"),
+            "annual_noi": _num(facts, "annual_noi"),
+            "annual_noi_stress_15": _num(facts, "annual_noi_stress_15"),
+            "annual_noi_stress_30": _num(facts, "annual_noi_stress_30"),
+            "recommended_stress_dscr_15": _num(facts, "recommended_min_dscr_stress_15"),
+            "max_loan_stress_dscr_15": _num(facts, "max_loan_min_dscr_stress_15"),
             "max_loan": [
                 {"year": r.year, "dscr": r.dscr, "debt_service": r.debt_service}
                 for r in rs.max_loan_dscr
@@ -109,6 +152,16 @@ def _chart_data(facts: Facts) -> dict[str, dict[str, Any]]:
         },
         "repayment": {
             "mode": rs.mode.value,
+            "quarterly_instalment": _num(facts, "quarterly_instalment_recommended"),
+            "total_interest": _num(facts, "total_interest_recommended"),
+            "quarterly_instalment_max": _num(facts, "quarterly_instalment_max"),
+            "total_interest_max": _num(facts, "total_interest_max"),
+            "tenure_years": _num(facts, "tenure_years"),
+            "total_quarters": _num(facts, "total_quarters"),
+            "moratorium_quarters": _num(facts, "moratorium_quarters"),
+            "repayment_quarters": _num(facts, "repayment_quarters"),
+            "annual_rate_pct": _num(facts, "annual_rate_pct"),
+            "sca_rate_pct": _num(facts, "sca_rate_pct"),
             "recommended": [
                 r.__dict__
                 for r in (
@@ -129,6 +182,20 @@ def _chart_data(facts: Facts) -> dict[str, dict[str, Any]]:
             ),
         },
         "market_reach": {
+            "radius_km": _num(facts, "radius_km"),
+            "households_2011": _num(facts, "households_2011"),
+            "population_2011": _num(facts, "population_2011"),
+            "households_now": _num(facts, "households_now"),
+            "population_now": _num(facts, "population_now"),
+            "growth_factor": _num(facts, "growth_factor"),
+            "villages_with_bank": _num(facts, "villages_with_bank"),
+            "road_connected_pct": _num(facts, "road_connected_pct"),
+            "mandis_in_radius": _num(facts, "mandis_in_radius"),
+            "demand_per_household_low": _num(facts, "demand_per_household_low"),
+            "demand_per_household_high": _num(facts, "demand_per_household_high"),
+            "addressable_market_low": _num(facts, "addressable_market_low"),
+            "addressable_market_high": _num(facts, "addressable_market_high"),
+            "addressable_market_point": _num(facts, "addressable_market_point"),
             "villages": [
                 {
                     "name": n.village.name,
@@ -137,6 +204,7 @@ def _chart_data(facts: Facts) -> dict[str, dict[str, Any]]:
                     "households_2011": n.village.households_2011,
                     "lat": n.village.lat,
                     "lon": n.village.lon,
+                    "has_bank": n.village.has_bank,
                 }
                 for n in facts.market.neighbours
             ],
@@ -150,6 +218,24 @@ def _chart_data(facts: Facts) -> dict[str, dict[str, Any]]:
             "observed_osm": facts.competitors.osm_observed,
             "z_score": facts.competitors.z_score,
             "estimator": facts.competitors.method,
+        },
+        "scheme": {
+            "scheme_name": scheme.scheme_name,
+            "scheme_name_hi": scheme.scheme_name_hi or scheme.scheme_name,
+            "logic": scheme.logic.value,
+            "annual_rate_pct": _num(facts, "annual_rate_pct"),
+            "sca_rate_pct": _num(facts, "sca_rate_pct"),
+            "verdict": eligibility.verdict.value,
+            "corporation_name": corporation.name if corporation else None,
+            "corporation_name_hi": corporation.name_hi if corporation else None,
+            "annual_family_income": eligibility.annual_family_income,
+            "income_ceiling": eligibility.income_ceiling,
+            "income_status": "provided" if eligibility.annual_family_income is not None else "missing",
+            "sca": (
+                {"name": sca.name, "name_hi": sca.name_hi, "address": sca.address, "channel": sca.channel}
+                if sca
+                else None
+            ),
         },
         "stress_seasonality": (
             {

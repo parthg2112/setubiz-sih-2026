@@ -79,7 +79,9 @@ class Facts(BaseModel):
         """
         parts: list[str] = [
             *self.eligibility.reasons,
+            *self.eligibility.reasons_hi,
             *self.eligibility.conditions,
+            *self.eligibility.conditions_hi,
             *(d.en for d in self.eligibility.documents),
             *(d.hi or "" for d in self.eligibility.documents),
             *(w.text_en for w in self.warnings),
@@ -96,6 +98,7 @@ class Facts(BaseModel):
             self.template.unit,
             self.template.name,
             self.scheme.scheme_name,
+            self.scheme.scheme_name_hi,
             *self.scheme.notes,
             self.competitors.band.method,
             self.demand.per_household_monthly.method,

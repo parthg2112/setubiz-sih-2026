@@ -12,6 +12,7 @@ from decimal import Decimal
 from typing import Protocol, runtime_checkable
 
 from setubiz.data.loader import DataSource, Village
+from setubiz.finance.cost_templates import display_name
 from setubiz.feasibility.market_reach import MarketReach
 from setubiz.money import q
 from setubiz.schemas import Advisory, Band, Confidence
@@ -63,10 +64,12 @@ class Ec13ZScoreEstimator:
                     id="no_ec13_row",
                     text_en=(
                         f"No Economic Census density for block {centre.block} and category "
-                        f"{category}; falling back to the observed OSM count, which under-counts."
+                        f"{(display_name(category) or (category, category))[0]}; "
+                        "falling back to the observed OSM count, which under-counts."
                     ),
                     text_hi=(
-                        f"{centre.block} प्रखंड एवं {category} श्रेणी के लिए आर्थिक जनगणना का "
+                        f"{centre.block} प्रखंड एवं {(display_name(category) or (category, category))[1]} "
+                        "श्रेणी के लिए आर्थिक जनगणना का "
                         "घनत्व उपलब्ध नहीं; OSM की गिनती पर आधारित अनुमान, जो कम आँकता है।"
                     ),
                 )
