@@ -31,3 +31,9 @@ etl/.cache/
 # OS noise
 Thumbs.db
 Desktop.ini
+.vercel
+
+# private working docs
+SIH26091_Models_Architecture_Workflow.docx
+UX4G_CodeGen_Prompt_v1.md
+PLAN.md

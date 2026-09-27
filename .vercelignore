@@ -13,3 +13,7 @@ PLAN.md
 
 datasets
 etl
+
+# Vercel prefers pyproject over requirements.txt, and ours installs nothing at runtime
+pyproject.toml
+uv.lock
